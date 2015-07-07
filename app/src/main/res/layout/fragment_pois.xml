@@ -1,0 +1,70 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.rafa.liquidgalaxypoiscontroller.POISFragment">
+
+    <TextView
+        android:id="@+id/fragment_pois_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textStyle="bold"
+        android:text="/"/>
+
+    <TextView
+        android:id="@+id/see_all_or_by_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/see_by_category"
+        android:textStyle="bold"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@+id/fragment_pois_route"/>
+
+    <ListView
+        android:id="@+id/categories_listview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:divider="@null"
+        android:layout_below="@+id/fragment_pois_route"/>
+    <Button
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        android:layout_below="@id/categories_listview"/>
+    <Button
+        android:id="@+id/back_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back_start"
+        android:layout_below="@+id/categories_listview"
+        android:layout_toRightOf="@+id/back"/>
+    <TextView
+        android:id="@+id/pois_tittle_listview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/back"
+        android:textSize="24dp"
+        android:text="POIs list"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+    <ListView
+        android:id="@+id/pois_listview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:divider="@null"
+        android:layout_below="@+id/pois_tittle_listview"
+        android:visibility="gone"/>
+    <!--<com.nhaarman.listviewanimations.itemmanipulation.DynamicListView-->
+        <!--android:id="@+id/pois_listview"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:divider="@null"-->
+        <!--android:layout_below="@+id/pois_tittle_listview"-->
+        <!--android:visibility="gone"/>-->
+
+</RelativeLayout>

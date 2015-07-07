@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.rafa.liquidgalaxypoiscontroller" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AdminActivity"
+            android:label="@string/title_activity_admin" >
+        </activity>
+
+        <provider
+            android:name=".data.POIsProvider"
+            android:authorities="com.example.rafa.liquidgalaxypoiscontroller"
+            android:enabled="true"
+            android:exported="true" />
+
+        <uses-sdk android:minSdkVersion="14" />
+
+        <activity
+            android:name=".CreateItemActivity"
+            android:label="@string/title_activity_create_item" >
+        </activity>
+        <activity
+            android:name=".UpdateItemActivity"
+            android:label="@string/title_activity_update_item" >
+        </activity>
+    </application>
+
+</manifest>
