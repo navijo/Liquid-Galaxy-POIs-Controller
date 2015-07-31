@@ -91,7 +91,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 
     public static class ViewHolderPoi {
 
-        public EditText cityET;
+        public EditText name;
         public EditText visitedPlaceET;
         public EditText longitudeET;
         public EditText latitudeET;
@@ -108,7 +108,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 
         public ViewHolderPoi(View rootView) {
 
-            cityET = (EditText) rootView.findViewById(R.id.city);
+            name = (EditText) rootView.findViewById(R.id.name);
             visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
             longitudeET = (EditText) rootView.findViewById(R.id.longitude);
             latitudeET = (EditText) rootView.findViewById(R.id.latitude);
@@ -187,13 +187,12 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
     }
     private ContentValues getContentValuesFromDataFromPOIInputForm(ViewHolderPoi viewHolder){
 
-        String city = "", completeName = "", visitedPlace = "", altitudeMode = "";
+        String completeName = "", visitedPlace = "", altitudeMode = "";
         float longitude = 0, latitude = 0, altitude = 0, heading = 0, tilt = 0, range = 0;
         int hide = 0, categoryID = 0;
 
-        city = viewHolder.cityET.getText().toString();
         visitedPlace = viewHolder.visitedPlaceET.getText().toString();
-        completeName = city + " - " + visitedPlace;
+        completeName = viewHolder.name.getText().toString();
         longitude = Float.parseFloat(viewHolder.longitudeET.getText().toString());
         latitude = Float.parseFloat(viewHolder.latitudeET.getText().toString());
         altitude = Float.parseFloat(viewHolder.altitudeET.getText().toString());
@@ -213,9 +212,8 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(POIsContract.POIEntry.COLUMN_CITY_NAME, city);
-        contentValues.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visitedPlace);
         contentValues.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, completeName);
+        contentValues.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visitedPlace);
         contentValues.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
         contentValues.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
         contentValues.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
@@ -354,10 +352,8 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             tourPOIsNames.add(completeName);
             tourPOIsDuration.add("0");
             namesAndIDs.put(completeName, poiSelected);
+
             FragmentActivity activity = (FragmentActivity) rootView.getContext();
-
-
-//-----------------
             TourPOIsAdapter.setType("creating");
             TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
             viewHolderTour.addedPois.setAdapter(adapter);

@@ -15,12 +15,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dip"/>
     <EditText
-        android:id="@+id/city"
+        android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dip"
         android:layout_marginRight="15dip"
-        android:hint="City name"
+        android:hint="Name"
         android:layout_below="@+id/new_poi_text"/>
     <EditText
         android:id="@+id/visited_place"
@@ -29,7 +29,7 @@
         android:layout_marginBottom="15dip"
         android:layout_marginRight="15dip"
         android:hint="Place to visit"
-        android:layout_below="@+id/city"/>
+        android:layout_below="@+id/name"/>
     <EditText
         android:id="@+id/longitude"
         android:layout_width="wrap_content"
@@ -53,7 +53,7 @@
         android:layout_marginBottom="15dip"
         android:layout_marginRight="15dp"
         android:hint="Altitude"
-        android:layout_toRightOf="@id/city"
+        android:layout_toRightOf="@id/name"
         android:layout_below="@id/new_poi_text"/>
     <EditText
         android:id="@+id/heading"

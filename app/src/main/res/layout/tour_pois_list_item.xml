@@ -4,21 +4,23 @@
     android:orientation="horizontal" 
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
+
     <TextView
         android:id="@+id/poi_complete_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="center"
-        android:layout_marginRight="30dp"/>
+        android:layout_marginRight="30dp"
+        android:focusable="false"/>
     <EditText
         android:id="@+id/poi_seconds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="(s)"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:descendantFocusability="blocksDescendants"/>
     <ImageView
         android:id="@+id/move_up"
         android:src="@drawable/move_up"
@@ -26,13 +28,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:focusable="false"/>
     <ImageView
         android:id="@+id/move_down"
         android:src="@drawable/move_down"
         android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:focusable="false"/>
 
 </LinearLayout>

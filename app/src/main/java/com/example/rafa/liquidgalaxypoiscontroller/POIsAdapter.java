@@ -13,7 +13,7 @@ import android.widget.TextView;
  */
 public class POIsAdapter extends CursorAdapter{
 
-    public static final int POI_COLUMN_VISITED_PLACE_NAME = 3;
+    public static final int POI_COLUMN_NAME = 1;
     public static final int TOUR_COLUMN_NAME = 1;
     public static final int CATEGORY_COLUMN_NAME = 1;
 
@@ -37,7 +37,7 @@ public class POIsAdapter extends CursorAdapter{
         TextView poiName = (TextView) view.findViewById(R.id.poi_list_item_textview);
         if(itemName != null) {
             if (itemName.equals("POI")) {
-                poiName.setText(cursor.getString(POI_COLUMN_VISITED_PLACE_NAME));
+                poiName.setText(cursor.getString(POI_COLUMN_NAME));
             } else if (itemName.equals("TOUR")) {
                 poiName.setText(cursor.getString(TOUR_COLUMN_NAME));
             } else {

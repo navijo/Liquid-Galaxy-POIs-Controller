@@ -2,6 +2,7 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,10 @@ public class CategoriesAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         TextView poiName = (TextView) view.findViewById(R.id.category_list_item_textview);
+        poiName.setTextColor(context.getResources().getColor(R.color.accent_material_light));
+        if(cursor.getInt(4) == 1){
+            poiName.setTextColor(Color.RED);
+        }
         poiName.setText(cursor.getString(CATEGORY_COLUMN_NAME));
 
     }

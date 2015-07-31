@@ -182,7 +182,7 @@ public class POIsProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
-        Uri returnUri;
+        Uri returnUri = null;
 
         switch (match) {
             case ALL_POIS: {
@@ -198,10 +198,12 @@ public class POIsProvider extends ContentProvider {
             case ALL_CATEGORIES: {
 
                 long _id = db.insert(POIsContract.CategoryEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
-                    returnUri = POIsContract.CategoryEntry.buildCategoryUri(_id);
+
+                if (_id > 0)
+                        returnUri = POIsContract.CategoryEntry.buildCategoryUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
+
                 break;
             }
             case ALL_TOURS: {

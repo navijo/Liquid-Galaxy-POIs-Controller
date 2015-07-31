@@ -19,9 +19,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 public class POISFragment extends Fragment {
 
@@ -40,11 +47,11 @@ public class POISFragment extends Fragment {
     private final Uri Category_URI = POIsContract.CategoryEntry.CONTENT_URI;
 
     private String EDITABLE_TAG, notify, createORupdate = "";
-    Button back, backStart;
+    private Button back, backStart;
     private List<String> backIDs = new ArrayList<String>(){{
             add("0");
     }};
-    TextView seeingOptions, poisListViewTittle, route;
+    private TextView seeingOptions, poisListViewTittle, route;
     public static int routeID = 0;
     private static Button category_here, tour_here, poi_here;
 
@@ -118,10 +125,11 @@ public class POISFragment extends Fragment {
 
         Cursor queryCursor;
         if(EDITABLE_TAG.startsWith("USER")){
-            queryCursor = POIsContract.CategoryEntry.getHidenCategoriesByFatherID(getActivity(), backIDs.get(0));
+            queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), backIDs.get(0));
         }else {
             queryCursor = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), backIDs.get(0));
         }
+
         adapter = new CategoriesAdapter(getActivity(), queryCursor, 0);
 
         if (queryCursor.getCount() > 0) {
@@ -448,12 +456,45 @@ public class POISFragment extends Fragment {
                         deleteButtonTreatment(itemSelectedID, POI_URI, POI_IDselection, "POI", getWhereClauseCategory("CATEGORY LEVEL"), whereClauseForRefreshing);
                     }
                 }else{
-                    Toast.makeText(getActivity(), cursor.getString(1), Toast.LENGTH_SHORT).show();
+                    HashMap<String, String> poi = getPOIData(itemSelectedID);
+                    String command = buildCommand(poi);
+                    Toast.makeText(getActivity(), command, Toast.LENGTH_LONG).show();
                 }
             }
         });
 
         return queryCursor.getCount();
+    }
+
+    private HashMap<String, String> getPOIData(int id){
+        Cursor c = POIsContract.POIEntry.getPOIByID(getActivity(), String.valueOf(id));
+        String completeName = "", altitudeMode = "";
+        float longitude = 0, latitude = 0, altitude = 0, heading = 0, tilt = 0, range = 0;
+
+        HashMap<String, String> poi = new HashMap<String, String>();
+
+        if(c.moveToNext()) {
+            poi.put("completeName", c.getString(1));
+            poi.put("longitude", String.valueOf(c.getFloat(3)));
+            poi.put("latitude", String.valueOf(c.getFloat(4)));
+            poi.put("altitude", String.valueOf(c.getFloat(5)));
+            poi.put("heading", String.valueOf(c.getFloat(6)));
+            poi.put("tilt", String.valueOf(c.getFloat(7)));
+            poi.put("range", String.valueOf(c.getFloat(8)));
+            poi.put("altitudeMode", c.getString(9));
+        }
+        return poi;
+    }
+    private String buildCommand(HashMap<String, String> poi){
+        return "earth@" + poi.get("completeName") +
+                "@flytoview=<LookAt><longitude>" + poi.get("longitude") +
+                "</longitude><latitude>" + poi.get("latitude") +
+                "</latitude><altitude>" + poi.get("altitude") +
+                "</altitude><heading>" + poi.get("heading") +
+                "</heading><tilt>" + poi.get("tilt") +
+                "</tilt><range>" + poi.get("range") +
+                "</range><gx:altitudeMode>" + poi.get("altitudeMode") +
+                "</gx:altitudeMode></LookAt>";
     }
     private String updatePoiSonsCategoryID(String itemSelectedID){
         String fatherID = POIsContract.CategoryEntry.getFatherIdByID(getActivity(), itemSelectedID);
@@ -689,5 +730,31 @@ public class POISFragment extends Fragment {
         categoriesListView.setAdapter(adapter);
 //        adapter.notifyDataSetChanged();
         //PROBAR NOTIFYDATASETCHANGED DE ADAPTER
+    }
+    private String setConnectionWithLiquidGalaxy(String command) throws JSchException {
+
+        JSch jsch = new JSch();
+
+//        String privateKey = Environment.getExternalStorageDirectory()+"/LGOD/conf/lg-id_rsa";   //now hardcoded, data from configuration file needs to be used
+//        jsch.addIdentity(privateKey);
+
+//        JSch.setConfig("StrictHostKeyChecking", "no");
+        Session session = jsch.getSession("lg", "", 21);
+        session.setPassword("lqgalaxy");
+
+        Properties prop = new Properties();
+        prop.put("StrictHostKeyChecking", "no");
+        session.setConfig(prop);
+        session.connect();
+
+        ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        channelssh.setOutputStream(baos);
+
+        channelssh.setCommand(command);
+        channelssh.connect();
+        channelssh.disconnect();
+
+        return baos.toString();
     }
 }

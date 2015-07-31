@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/back"
-        android:textSize="24dp"
+        android:textSize="16dp"
         android:text="POIs list"
         android:textStyle="bold"
         android:visibility="gone"/>

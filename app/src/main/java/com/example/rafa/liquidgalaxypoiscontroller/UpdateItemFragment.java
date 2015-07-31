@@ -85,20 +85,19 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
     public static class ViewHolderPoi {
 
         public int ID = 0;
-        public int COMPLETE_NAME = 1;
-        public int CITY_NAME = 2;
-        public int VISITED_PLACE_NAME = 3;
-        public int LONGITUDE = 4;
-        public int LATITUDE = 5;
-        public int ALTITUDE = 6;
-        public int HEADING = 7;
-        public int TILT = 8;
-        public int RANGE = 9;
-        public int ALTITUDE_MODE = 10;
-        public int HIDE = 11;
-        public int CATEGORY_ID = 12;
+        public int NAME = 1;
+        public int VISITED_PLACE_NAME = 2;
+        public int LONGITUDE = 3;
+        public int LATITUDE = 4;
+        public int ALTITUDE = 5;
+        public int HEADING = 6;
+        public int TILT = 7;
+        public int RANGE = 8;
+        public int ALTITUDE_MODE = 9;
+        public int HIDE = 10;
+        public int CATEGORY_ID = 11;
 
-        public EditText cityET;
+        public EditText nameET;
         public EditText visitedPlaceET;
         public EditText longitudeET;
         public EditText latitudeET;
@@ -115,7 +114,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
         public ViewHolderPoi(View rootView) {
 
-            cityET = (EditText) rootView.findViewById(R.id.city);
+            nameET = (EditText) rootView.findViewById(R.id.name);
             visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
             longitudeET = (EditText) rootView.findViewById(R.id.longitude);
             latitudeET = (EditText) rootView.findViewById(R.id.latitude);
@@ -225,7 +224,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
     }
     private void setDataToPOIsLayout(Cursor query, ViewHolderPoi viewHolder){
         if(query.moveToFirst()){
-            viewHolder.cityET.setText(query.getString(viewHolder.CITY_NAME));
+            viewHolder.nameET.setText(query.getString(viewHolder.NAME));
             viewHolder.visitedPlaceET.setText(query.getString(viewHolder.VISITED_PLACE_NAME));
             viewHolder.longitudeET.setText(String.valueOf(query.getFloat(viewHolder.LONGITUDE)));
             viewHolder.latitudeET.setText(String.valueOf(query.getFloat(viewHolder.LATITUDE)));
@@ -250,13 +249,12 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
                 ContentValues contentValues = new ContentValues();
 
-                String city = "", completeName = "", visitedPlace = "", altitudeMode = "";
+                String completeName = "", visitedPlace = "", altitudeMode = "";
                 float longitude = 0, latitude = 0, altitude = 0, heading = 0, tilt = 0, range = 0;
                 int hide = 0, categoryID = 0;
 
-                city = viewHolder.cityET.getText().toString();
                 visitedPlace = viewHolder.visitedPlaceET.getText().toString();
-                completeName = city + " - " + visitedPlace;
+                completeName = viewHolder.nameET.getText().toString();
                 longitude = Float.parseFloat(viewHolder.longitudeET.getText().toString());
                 latitude = Float.parseFloat(viewHolder.latitudeET.getText().toString());
                 altitude = Float.parseFloat(viewHolder.altitudeET.getText().toString());
@@ -269,7 +267,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
                 categoryID = getFatherIDValueFromInputForm(shownName);
 
-                contentValues.put(POIsContract.POIEntry.COLUMN_CITY_NAME, city);
+                contentValues.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, completeName);
                 contentValues.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visitedPlace);
                 contentValues.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, completeName);
                 contentValues.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
@@ -454,16 +452,18 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 String name = (String) parent.getItemAtPosition(position);
                 View popup = createPopup();
                 cancelButtonTreatment(popup);
-                deleteButtonTreatment(popup, name);
+                deleteButtonTreatment(popup, name, position);
                 return true;
             }
         });
     }
-    private void deleteButtonTreatment(View view, final String name){
+    private void deleteButtonTreatment(View view, final String name, final int position){
         final Button delete = (Button) view.findViewById(R.id.delete_poi);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //int position = tourPOIsNames.indexOf(name);
+                TourPOIsAdapter.removeDurationByPosition(position);
                 tourExistingPOIsNames.remove(name);
                 tourPOIsNames.remove(name);
                 String id = namesAndIDs.get(name);
@@ -515,13 +515,14 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
     private void updateTourPOIsModifications() {
         ContentValues contentValues = new ContentValues();
         int i = 1;
-//        for(String poiID : tourPOIsIDs){
+        List<Integer> durationList = TourPOIsAdapter.getDurationList();
         for(String poiName : tourPOIsNames){
             contentValues.clear();
             String poiID = namesAndIDs.get(poiName);
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, Integer.parseInt(poiID));
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, itemSelectedID);
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, i);
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, durationList.get(i-1));
             if(tourExistingPOIsIDs.contains(poiID)) {
                 int updatedRows = POIsContract.TourPOIsEntry.updateByTourIdAndPoiID(getActivity(), contentValues, itemSelectedID, poiID);
                 Toast.makeText(getActivity(), updatedRows + "tourPois rows updated.", Toast.LENGTH_SHORT).show();
@@ -560,7 +561,6 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         FragmentActivity fragmentActivity = getActivity();
         Cursor cursor = POIsContract.TourPOIsEntry.getPOIsByTourID(fragmentActivity, itemSelectedID);
         String name, id;
-        EditText durationField;
         List<Integer> durationList = new ArrayList<Integer>();
         while (cursor.moveToNext()){
             name = cursor.getString(1);
@@ -603,9 +603,14 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             tourPOIsNames.add(completeName);
             namesAndIDs.put(completeName, poiSelected);
 
+            TourPOIsAdapter.setType("updating");
+            TourPOIsAdapter.updatePOIsDurations(viewHolderTour.addedPois);
+            TourPOIsAdapter.addToDurationList(); //the new POI will initially have a duration of 'general duration' and this method introduces that duration to the list of durations.
+
             FragmentActivity activity = (FragmentActivity) rootView.getContext();
             TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
             viewHolderTour.addedPois.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
     }
     private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder){

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class TourPOIsAdapter extends BaseAdapter {
     private static List<Integer> poisDuration = new ArrayList<Integer>();
     private FragmentActivity activity;
     private static String type = "creating";
-    private static int global_interval = 0;
+    private static int global_interval, updated_position, lastPost;
 
     public TourPOIsAdapter(FragmentActivity activity, List<String> tourPOIsNames) {
         this.activity = activity;
@@ -80,8 +81,9 @@ public class TourPOIsAdapter extends BaseAdapter {
      * @return A View corresponding to the data at the specified position.
      */
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
 
+        final int pos = position;
         View view = convertView;
         String poi = (String) getItem(position);
 
@@ -93,42 +95,31 @@ public class TourPOIsAdapter extends BaseAdapter {
         TextView name = (TextView) view.findViewById(R.id.poi_complete_name);
         name.setText(poi);
 
-        if(position == 0){
-            view.findViewById(R.id.move_up).setVisibility(View.INVISIBLE);
-        }
-        if(position == getCount() - 1){
-            view.findViewById(R.id.move_down).setVisibility(View.INVISIBLE);
-        }
+        final EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
 
-        view.findViewById(R.id.move_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String toMoveDown = (String) getItem(position);
-                String toMoveUp = (String) getItem(position + 1);
-                pois.remove(position + 1);
-                pois.remove(position);
-                pois.add(position, toMoveUp);
-                pois.add(position + 1, toMoveDown);
-                notifyDataSetChanged();
-            }
-        });
-
-        view.findViewById(R.id.move_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String toMoveUp = (String) getItem(position);
-                String toMoveDown = (String) getItem(position - 1);
-                pois.remove(position);
-                pois.remove(position - 1);
-                pois.add(position - 1, toMoveUp);
-                pois.add(position, toMoveDown);
-
-                notifyDataSetChanged();
-            }
-        });
+//        seconds.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                String updatedSec = seconds.getText().toString();
+//                if(!updatedSec.equals("")) {
+//                    int sec = Integer.valueOf(seconds.getText().toString());
+//                    //updated_position = pos;
+//                    if(sec != poisDuration.get(pos)) {
+//                        updatePoisDurationList(sec, pos);
+//                    }
+//                }
+//            }
+//        });
 
         if(type.equals("updating")) {
-            EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
             int poi_interval = poisDuration.get(position);
             if(global_interval == poi_interval){
                 seconds.setText("");
@@ -136,6 +127,11 @@ public class TourPOIsAdapter extends BaseAdapter {
                 seconds.setText(String.valueOf(poi_interval));
             }
         }
+
+        setArrowsVisibility(view, position);
+        setArrowsBehaviour(view, position);
+
+        notifyDataSetChanged();
 
         return view;
     }
@@ -145,11 +141,113 @@ public class TourPOIsAdapter extends BaseAdapter {
         poisDuration.addAll(durationList);
     }
 
+    public static void removeDurationByPosition(int position){
+        poisDuration.remove(position);
+    }
+
     public static void setType(String t){
         type = t;
     }
 
     public static void setGlobalInterval(int globalInterval) {
         global_interval = globalInterval;
+    }
+
+    public static void addToDurationList() {
+        poisDuration.add(global_interval);
+    }
+
+    public static List<Integer> getDurationList() {
+        return poisDuration;
+    }
+
+    private void setArrowsBehaviour(View view, final int position) {
+        view.findViewById(R.id.move_down).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveDown(position);
+            }
+        });
+
+        view.findViewById(R.id.move_up).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveUp(position);
+            }
+        });
+    }
+    private void setArrowsVisibility(View view, int position) {
+        if(position == 0){
+            view.findViewById(R.id.move_up).setVisibility(View.INVISIBLE);
+        }
+        if(position == getCount() - 1){
+            view.findViewById(R.id.move_up).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.move_down).setVisibility(View.INVISIBLE);
+        }
+    }
+    private void moveUp(int position){
+        String toMoveUp = (String) getItem(position);
+        String toMoveDown = (String) getItem(position - 1);
+        if(poisDuration.size() > 0) {
+            int current_item_duration = poisDuration.get(position);
+            int above_item_duration = poisDuration.get(position - 1);
+
+            poisDuration.remove(position);
+            poisDuration.remove(position - 1);
+            poisDuration.add(position - 1, current_item_duration);
+            poisDuration.add(position, above_item_duration);
+        }
+        pois.remove(position);
+        pois.remove(position - 1);
+        pois.add(position - 1, toMoveUp);
+        pois.add(position, toMoveDown);
+
+        notifyDataSetChanged();
+    }
+    private void moveDown(int position){
+        String toMoveDown = (String) getItem(position);
+        String toMoveUp = (String) getItem(position + 1);
+        if(poisDuration.size() > 0) {
+            int current_item_duration = poisDuration.get(position);
+            int below_item_duration = poisDuration.get(position + 1);
+
+            poisDuration.remove(position + 1);
+            poisDuration.remove(position);
+            poisDuration.add(position, below_item_duration);
+            poisDuration.add(position + 1, current_item_duration);
+        }
+        pois.remove(position + 1);
+        pois.remove(position);
+        pois.add(position, toMoveUp);
+        pois.add(position + 1, toMoveDown);
+        notifyDataSetChanged();
+    }
+
+    public static void updatePOIsDurations(final ListView addedPois) {
+
+//        View v = addedPois.getAdapter().getView(addedPois.getChildCount(), null, addedPois);
+
+//        ListView xx = (ListView) v;
+//        xx.getChildCount();
+
+
+        int sss = addedPois.getCount();
+        int ppp = addedPois.getChildCount();
+        for(int i = 0; i < addedPois.getChildCount(); i++){
+            View row = addedPois.getChildAt(i);
+            EditText secET = (EditText) row.findViewById(R.id.poi_seconds);
+            String sec = secET.getText().toString();
+            int seconds = 0;
+            if(sec.equals("")){
+                seconds = global_interval;
+            }else{
+                seconds = Integer.valueOf(sec);
+            }
+
+            if (poisDuration.get(i) != seconds) {
+                poisDuration.remove(i);
+                poisDuration.add(i, seconds);
+            }
+        }
     }
 }

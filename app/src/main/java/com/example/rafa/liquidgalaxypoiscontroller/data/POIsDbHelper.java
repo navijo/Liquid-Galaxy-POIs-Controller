@@ -15,7 +15,7 @@ import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourPOIsEnt
 public class POIsDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 30;
     static final String DATABASE_NAME = "poi_controller.db";
 
     public POIsDbHelper(Context context) {
@@ -36,7 +36,6 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_POI_TABLE = "CREATE TABLE " + POIsContract.POIEntry.TABLE_NAME + " (" +
                 POIEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 POIEntry.COLUMN_COMPLETE_NAME + " TEXT UNIQUE NOT NULL, " +
-                POIEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
                 POIEntry.COLUMN_VISITED_PLACE_NAME + " TEXT NOT NULL, " +
                 POIEntry.COLUMN_LONGITUDE + " REAL NOT NULL, " +
                 POIEntry.COLUMN_LATITUDE + " REAL NOT NULL, " +

@@ -46,7 +46,6 @@ public class POIsContract {
 
         //Table columns
         public static final String COLUMN_COMPLETE_NAME = "Name";
-        public static final String COLUMN_CITY_NAME = "City";
         public static final String COLUMN_VISITED_PLACE_NAME = "Visited_Place";
         public static final String COLUMN_LONGITUDE = "Longitude";
         public static final String COLUMN_LATITUDE = "Latitude";
@@ -117,6 +116,10 @@ public class POIsContract {
         public static Cursor getAllNotHidenPOIs(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI,null, COLUMN_HIDE + " = 0", null, null);
         }
+
+        public static Cursor getPOIByID(FragmentActivity activity, String id) {
+            return activity.getContentResolver().query(CONTENT_URI ,null, _ID + " = ?", new String[]{id}, null);
+        }
     }
 
     public static final class CategoryEntry implements BaseColumns {
@@ -139,6 +142,13 @@ public class POIsContract {
         public static Uri buildCategoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
+        public static int getIdByUri(Uri insertedUri) {
+            String uri = insertedUri.toString();
+            String[] uriSplit = uri.split("/");
+            return Integer.parseInt(uriSplit[uriSplit.length - 1]);
+        }
+
         public static Cursor getAllCategories(FragmentActivity fragmentActivity){
             return fragmentActivity.getContentResolver().query(CONTENT_URI,null, null, null, null);
         }
@@ -151,7 +161,7 @@ public class POIsContract {
                     null);
         }
 
-        public static Cursor getHidenCategoriesByFatherID(FragmentActivity fragmentActivity, String fatherID) {
+        public static Cursor getNotHidenCategoriesByFatherID(FragmentActivity fragmentActivity, String fatherID) {
             return fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
                     null,

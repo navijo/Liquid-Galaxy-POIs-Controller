@@ -31,12 +31,27 @@
 
         <activity
             android:name=".CreateItemActivity"
-            android:label="@string/title_activity_create_item" >
+            android:label="@string/title_activity_create_item"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".UpdateItemActivity"
-            android:label="@string/title_activity_update_item" >
+            android:label="@string/title_activity_update_item"
+            android:windowSoftInputMode="adjustPan">
         </activity>
-    </application>
+        <intent-filter>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
 
+    </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>
