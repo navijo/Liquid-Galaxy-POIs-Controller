@@ -22,7 +22,8 @@ public class TourPOIsAdapter extends BaseAdapter {
     private static List<Integer> poisDuration = new ArrayList<Integer>();
     private FragmentActivity activity;
     private static String type = "creating";
-    private static int global_interval, updated_position, lastPost;
+    private static int global_interval = 0, updated_position, lastPost;
+    private boolean MOVE_TAG = false;
 
     public TourPOIsAdapter(FragmentActivity activity, List<String> tourPOIsNames) {
         this.activity = activity;
@@ -81,7 +82,7 @@ public class TourPOIsAdapter extends BaseAdapter {
      * @return A View corresponding to the data at the specified position.
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         final int pos = position;
         View view = convertView;
@@ -96,28 +97,23 @@ public class TourPOIsAdapter extends BaseAdapter {
         name.setText(poi);
 
         final EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
+        seconds.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String sec = seconds.getText().toString();
+                    if(isNumeric(sec)){
+                        if(Integer.parseInt(sec) != poisDuration.get(position)){
+                            if(MOVE_TAG == false) {
+                                poisDuration.remove(position);
+                                poisDuration.add(position, Integer.parseInt(sec));
+                            }
+                        }
+                    }
 
-//        seconds.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                String updatedSec = seconds.getText().toString();
-//                if(!updatedSec.equals("")) {
-//                    int sec = Integer.valueOf(seconds.getText().toString());
-//                    //updated_position = pos;
-//                    if(sec != poisDuration.get(pos)) {
-//                        updatePoisDurationList(sec, pos);
-//                    }
-//                }
-//            }
-//        });
+                }
+            }
+        });
 
         if(type.equals("updating")) {
             int poi_interval = poisDuration.get(position);
@@ -128,43 +124,45 @@ public class TourPOIsAdapter extends BaseAdapter {
             }
         }
 
-        setArrowsVisibility(view, position);
-        setArrowsBehaviour(view, position);
-
-        notifyDataSetChanged();
+        //setArrowsVisibility(view, position);
+        setArrowsBehaviour(view, position, parent);
+        setDeleteItemButtonBehaviour(view, poi);
 
         return view;
+    }
+
+
+    private void setDeleteItemButtonBehaviour(View view, String name) {
+        CreateItemFragment.deleteButtonTreatment(view, name);
     }
 
     public static void setPOIsDuration(List<Integer> durationList) {
         poisDuration.clear();
         poisDuration.addAll(durationList);
     }
-
     public static void removeDurationByPosition(int position){
         poisDuration.remove(position);
     }
-
     public static void setType(String t){
         type = t;
     }
-
     public static void setGlobalInterval(int globalInterval) {
         global_interval = globalInterval;
     }
-
+    public static int getGlobalInterval(){return global_interval;}
     public static void addToDurationList() {
         poisDuration.add(global_interval);
     }
-
     public static List<Integer> getDurationList() {
         return poisDuration;
     }
 
-    private void setArrowsBehaviour(View view, final int position) {
+    private void setArrowsBehaviour(View view, final int position, final ViewGroup parent) {
         view.findViewById(R.id.move_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //updateDurations((ListView) parent);
                 moveDown(position);
             }
         });
@@ -172,16 +170,30 @@ public class TourPOIsAdapter extends BaseAdapter {
         view.findViewById(R.id.move_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //updateDurations((ListView) parent);
                 moveUp(position);
+                //CreateItemFragment.proba(pois);
             }
         });
     }
+
+    private void updateLV(int position, int otherPosition, ListView parent) {
+        View row;
+        EditText secET;
+        row = parent.getAdapter().getView(position, null, parent);
+        secET = (EditText) row.findViewById(R.id.poi_seconds);
+        secET.setText(poisDuration.get(position).toString());
+        row = parent.getAdapter().getView(otherPosition, null, parent);
+        secET = (EditText) row.findViewById(R.id.poi_seconds);
+        secET.setText(poisDuration.get(otherPosition).toString());
+        notifyDataSetChanged();
+    }
+
     private void setArrowsVisibility(View view, int position) {
         if(position == 0){
             view.findViewById(R.id.move_up).setVisibility(View.INVISIBLE);
         }
         if(position == getCount() - 1){
-            view.findViewById(R.id.move_up).setVisibility(View.VISIBLE);
             view.findViewById(R.id.move_down).setVisibility(View.INVISIBLE);
         }
     }
@@ -201,7 +213,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         pois.remove(position - 1);
         pois.add(position - 1, toMoveUp);
         pois.add(position, toMoveDown);
-
+        MOVE_TAG = true;
         notifyDataSetChanged();
     }
     private void moveDown(int position){
@@ -220,34 +232,48 @@ public class TourPOIsAdapter extends BaseAdapter {
         pois.remove(position);
         pois.add(position, toMoveUp);
         pois.add(position + 1, toMoveDown);
+        MOVE_TAG = true;
         notifyDataSetChanged();
     }
 
-    public static void updatePOIsDurations(final ListView addedPois) {
+    private void updateDurations(ListView addedPois) {
 
-//        View v = addedPois.getAdapter().getView(addedPois.getChildCount(), null, addedPois);
+        //CreateItemFragment.proba();
 
-//        ListView xx = (ListView) v;
-//        xx.getChildCount();
-
-
-        int sss = addedPois.getCount();
-        int ppp = addedPois.getChildCount();
-        for(int i = 0; i < addedPois.getChildCount(); i++){
-            View row = addedPois.getChildAt(i);
+        //notifyDataSetChanged();
+        View row;
+        for(int i = 0; i < addedPois.getCount(); i++){
+            row = addedPois.getAdapter().getView(i, null, addedPois);
             EditText secET = (EditText) row.findViewById(R.id.poi_seconds);
-            String sec = secET.getText().toString();
-            int seconds = 0;
-            if(sec.equals("")){
-                seconds = global_interval;
+            String sec = secET.getEditableText().toString();
+            if(isNumeric(sec)){
+                int seconds = Integer.parseInt(sec);
+                if(poisDuration.get(i) != seconds){
+                    poisDuration.remove(i);
+                    poisDuration.add(i, seconds);
+                }
             }else{
-                seconds = Integer.valueOf(sec);
-            }
-
-            if (poisDuration.get(i) != seconds) {
-                poisDuration.remove(i);
-                poisDuration.add(i, seconds);
+                if(poisDuration.get(i) != global_interval){
+                    poisDuration.remove(i);
+                    poisDuration.add(i, global_interval);
+                }
             }
         }
+    }
+
+    private static boolean isNumeric(String str){
+        try
+        {
+            int d = Integer.parseInt(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static void deleteDuration(int durationIndex) {
+        poisDuration.remove(durationIndex);
     }
 }

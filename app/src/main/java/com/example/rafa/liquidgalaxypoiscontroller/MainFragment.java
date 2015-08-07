@@ -15,6 +15,14 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Properties;
+
 
 public class MainFragment extends Fragment {
 
@@ -40,10 +48,59 @@ public class MainFragment extends Fragment {
         setPOIButtonBehaviour(rootView);
         setTourButtonBehaviour(rootView);
         setAdminButtonBehaviour(rootView, R.id.admin_button);
+        setSearchInLGButton(rootView);
 
         return rootView;
     }
 
+    private void setSearchInLGButton(View rootView) {
+
+        final EditText editSearch = (EditText) rootView.findViewById(R.id.search_edittext);
+        Button buttonSearch = (Button) rootView.findViewById(R.id.searchButton);
+
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            String placeToSearch = editSearch.getText().toString();
+            if(!placeToSearch.equals("") && placeToSearch != null){
+                try {
+                    String command = buildSearchCommand(placeToSearch);
+                    setConnectionWithLiquidGalaxy(command);
+                }catch(JSchException ex){
+                    Toast.makeText(getActivity(), "Error connecting with Liquid Galaxy. Try changing username, password, host IP or port.", Toast.LENGTH_LONG).show();
+                }
+            }else{
+                Toast.makeText(getActivity(), "Please, first type some place to search.", Toast.LENGTH_LONG).show();
+            }
+            }
+        });
+    }
+
+    private String buildSearchCommand(String search){
+        return "echo 'search=" + search + "' > /tmp/query.txt";
+    }
+    private String setConnectionWithLiquidGalaxy(String command) throws JSchException {
+
+        JSch jsch = new JSch();
+
+        Session session = jsch.getSession("lg", "172.26.17.21", 22);
+        session.setPassword("lqgalaxy");
+
+        Properties prop = new Properties();
+        prop.put("StrictHostKeyChecking", "no");
+        session.setConfig(prop);
+        session.connect();
+
+        ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        channelssh.setOutputStream(baos);
+
+        channelssh.setCommand(command);
+        channelssh.connect();
+        channelssh.disconnect();
+
+        return baos.toString();
+    }
     /**
      * Initializes an instance of POISFragment to show the content of the POIs or TOURs database,
      * depending on which button has been clicked.
@@ -59,7 +116,6 @@ public class MainFragment extends Fragment {
                 showToastMessage("POI");
             }
         });
-
     }
 
     private void setTourButtonBehaviour(View rootView){
@@ -142,7 +198,6 @@ public class MainFragment extends Fragment {
                     popupWindow.dismiss();
                 }
                 else{
-
                     incorrectPass.setVisibility(View.VISIBLE);
                     showToastMessage("INCORRECT PASSWORD");
                 }

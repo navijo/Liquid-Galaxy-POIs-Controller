@@ -604,7 +604,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             namesAndIDs.put(completeName, poiSelected);
 
             TourPOIsAdapter.setType("updating");
-            TourPOIsAdapter.updatePOIsDurations(viewHolderTour.addedPois);
+//            TourPOIsAdapter.updatePOIsDurations(viewHolderTour.addedPois);
             TourPOIsAdapter.addToDurationList(); //the new POI will initially have a duration of 'general duration' and this method introduces that duration to the list of durations.
 
             FragmentActivity activity = (FragmentActivity) rootView.getContext();

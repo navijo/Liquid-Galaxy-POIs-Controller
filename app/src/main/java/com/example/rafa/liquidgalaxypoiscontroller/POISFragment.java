@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -47,7 +48,7 @@ public class POISFragment extends Fragment {
     private final Uri Category_URI = POIsContract.CategoryEntry.CONTENT_URI;
 
     private String EDITABLE_TAG, notify, createORupdate = "";
-    private Button back, backStart;
+    private ImageView backIcon, backStartIcon;
     private List<String> backIDs = new ArrayList<String>(){{
             add("0");
     }};
@@ -78,8 +79,8 @@ public class POISFragment extends Fragment {
         //poisListView = (DynamicListView) poisView.findViewById(R.id.pois_listview);
         poisListView = (ListView) poisView.findViewById(R.id.pois_listview);
         categoriesListView = (ListView) poisView.findViewById(R.id.categories_listview);
-        back = (Button) poisView.findViewById(R.id.back);
-        backStart = (Button) poisView.findViewById(R.id.back_start);
+        backIcon = (ImageView) poisView.findViewById(R.id.back_icon);
+        backStartIcon = (ImageView) poisView.findViewById(R.id.back_start_icon);
         seeingOptions = (TextView) poisView.findViewById(R.id.see_all_or_by_category);
         poisListViewTittle = (TextView) poisView.findViewById(R.id.pois_tittle_listview);
         route = (TextView) poisView.findViewById(R.id.fragment_pois_route);
@@ -105,14 +106,14 @@ public class POISFragment extends Fragment {
         seeingOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(seeingOptions.getText().toString().equals("By category")){
-                    seeingOptions.setText("All");
+                if(seeingOptions.getText().toString().equals("See elements by category")){
+                    seeingOptions.setText("See all elements");
                     category_here.setVisibility(View.VISIBLE);
                     notify = "CATEGORY";
                     showCategoriesByLevel();
 
                 }else{
-                    seeingOptions.setText("By category");
+                    seeingOptions.setText("See elements by category");
                     backIDs.clear();
                     backIDs.add("0");
                     category_here.setVisibility(View.GONE);
@@ -134,15 +135,12 @@ public class POISFragment extends Fragment {
 
         if (queryCursor.getCount() > 0) {
             categoriesListView.setAdapter(adapter);
-
             routeID = Integer.parseInt(backIDs.get(0));
             buttonsVisibility();
 
         } else {
             routeID = Integer.parseInt(backIDs.get(0));
             buttonsVisibility();
-//            backIDs.remove(0);
-//            if(backIDs.size()>0 && !notify.equals("POI") && !notify.equals("TOUR")) {
             if(backIDs.size()>0) {
                 Toast.makeText(getActivity(), "There aren't more categories", Toast.LENGTH_SHORT).show();
                 categoriesListView.setAdapter(adapter);
@@ -202,8 +200,10 @@ public class POISFragment extends Fragment {
     }
     private void showAllCategories(){
 
-        back.setVisibility(View.GONE);
-        backStart.setVisibility(View.GONE);
+//        back.setVisibility(View.GONE);
+//        backStart.setVisibility(View.GONE);
+        backIcon.setVisibility(View.GONE);
+        backStartIcon.setVisibility(View.GONE);
 
         Cursor queryCursor = POIsContract.CategoryEntry.getAllCategories(getActivity());
         //Cursor queryCursor = POIsContract.CategoryEntry.getAllNotHidenCategories(getActivity());
@@ -235,42 +235,39 @@ public class POISFragment extends Fragment {
     }
     private void buttonsVisibility(){
         if (!backIDs.get(0).equals("0")) {
-            if (!back.isShown() && !backStart.isShown()) {
-                back.setVisibility(View.VISIBLE);
-                backStart.setVisibility(View.VISIBLE);
+            if (!backIcon.isShown() && !backStartIcon.isShown()) {
+                backIcon.setVisibility(View.VISIBLE);
+                backStartIcon.setVisibility(View.VISIBLE);
             }
             setBackButtonTreatment();
             setBackToStartButtonTreatment();
         } else {
-            if (back.isShown() && backStart.isShown()) { //&& backIDs.isEmpty()
-                back.setVisibility(View.GONE);
-                backStart.setVisibility(View.GONE);
+            if (backIcon.isShown() && backStartIcon.isShown()) { //&& backIDs.isEmpty()
+                backIcon.setVisibility(View.GONE);
+                backStartIcon.setVisibility(View.GONE);
             }
         }
     }
     private void setBackButtonTreatment(){
-        back.setOnClickListener(new View.OnClickListener() {
+        backIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 backIDs.remove(0);
-                //notify = "CATEGORY";
                 showCategoriesByLevel();
             }
         });
     }
     private void setBackToStartButtonTreatment(){
-        backStart.setOnClickListener(new View.OnClickListener() {
+        backStartIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 backIDs.clear();
                 backIDs.add("0");
-                //notify = "CATEGORY";
                 showCategoriesByLevel();
             }
         });
     }
     private void updateSonsFatherIDAndShownName(String itemSelectedID, String itemSelectedFatherID){
-
         final String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), Integer.parseInt(itemSelectedFatherID));
 
         searchAndEditCategoriesSons(itemSelectedID, itemSelectedFatherID, fatherShownName);
@@ -278,7 +275,6 @@ public class POISFragment extends Fragment {
 
     }
     private void searchAndEditCategoriesSons(String itemSelectedID, String fatherOfItemSelectedID, String shownNameFather){
-
         //we get the ID and Name of the pois whose father ID is itemSelectedID parameter.
         //On the first loop, it will be the ID from the sons of the poi we want to delete
         Cursor sonsIDCursor = POIsContract.CategoryEntry.getIDAndNameByFatherID(getActivity(),itemSelectedID);
@@ -292,35 +288,29 @@ public class POISFragment extends Fragment {
         //for each son
         if(sonsIDCursor.getCount()>0){
             while(sonsIDCursor.moveToNext()){
-                //Change SHOWNNAME and ID
+                //We change shownName and ID
                 int sonID = sonsIDCursor.getInt(COLUMN_ID);
                 String sonName = sonsIDCursor.getString(COLUMN_NAME);
                 String finalShownName = shownNameFather + sonName + "/";
 
                 int updatedRows = POIsContract.CategoryEntry.updateFatherIdAndShownNameByID(getActivity(), String.valueOf(sonID), fatherOfItemSelectedID, finalShownName);
-
-                //MIRAR SI TIENE HIJOS Y HACER LO MISMO (RECURRENTE)
                 if(updatedRows == 1) {//if updated is correct done
                     searchAndEditShownNameOfCategoriesSons(sonID, finalShownName);
                 }
             }
         }
-
     }
     private void searchAndEditShownNameOfCategoriesSons(int fatherID, String shownName){
-
         Cursor sonsIDCursor = POIsContract.CategoryEntry.getIDAndNameByFatherID(getActivity(), String.valueOf(fatherID));
         final int COLUMN_ID = 0, COLUMN_NAME = 1;
 
         while(sonsIDCursor.moveToNext()){
-            //CAMBIAR SHOWNNAME Y ID
+            //We change shownName and ID
             int sonID = sonsIDCursor.getInt(COLUMN_ID);
             String sonName = sonsIDCursor.getString(COLUMN_NAME);
             String finalShownName = shownName + sonName + "/";
 
             int updatedRows = POIsContract.CategoryEntry.updateShownNameByID(getActivity(), sonID, finalShownName);
-
-            //MIRAR SI TIENE HIJOS Y HACER LO MISMO (RECURSIVO)
             if(updatedRows == 1) {//if updated is correct done
                 searchAndEditShownNameOfCategoriesSons(sonID, finalShownName);
             }
@@ -335,43 +325,12 @@ public class POISFragment extends Fragment {
         }
         seeingOptions.setVisibility(View.GONE);
         poisListViewTittle.setText("List of POIs");
-        back.setVisibility(View.GONE);
-        backStart.setVisibility(View.GONE);
+        backIcon.setVisibility(View.GONE);
+        backStartIcon.setVisibility(View.GONE);
         poisListViewTittle.setVisibility(View.VISIBLE);
         categoriesListView.setVisibility(View.VISIBLE);
         notify = "POI";
         showCategoriesByLevel();
-
-//        seeingOptions.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(seeingOptions.getText().toString().equals("By category")){ //vull veure-les per categoria
-//                    seeingOptions.setText("All");
-//                    if(EDITABLE_TAG.startsWith("ADMIN")) {
-//                        poi_here.setVisibility(View.VISIBLE);
-//                    }
-//                    poisListViewTittle.setVisibility(View.VISIBLE);
-//                    categoriesListView.setVisibility(View.VISIBLE);
-//                    notify = "POI";
-//                    showCategoriesByLevel();
-//
-//                }else{
-//                    seeingOptions.setText("By category");
-//                    backIDs.clear();
-//                    backIDs.add("0");
-//                    if(EDITABLE_TAG.startsWith("ADMIN")) {
-//                        poi_here.setVisibility(View.GONE);
-//                    }
-//                    poisListViewTittle.setVisibility(View.GONE);
-//                    back.setVisibility(View.GONE);
-//                    backStart.setVisibility(View.GONE);
-//                    showAllPois();
-//                }
-//            }
-//        });
-
-
-
     }
     private void showAllPois(){
         final Cursor queryCursor;
@@ -455,10 +414,18 @@ public class POISFragment extends Fragment {
                         String whereClauseForRefreshing = POIsContract.POIEntry.COLUMN_CATEGORY_ID + " = " + String.valueOf(categoryID);
                         deleteButtonTreatment(itemSelectedID, POI_URI, POI_IDselection, "POI", getWhereClauseCategory("CATEGORY LEVEL"), whereClauseForRefreshing);
                     }
-                }else{
-                    HashMap<String, String> poi = getPOIData(itemSelectedID);
-                    String command = buildCommand(poi);
-                    Toast.makeText(getActivity(), command, Toast.LENGTH_LONG).show();
+                }else{//IF BASIC USER CLICKS ON ONE POI...
+                    try {
+                        HashMap<String, String> poi = getPOIData(itemSelectedID);
+                        String command = buildCommand(poi);
+                        try {
+                            setConnectionWithLiquidGalaxy(command);
+                        } catch (JSchException e) {
+                            Toast.makeText(getActivity(),"Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip", Toast.LENGTH_LONG).show();
+                        }
+                    }catch (Exception ex){
+                        Toast.makeText(getActivity(),"Error. " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -466,11 +433,8 @@ public class POISFragment extends Fragment {
         return queryCursor.getCount();
     }
 
-    private HashMap<String, String> getPOIData(int id){
+    private HashMap<String, String> getPOIData(int id) throws Exception {
         Cursor c = POIsContract.POIEntry.getPOIByID(getActivity(), String.valueOf(id));
-        String completeName = "", altitudeMode = "";
-        float longitude = 0, latitude = 0, altitude = 0, heading = 0, tilt = 0, range = 0;
-
         HashMap<String, String> poi = new HashMap<String, String>();
 
         if(c.moveToNext()) {
@@ -482,19 +446,20 @@ public class POISFragment extends Fragment {
             poi.put("tilt", String.valueOf(c.getFloat(7)));
             poi.put("range", String.valueOf(c.getFloat(8)));
             poi.put("altitudeMode", c.getString(9));
+        }else{
+            throw new Exception("There is no POI with this features inside the data base. Try creating once correct.");
         }
         return poi;
     }
     private String buildCommand(HashMap<String, String> poi){
-        return "earth@" + poi.get("completeName") +
-                "@flytoview=<LookAt><longitude>" + poi.get("longitude") +
+        return "echo 'flytoview=<LookAt><longitude>" + poi.get("longitude") +
                 "</longitude><latitude>" + poi.get("latitude") +
                 "</latitude><altitude>" + poi.get("altitude") +
                 "</altitude><heading>" + poi.get("heading") +
                 "</heading><tilt>" + poi.get("tilt") +
                 "</tilt><range>" + poi.get("range") +
                 "</range><gx:altitudeMode>" + poi.get("altitudeMode") +
-                "</gx:altitudeMode></LookAt>";
+                "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
     }
     private String updatePoiSonsCategoryID(String itemSelectedID){
         String fatherID = POIsContract.CategoryEntry.getFatherIdByID(getActivity(), itemSelectedID);
@@ -513,14 +478,16 @@ public class POISFragment extends Fragment {
             tour_here.setVisibility(View.GONE);
         }
         poisListViewTittle.setText("List of TOURs");
-        back.setVisibility(View.GONE);
-        backStart.setVisibility(View.GONE);
+//        back.setVisibility(View.GONE);
+//        backStart.setVisibility(View.GONE);
+        backIcon.setVisibility(View.GONE);
+        backStartIcon.setVisibility(View.GONE);
         showAllTours();
         seeingOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(seeingOptions.getText().toString().equals("By category")){ //vull veure-les per categoria
-                    seeingOptions.setText("All");
+                if(seeingOptions.getText().toString().equals("See elements by category")){ //vull veure-les per categoria
+                    seeingOptions.setText("See all elements");
                     if(EDITABLE_TAG.startsWith("ADMIN")) {
                         tour_here.setVisibility(View.VISIBLE);
                     }
@@ -530,15 +497,17 @@ public class POISFragment extends Fragment {
                     showCategoriesByLevel();
 
                 }else{
-                    seeingOptions.setText("By category");
+                    seeingOptions.setText("See elements by category");
                     backIDs.clear();
                     backIDs.add("0");
                     if(EDITABLE_TAG.startsWith("ADMIN")) {
                         tour_here.setVisibility(View.GONE);
                     }
                     poisListViewTittle.setVisibility(View.GONE);
-                    back.setVisibility(View.GONE);
-                    backStart.setVisibility(View.GONE);
+//                    back.setVisibility(View.GONE);
+//                    backStart.setVisibility(View.GONE);
+                    backIcon.setVisibility(View.GONE);
+                    backStartIcon.setVisibility(View.GONE);
                     showAllTours();
                 }
             }
@@ -563,7 +532,11 @@ public class POISFragment extends Fragment {
                     UpdateItemFragment.setPOItoTourPOIsList(String.valueOf(itemSelectedID), completeName);
                     popupPoiSelected.dismiss();
                 }else{
-                    CreateItemFragment.setPOItoTourPOIsList(String.valueOf(itemSelectedID), completeName);
+                    try {
+                        CreateItemFragment.setPOItoTourPOIsList(String.valueOf(itemSelectedID), completeName);
+                    }catch (Exception e){
+                        Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    }
                     popupPoiSelected.dismiss();
                 }
             }
@@ -735,11 +708,7 @@ public class POISFragment extends Fragment {
 
         JSch jsch = new JSch();
 
-//        String privateKey = Environment.getExternalStorageDirectory()+"/LGOD/conf/lg-id_rsa";   //now hardcoded, data from configuration file needs to be used
-//        jsch.addIdentity(privateKey);
-
-//        JSch.setConfig("StrictHostKeyChecking", "no");
-        Session session = jsch.getSession("lg", "", 21);
+        Session session = jsch.getSession("lg", "172.26.17.21", 22);
         session.setPassword("lqgalaxy");
 
         Properties prop = new Properties();

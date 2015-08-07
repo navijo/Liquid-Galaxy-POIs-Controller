@@ -4,7 +4,7 @@
     <string name="app_name">Liquid Galaxy POIs Controller</string>
     <string name="tittle">Liquid Galaxy Controller</string>
     <string name="action_settings">Settings</string>
-    <string name="POIs_button">POIs</string>
+    <string name="POIs_button">POIssssSSSQQQ</string>
     <string name="TOURs_button">TOURs</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="admin">Administration tools</string>
@@ -31,14 +31,13 @@
     <string name="new_poi_here">New POI inside this category</string>
     <string name="new_tour_here">New TOUR inside this category</string>
     <string name="new_category_here">New Category inside this category</string>
-    <string name="see_all">All</string>
-    <string name="see_by_category">By category</string>
+    <string name="see_all">See all elements</string>
+    <string name="see_by_category">See elements by category</string>
     <string name="next_subcategory">See subcategory</string>
     <string name="back">Back</string>
     <string name="back_start">Back to Start</string>
     <string name="global_interval_text">Duration of each POI (25 by default)</string>
-    <string name="interval_explanation_text">(You can also modify the duration of each POI by long clicking on it)</string>
-
+    <string name="tour_pois">Tour POIs</string>
 
 
 </resources>

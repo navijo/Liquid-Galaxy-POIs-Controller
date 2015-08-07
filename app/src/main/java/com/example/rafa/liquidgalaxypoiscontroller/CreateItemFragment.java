@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
@@ -68,12 +69,18 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         else if(creationType.startsWith("TOUR")){
 
             setTourLayoutSettings(inflater, container);
-            popupItemSelected();
+//            popupItemSelected();
             viewHolderTour.createTOUR.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int tourID = createTour();
-                    addTourPOIsTODataBase(tourID);//TENIR EN COMPTE ELS POIS DE DINS DEL TOUR!!!!!!!!!!!!!!!!!!!!
+                    try {
+                        int tourID = createTour();
+                        addTourPOIsTODataBase(tourID);//TENIR EN COMPTE ELS POIS DE DINS DEL TOUR (SI N'HI HA O NO)!!!!!!!!!!!!!!!!!!!!
+                    }catch (NumberFormatException e){
+                        Toast.makeText(getActivity(), "The duration of each POI must be in seconds (numeric type).", Toast.LENGTH_LONG).show();
+                    }catch (Exception e){
+                        Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
@@ -88,6 +95,8 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         }
         return rootView;
     }
+
+
 
     public static class ViewHolderPoi {
 
@@ -309,27 +318,29 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         setCancelComeBackBehaviour(viewHolderTour.cancel);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_tour_pois, new POISFragment(), "ADMIN/TOUR_POIS").commit();
     }
-    private int createTour(){
+    private int createTour() throws Exception {
         int tourID = 0;
-        try {
-            ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
-            Uri insertedUri = POIsContract.TourEntry.createNewTOUR(getActivity(), contentValues);
-            Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
-            tourID = POIsContract.TourEntry.getIdByUri(insertedUri);
+        ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
-        }catch (NumberFormatException e){
-            Toast.makeText(getActivity(),"Error.", Toast.LENGTH_LONG).show();
-        }
+        Uri insertedUri = POIsContract.TourEntry.createNewTOUR(getActivity(), contentValues);
+        Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
+        tourID = POIsContract.TourEntry.getIdByUri(insertedUri);
+
         return tourID;
     }
-    private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder){
+    private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder) throws Exception {
 
         String name = "";
         int hide = 0, categoryID = 0, interval = 0;
         name = viewHolder.tourName.getText().toString();
+        if(name.equals("")){
+            throw new Exception("Name field can't be empty. Please, write a name for the Tour.");
+        }
+
         hide = getHideValueFromInputForm(viewHolder.hide);
         interval = Integer.parseInt(viewHolder.globalInterval.getText().toString());
+        TourPOIsAdapter.setGlobalInterval(interval);
         if(creationType.endsWith("HERE")) {
             categoryID = POISFragment.routeID;
         }else{
@@ -346,63 +357,108 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 
         return contentValues;
     }
-    public static void setPOItoTourPOIsList(String poiSelected, String completeName) {
-        if(!tourPOIsIDs.contains(poiSelected)){
-            tourPOIsIDs.add(poiSelected);
-            tourPOIsNames.add(completeName);
-            tourPOIsDuration.add("0");
-            namesAndIDs.put(completeName, poiSelected);
+    public static void setPOItoTourPOIsList(String poiSelected, String completeName) throws Exception {
 
-            FragmentActivity activity = (FragmentActivity) rootView.getContext();
-            TourPOIsAdapter.setType("creating");
-            TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
-            viewHolderTour.addedPois.setAdapter(adapter);
+        String global_interval = viewHolderTour.globalInterval.getText().toString();
+        if(isNumeric(global_interval)) {
+            if (!tourPOIsIDs.contains(poiSelected)) {
+                if(tourPOIsNames.isEmpty()){
+                    TourPOIsAdapter.getDurationList().clear();
+                }
+                tourPOIsIDs.add(poiSelected);
+                tourPOIsNames.add(completeName);
+                tourPOIsDuration.add(global_interval);
+                namesAndIDs.put(completeName, poiSelected);
+
+                FragmentActivity activity = (FragmentActivity) rootView.getContext();
+                if(viewHolderTour.addedPois.getCount() == 0){
+                    TourPOIsAdapter.setGlobalInterval(Integer.parseInt(global_interval));
+                }
+                TourPOIsAdapter.addToDurationList();
+                TourPOIsAdapter.setType("creating");
+                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
+                viewHolderTour.addedPois.setAdapter(adapter);
+                viewHolderTour.addedPois.invalidateViews();
 //------------------
 //            AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
 //            animationAdapter.setAbsListView(viewHolderTour.addedPois);
 //            viewHolderTour.addedPois.enableDragAndDrop();
 //            viewHolderTour.addedPois.setDraggableManager(new TouchViewDraggableManager(android.R.id.text1));
-            //----------------------
+                //----------------------
 //            StableArrayAdapter adapter = new StableArrayAdapter(activity, R.layout.adapter_textview, tourPOIsNames);
 //            viewHolderTour.addedPois.setCheeseList(tourPOIsNames);
 //            viewHolderTour.addedPois.setAdapter(adapter);
 //            viewHolderTour.addedPois.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            }
+        }else{
+            throw new Exception("Please, first type a value for the Global POI Interval field.");
         }
     }
+
+
     private void addTourPOIsTODataBase(int tourID) {
 
         ContentValues contentValues = new ContentValues();
         EditText sec;
         int i = 1, pois_number = viewHolderTour.addedPois.getCount(), seconds = 0;
-        int global_interval = Integer.parseInt(viewHolderTour.globalInterval.getText().toString());
-
-        for(String poiName : tourPOIsNames){
-            contentValues.clear();
-            if(i <= pois_number) {
-                sec = (EditText) viewHolderTour.addedPois.getChildAt(i - 1).findViewById(R.id.poi_seconds);
-                if(sec.getText().toString().equals("")){
-                    seconds = global_interval;
-                }else {
-                    try {
-                        seconds = Integer.parseInt(sec.getText().toString());
-                        if (seconds == 0) {
-                            seconds = global_interval;
+        try{
+            int global_interval = Integer.parseInt(viewHolderTour.globalInterval.getText().toString());
+            for(String poiName : tourPOIsNames){
+                contentValues.clear();
+                if(i <= pois_number) {
+                    sec = (EditText) viewHolderTour.addedPois.getChildAt(i - 1).findViewById(R.id.poi_seconds);
+                    if(sec.getText().toString().equals("")){
+                        seconds = global_interval;
+                    }else {
+                        try {
+                            seconds = Integer.parseInt(sec.getText().toString());
+                            if (seconds == 0) {
+                                seconds = global_interval;
+                            }
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(getActivity(), "The duration of each POI must be in seconds (numeric type).", Toast.LENGTH_LONG).show();
                         }
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(getActivity(), "The duration of each POI must be in seconds (numeric type).", Toast.LENGTH_LONG).show();
                     }
                 }
+                contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, Integer.parseInt(namesAndIDs.get(poiName)));
+                contentValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, tourID);
+                contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, i);
+                contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, seconds);
+                Uri insertedUri = POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
+                Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
+                i++;
             }
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, Integer.parseInt(namesAndIDs.get(poiName)));
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, tourID);
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, i);
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, seconds);
-            Uri insertedUri = POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
-            Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
-            i++;
+
+        }catch (NumberFormatException e){
+            Toast.makeText(getActivity(), "You must type a global POI interval in seconds.", Toast.LENGTH_LONG).show();
         }
+
         Intent intent = new Intent(getActivity(), AdminActivity.class);
         startActivity(intent);
+    }
+    public static void deleteButtonTreatment(View view, final String name){
+        final ImageView delete = (ImageView) view.findViewById(R.id.delete);
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int durationIndex = tourPOIsNames.indexOf(name);
+                tourPOIsDuration.remove(durationIndex);
+                tourPOIsNames.remove(name);
+                String id = namesAndIDs.get(name);
+                tourPOIsIDs.remove(id);
+                namesAndIDs.remove(name);
+                TourPOIsAdapter.deleteDuration(durationIndex);
+
+                FragmentActivity activity = (FragmentActivity) rootView.getContext();
+                TourPOIsAdapter.setType("creating");
+                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
+                viewHolderTour.addedPois.setAdapter(adapter);
+//                FragmentActivity activity = (FragmentActivity) rootView.getContext();
+//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
+//                viewHolderTour.addedPois.setAdapter(adapter);
+//
+            }
+        });
     }
     private void popupItemSelected(){
         viewHolderTour.addedPois.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -413,27 +469,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 cancelButtonTreatment(popup);
                 deleteButtonTreatment(popup, name);
                 return true;
-            }
-        });
-    }
-    private void deleteButtonTreatment(View view, final String name){
-        final Button delete = (Button) view.findViewById(R.id.delete_poi);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tourPOIsNames.remove(name);
-                String id = namesAndIDs.get(name);
-                tourPOIsIDs.remove(id);
-                namesAndIDs.remove(name);
-
-                FragmentActivity activity = (FragmentActivity) rootView.getContext();
-                TourPOIsAdapter.setType("creating");
-                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
-                viewHolderTour.addedPois.setAdapter(adapter);
-//                FragmentActivity activity = (FragmentActivity) rootView.getContext();
-//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
-//                viewHolderTour.addedPois.setAdapter(adapter);
-                popupPoiSelected.dismiss();
             }
         });
     }
@@ -505,9 +540,21 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                TourPOIsAdapter.getDurationList().clear();
                 Intent admin = new Intent(getActivity(), AdminActivity.class);
                 startActivity(admin);
             }
         });
+    }
+    private static boolean isNumeric(String str){
+        try
+        {
+            int d = Integer.parseInt(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
     }
 }

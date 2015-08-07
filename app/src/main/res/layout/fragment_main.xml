@@ -43,14 +43,23 @@
         android:text="@string/admin"/>
 
     <!-- To be able to use SearchView: minSDKVersion = "11"; -->
-    <SearchView
+
+    <EditText
+        android:hint="Search directly on Liquid Galaxy typing here a place..."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/searchView"
-        android:layout_above="@+id/POIS_container"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="288dp"
-        android:layout_marginEnd="288dp" />
+        android:layout_toRightOf="@+id/TOUR_button"
+        android:layout_marginLeft="30dp"
+        android:layout_below="@+id/tittle_textview"
+        android:id="@+id/search_edittext"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchButton"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/search_edittext"
+        android:layout_below="@+id/tittle_textview"
+        android:text="SEARCH"/>
 
 </RelativeLayout>

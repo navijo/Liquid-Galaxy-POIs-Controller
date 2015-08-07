@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class AdminFragment extends Fragment {
         return rootView;
     }
 
+    //Manage the buttons visibility depending on the button the user clicks.
     private void managementOfPoisToursAndCategories() {
         viewHolder.poisManagement.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,25 +98,22 @@ public class AdminFragment extends Fragment {
             }
         });
     }
-    private void setImportPOIsButtonBehaviour() {
-        viewHolder.importPois.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectFileToImport();
-            }
-        });
-    }
+
+    //Behaviour for leaving Administration section.
     private void setLogOutButtonBehaviour() {
         viewHolder.logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //To leave out the Administration section
                 Intent main = new Intent(getActivity(), MainActivity.class);
                 startActivity(main);
             }
         });
     }
-    private void setNewItemHereButtonBehaviour(){
 
+    //When user decide to create an item inside the category he/she is watching in the screen.
+    private void setNewItemHereButtonBehaviour(){
+        //Depending on the button clicked, the user will see an interface or other, depending on the type of the item
         viewHolder.createCategoryhere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,6 +141,8 @@ public class AdminFragment extends Fragment {
             }
         });
     }
+
+    //When user decide to create an item.
     private void setNewItemButtonBehaviour(){
 
         viewHolder.createCategory.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +166,7 @@ public class AdminFragment extends Fragment {
         viewHolder.createTour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent createTourIntent = new Intent(getActivity(), CreateItemActivity.class);
                 createTourIntent.putExtra("CREATION_TYPE", "TOUR");
                 startActivity(createTourIntent);
@@ -172,47 +174,47 @@ public class AdminFragment extends Fragment {
         });
     }
 
+    //All the following methods are the different steps to import a file with POIs.
+    private void setImportPOIsButtonBehaviour() {
+        viewHolder.importPois.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Complete procedure to get the file with the POIs to import
+                selectFileToImport();
+            }
+        });
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //When user select one file
         if(requestCode == 1){
             if(resultCode == Activity.RESULT_OK){
-
-                filePath = pathTreatment(data.getData().getPath(), Environment.getExternalStorageDirectory().getAbsolutePath());
-//                filePath = pathTreatment(data.getData().getPath());
-                String category = getFileName();
-                int categoryID = createCategory(category);
-                if(categoryID != 0){
-                    List<ContentValues> poisToImport = readFile(categoryID);
-                    createPOis(poisToImport);
+                Uri uri = data.getData();
+                if (uri != null) {
+                    String path = uri.toString();
+                    //We get the file path by executing one of the following methods, depending the explorer the user uses.
+                    if (path.toLowerCase().startsWith("file://")) {
+                        filePath = (new File(URI.create(path))).getAbsolutePath();
+                    }else {
+                        filePath = pathTreatment(data.getData().getPath(), Environment.getExternalStorageDirectory().getAbsolutePath());
+                    }
+                    //We get the file name in order to create the category which will contain the POIs.
+                    String category = getFileName();
+                    int categoryID = createCategory(category);
+                    if(categoryID != 0){
+                        //We read the file and create the POIs described inside it.
+                        List<ContentValues> poisToImport = readFile(categoryID);
+                        createPOis(poisToImport);
+                    }else{
+                        Toast.makeText(getActivity(), "There is an error creating the category. Try to solve it renaming the file.", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         }
     }
     private List<ContentValues> readFile(int categoryID) {
         List<ContentValues> poisList = new ArrayList<ContentValues>();
-//        try {
-//            //FileInputStream fis = new FileInputStream (new File(filePath));
-//            FileInputStream fis = getActivity().openFileInput(filePath);
-//              InputStream is = getClass().getResourceAsStream(filePath);
-//            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-//            String line = "";
-//
-//            while ((line = br.readLine()) != null) {
-//                viewHolder.logout.setText(line);
-//                readPOI(poisList, line, categoryID);
-//            }
-//            br.close();
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//            Toast.makeText(getActivity(), "File", Toast.LENGTH_LONG).show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Toast.makeText(getActivity(), "IO", Toast.LENGTH_LONG).show();
-//        }
-
-//        filePath = "/mnt/sdcard/Download/Taiwan.txt";
         File file = new File(filePath);
         if(file.exists()) {
             FileInputStream inputStream = null;
@@ -226,47 +228,55 @@ public class AdminFragment extends Fragment {
 
             try {
                 while ((line = br.readLine()) != null) {
+                    //for each POI described inside the file we read and introduce it inside a POIs list.
                     readPOI(poisList, line, categoryID);
                 }
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }else{
+            Toast.makeText(getActivity(), "File couldn't be opened. Try to open it with a different file explorer, for example 'Root Explorer' once.", Toast.LENGTH_LONG).show();
         }
         return poisList;
     }
     private void readPOI(List<ContentValues> poisList, String line, int categoryID){
 
-        ContentValues poi = new ContentValues();
-        String name = getPOIName(line);
-        String visited_place = name;
-        String longitude = getPOIAttribute("longitude", line);
-        String latitude = getPOIAttribute("latitude", line);
-        String altitude = getPOIAttribute("altitude", line);
-        String heading = getPOIAttribute("heading", line);
-        String tilt = getPOIAttribute("tilt", line);
-        String range = getPOIAttribute("range", line);
-        String altitudeMode = getAltitudeMode(line);
+        try {
+            ContentValues poi = new ContentValues();
+            String name = getPOIName(line);
+            String visited_place = name;
+            String longitude = getPOIAttribute("longitude", line);
+            String latitude = getPOIAttribute("latitude", line);
+            String altitude = getPOIAttribute("altitude", line);
+            String heading = getPOIAttribute("heading", line);
+            String tilt = getPOIAttribute("tilt", line);
+            String range = getPOIAttribute("range", line);
+            String altitudeMode = getAltitudeMode(line);
 
-        poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
-        poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
-        poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
-        poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
-        poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
-        poi.put(POIsContract.POIEntry.COLUMN_HEADING, heading);
-        poi.put(POIsContract.POIEntry.COLUMN_TILT, tilt);
-        poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
-        poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
-        poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
-        poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
+            poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
+            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
+            poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
+            poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
+            poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
+            poi.put(POIsContract.POIEntry.COLUMN_HEADING, heading);
+            poi.put(POIsContract.POIEntry.COLUMN_TILT, tilt);
+            poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
+            poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
+            poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
+            poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
 
-        poisList.add(poi);
+            poisList.add(poi);
+        }catch (Exception e){
+            Toast.makeText(getActivity(),"Error reading POIs. Remember POI name must be between two '@' and other features between '<featureName>' fields.", Toast.LENGTH_LONG).show();
+        }
     }
     private String getFileName(){
         int startIndex = filePath.lastIndexOf("/") + 1;
         return filePath.substring(startIndex, filePath.length() - 4);
     }
     private void selectFileToImport(){
+        //We use Intent.GATA_GET_CONTENT to let the user select the file to import
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -295,14 +305,13 @@ public class AdminFragment extends Fragment {
         return line.substring(start, end);
     }
     private void createPOis(List<ContentValues> pois){
-
         for(ContentValues poi: pois){
             try {
                 Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), poi);
                 Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
             }catch (android.database.SQLException e){
                 String poiName = poi.get(POIsContract.POIEntry.COLUMN_COMPLETE_NAME).toString();
-                Toast.makeText(getActivity(), "Already exists one POI with the same name: " + poiName + ". Please, change it.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Already exists one POI with the same name: " + poiName + ". Please, change it.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -384,4 +393,5 @@ public class AdminFragment extends Fragment {
             importPois = (Button) rootView.findViewById(R.id.import_pois);
         }
     }
+
 }
