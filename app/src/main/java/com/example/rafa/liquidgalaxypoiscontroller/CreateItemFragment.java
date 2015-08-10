@@ -36,14 +36,13 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
     private Cursor queryCursor;
     private static View rootView= null;
     private static Map<String, String> spinnerIDsAndShownNames, namesAndIDs;
-    private static ArrayList<String> tourPOIsNames, tourPOIsIDs, tourPOIsDuration;
+    private static ArrayList<String> tourPOIsNames, tourPOIsIDs;
     private static ViewHolderTour viewHolderTour;
     private PopupWindow popupPoiSelected;
 
     public CreateItemFragment() {
         tourPOIsIDs = new ArrayList<String>();
         tourPOIsNames = new ArrayList<String>();
-        tourPOIsDuration = new ArrayList<String>();
         namesAndIDs = new HashMap<String, String>();
     }
 
@@ -95,8 +94,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         }
         return rootView;
     }
-
-
 
     public static class ViewHolderPoi {
 
@@ -367,7 +364,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 }
                 tourPOIsIDs.add(poiSelected);
                 tourPOIsNames.add(completeName);
-                tourPOIsDuration.add(global_interval);
                 namesAndIDs.put(completeName, poiSelected);
 
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
@@ -396,8 +392,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             throw new Exception("Please, first type a value for the Global POI Interval field.");
         }
     }
-
-
     private void addTourPOIsTODataBase(int tourID) {
 
         ContentValues contentValues = new ContentValues();
@@ -444,12 +438,11 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 int durationIndex = tourPOIsNames.indexOf(name);
-                tourPOIsDuration.remove(durationIndex);
                 tourPOIsNames.remove(name);
                 String id = namesAndIDs.get(name);
                 tourPOIsIDs.remove(id);
                 namesAndIDs.remove(name);
-                TourPOIsAdapter.deleteDuration(durationIndex);
+                TourPOIsAdapter.deleteDurationByPosition(durationIndex);
 
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
                 TourPOIsAdapter.setType("creating");

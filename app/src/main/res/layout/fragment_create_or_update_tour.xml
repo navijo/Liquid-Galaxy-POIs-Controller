@@ -125,12 +125,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
+        <Button
+            android:id="@+id/cancel_come_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:background="@color/red"
+            android:text="@string/cancel"/>
         <Button
             android:id="@+id/create_tour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_green_light"
+            android:layout_toRightOf="@+id/cancel_come_back"
             android:text="@string/create_tour"/>
         <Button
             android:id="@+id/update_tour"
@@ -138,15 +145,9 @@
             android:layout_height="wrap_content"
             android:text="@string/update_tour"
             android:background="@android:color/holo_green_light"
+            android:layout_toRightOf="@+id/cancel_come_back"
             android:visibility="gone"/>
-        <Button
-            android:id="@+id/cancel_come_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/create_tour"
-            android:background="@color/red"
-            android:text="@string/cancel"/>
+
 
     </RelativeLayout>
 </LinearLayout>

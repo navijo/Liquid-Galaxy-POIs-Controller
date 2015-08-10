@@ -119,13 +119,11 @@ public class TourPOIsAdapter extends BaseAdapter {
             }
         });
 
-        if(type.equals("updating") || type.equals("creating")) {
-            int poi_interval = poisDuration.get(position);
-            if(global_interval == poi_interval){
-                seconds.setText("");
-            }else {
-                seconds.setText(String.valueOf(poi_interval));
-            }
+        int poi_interval = poisDuration.get(position);
+        if(global_interval == poi_interval){
+            seconds.setText("");
+        }else {
+            seconds.setText(String.valueOf(poi_interval));
         }
 
         //setArrowsVisibility(view, position);
@@ -136,14 +134,15 @@ public class TourPOIsAdapter extends BaseAdapter {
     }
 
     private void setDeleteItemButtonBehaviour(View view, String name) {
-        CreateItemFragment.deleteButtonTreatment(view, name);
+        if(type.equals("creating")) {
+            CreateItemFragment.deleteButtonTreatment(view, name);
+        }else{
+            UpdateItemFragment.deleteButtonTreatment(view, name);
+        }
     }
     public static void setPOIsDuration(List<Integer> durationList) {
         poisDuration.clear();
         poisDuration.addAll(durationList);
-    }
-    public static void removeDurationByPosition(int position){
-        poisDuration.remove(position);
     }
     public static void setType(String t){
         type = t;
@@ -277,7 +276,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         return true;
     }
 
-    public static void deleteDuration(int durationIndex) {
+    public static void deleteDurationByPosition(int durationIndex) {
         poisDuration.remove(durationIndex);
     }
 }

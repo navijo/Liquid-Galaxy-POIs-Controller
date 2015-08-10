@@ -32,7 +32,8 @@ import java.util.Map;
 public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
     private static View rootView;
-    private String updateType, itemSelectedID, newShownName;
+    private String updateType, newShownName;
+    private static String itemSelectedID;
     private Cursor queryCursor;
     private static ViewHolderTour viewHolderTour;
     private ArrayAdapter<String> adapter;
@@ -435,7 +436,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         Cursor query = getAllSelectedItemData(POIsContract.TourEntry.CONTENT_URI, TOUR_IDselection);
         fillPOIsCategoriesSpinner(viewHolder.categoryID);
         setDataToTourLayout(query, viewHolder);
-        popupItemSelected();
+//        popupItemSelected();
         viewHolder.updateTOUR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -452,27 +453,29 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 String name = (String) parent.getItemAtPosition(position);
                 View popup = createPopup();
                 cancelButtonTreatment(popup);
-                deleteButtonTreatment(popup, name, position);
+                deleteButtonTreatment(popup, name);
                 return true;
             }
         });
     }
-    private void deleteButtonTreatment(View view, final String name, final int position){
-        final Button delete = (Button) view.findViewById(R.id.delete_poi);
+    public static void deleteButtonTreatment(View view, final String name){
+        final ImageView delete = (ImageView) view.findViewById(R.id.delete);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //int position = tourPOIsNames.indexOf(name);
-                TourPOIsAdapter.removeDurationByPosition(position);
+                int position = tourPOIsNames.indexOf(name);
                 tourExistingPOIsNames.remove(name);
                 tourPOIsNames.remove(name);
                 String id = namesAndIDs.get(name);
                 tourExistingPOIsIDs.remove(id);
                 tourPOIsIDs.remove(id);
                 namesAndIDs.remove(name);
-                POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(getActivity(), itemSelectedID, id);
-                //----------------
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
+                POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(activity, itemSelectedID, id);
+                TourPOIsAdapter.deleteDurationByPosition(position);
+                //----------------
+
+                TourPOIsAdapter.setType("updating");
                 TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
                 viewHolderTour.addedPois.setAdapter(adapter);
                 //----------------
@@ -481,7 +484,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 //                ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
 //                viewHolderTour.addedPois.setAdapter(adapter);
 
-                popupPoiSelected.dismiss();
+//                popupPoiSelected.dismiss();
             }
         });
     }
