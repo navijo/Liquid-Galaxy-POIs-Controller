@@ -610,7 +610,9 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             FragmentActivity activity = (FragmentActivity) rootView.getContext();
             TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
             viewHolderTour.addedPois.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+//            adapter.notifyDataSetChanged();
+        }else{
+            Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
         }
     }
     private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder){

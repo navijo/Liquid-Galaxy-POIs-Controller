@@ -24,6 +24,7 @@ public class TourPOIsAdapter extends BaseAdapter {
     private static String type = "creating";
     private static int global_interval = 0, updated_position, lastPost;
     private boolean MOVE_TAG = false;
+    private int recently_changed = 999999;
 
     public TourPOIsAdapter(FragmentActivity activity, List<String> tourPOIsNames) {
         this.activity = activity;
@@ -84,7 +85,6 @@ public class TourPOIsAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        final int pos = position;
         View view = convertView;
         String poi = (String) getItem(position);
 
@@ -97,25 +97,29 @@ public class TourPOIsAdapter extends BaseAdapter {
         name.setText(poi);
 
         final EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
+
         seconds.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    String sec = seconds.getText().toString();
-                    if(isNumeric(sec)){
-                        if(Integer.parseInt(sec) != poisDuration.get(position)){
-                            if(MOVE_TAG == false) {
-                                poisDuration.remove(position);
-                                poisDuration.add(position, Integer.parseInt(sec));
-                            }
+            int s = 0;
+            if (!hasFocus) {
+                String sec = seconds.getText().toString();
+                if(isNumeric(sec)){
+                    s = Integer.parseInt(sec);
+                    if(s != poisDuration.get(position)){
+                        if(MOVE_TAG == false){
+                            poisDuration.remove(position);
+                            poisDuration.add(position, s);
+                        }else{
+                            MOVE_TAG = false;
                         }
                     }
-
                 }
+            }
             }
         });
 
-        if(type.equals("updating")) {
+        if(type.equals("updating") || type.equals("creating")) {
             int poi_interval = poisDuration.get(position);
             if(global_interval == poi_interval){
                 seconds.setText("");
@@ -131,11 +135,9 @@ public class TourPOIsAdapter extends BaseAdapter {
         return view;
     }
 
-
     private void setDeleteItemButtonBehaviour(View view, String name) {
         CreateItemFragment.deleteButtonTreatment(view, name);
     }
-
     public static void setPOIsDuration(List<Integer> durationList) {
         poisDuration.clear();
         poisDuration.addAll(durationList);
@@ -214,6 +216,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         pois.add(position - 1, toMoveUp);
         pois.add(position, toMoveDown);
         MOVE_TAG = true;
+        recently_changed = position;
         notifyDataSetChanged();
     }
     private void moveDown(int position){
@@ -233,6 +236,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         pois.add(position, toMoveUp);
         pois.add(position + 1, toMoveDown);
         MOVE_TAG = true;
+        recently_changed = position;
         notifyDataSetChanged();
     }
 

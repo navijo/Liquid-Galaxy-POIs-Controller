@@ -62,4 +62,14 @@
         android:layout_below="@+id/tittle_textview"
         android:text="SEARCH"/>
 
+    <Button
+        android:id="@+id/stop_tour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STOP"
+        android:background="@android:color/holo_red_dark"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
+
 </RelativeLayout>

@@ -28,6 +28,7 @@ public class MainFragment extends Fragment {
 
     private final String correctPassword = "lg";
     private PopupWindow popupWindow;
+    private Button stopTour;
 
     public MainFragment() {
     }
@@ -44,6 +45,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        stopTour = (Button) rootView.findViewById(R.id.stop_tour);
 
         setPOIButtonBehaviour(rootView);
         setTourButtonBehaviour(rootView);
@@ -125,6 +127,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.POIS_container, new POISFragment(), "USER/TOURS").commit();
+                POISFragment.giveStopButtonControl(stopTour);
                 showToastMessage("TOUR");
             }
         });

@@ -1,11 +1,15 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,6 +23,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rafa.liquidgalaxypoiscontroller.data.LiquidGalaxyTourView;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -54,7 +59,8 @@ public class POISFragment extends Fragment {
     }};
     private TextView seeingOptions, poisListViewTittle, route;
     public static int routeID = 0;
-    private static Button category_here, tour_here, poi_here;
+    private static Button category_here, tour_here, poi_here, stopButton;
+    private boolean tourIsWorking = false;
 
     public POISFragment() {
     }
@@ -200,13 +206,10 @@ public class POISFragment extends Fragment {
     }
     private void showAllCategories(){
 
-//        back.setVisibility(View.GONE);
-//        backStart.setVisibility(View.GONE);
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
 
         Cursor queryCursor = POIsContract.CategoryEntry.getAllCategories(getActivity());
-        //Cursor queryCursor = POIsContract.CategoryEntry.getAllNotHidenCategories(getActivity());
 
         adapter = new CategoriesAdapter(getActivity(), queryCursor, 0);
         categoriesListView.setAdapter(adapter);
@@ -271,8 +274,6 @@ public class POISFragment extends Fragment {
         final String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), Integer.parseInt(itemSelectedFatherID));
 
         searchAndEditCategoriesSons(itemSelectedID, itemSelectedFatherID, fatherShownName);
-        Toast.makeText(getActivity(),"GOOOOOD",Toast.LENGTH_SHORT).show();
-
     }
     private void searchAndEditCategoriesSons(String itemSelectedID, String fatherOfItemSelectedID, String shownNameFather){
         //we get the ID and Name of the pois whose father ID is itemSelectedID parameter.
@@ -478,8 +479,6 @@ public class POISFragment extends Fragment {
             tour_here.setVisibility(View.GONE);
         }
         poisListViewTittle.setText("List of TOURs");
-//        back.setVisibility(View.GONE);
-//        backStart.setVisibility(View.GONE);
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
         showAllTours();
@@ -504,8 +503,6 @@ public class POISFragment extends Fragment {
                         tour_here.setVisibility(View.GONE);
                     }
                     poisListViewTittle.setVisibility(View.GONE);
-//                    back.setVisibility(View.GONE);
-//                    backStart.setVisibility(View.GONE);
                     backIcon.setVisibility(View.GONE);
                     backStartIcon.setVisibility(View.GONE);
                     showAllTours();
@@ -561,19 +558,75 @@ public class POISFragment extends Fragment {
         poisListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                if(EDITABLE_TAG.startsWith("ADMIN")) {
+
+                if(!tourIsWorking) {
+                    Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                     int itemSelectedID = cursor.getInt(0);
-                    popupView = createAndShowItemSelectedPopup();
-                    cancelButtonTreatment(popupView);
-                    editButtonTreatment(String.valueOf(itemSelectedID), "TOUR");
-                    deleteButtonTreatment(itemSelectedID, TOUR_URI, TOUR_IDselection, "TOUR", null, null);
-                }else{
-                    Toast.makeText(getActivity(), cursor.getString(1), Toast.LENGTH_SHORT).show();
+                    if (EDITABLE_TAG.startsWith("ADMIN")) {
+                        popupView = createAndShowItemSelectedPopup();
+                        cancelButtonTreatment(popupView);
+                        editButtonTreatment(String.valueOf(itemSelectedID), "TOUR");
+                        deleteButtonTreatment(itemSelectedID, TOUR_URI, TOUR_IDselection, "TOUR", null, null);
+                    } else {
+
+                        final LiquidGalaxyTourView tour = new LiquidGalaxyTourView();
+                        tour.setActivity(getActivity());
+                        stopButton.setVisibility(View.VISIBLE);
+                        stopButton.setClickable(true);
+                        tour.execute(String.valueOf(itemSelectedID));
+
+                        invalidateOtherClickableElements();
+                        stopButtonBehaviour(tour);
+                    }
                 }
             }
         });
     }
+
+    private void invalidateOtherClickableElements() {
+        tourIsWorking = true;
+    }
+
+    private void stopButtonBehaviour(final LiquidGalaxyTourView tour) {
+        stopButton.setVisibility(View.VISIBLE);
+        stopButton.setClickable(true);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlert(stopButton, tour);
+            }
+        });
+    }
+    private void showAlert(final Button stopButton, final LiquidGalaxyTourView tour){
+        // prepare the alert box
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(getActivity());
+
+        // set the message to display
+        alertbox.setMessage("Are you sure to stop the Tour view?");
+
+        // set a positive/yes button and create a listener
+        alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            // When button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                tour.cancel(true);
+                stopButton.setVisibility(View.GONE);
+                stopButton.setClickable(false);
+                tourIsWorking = false;
+            }
+        });
+
+        // set a negative/no button and create a listener
+        alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            // When button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        });
+        // display box
+        alertbox.show();
+    }
+
+
     private int showToursByCategory(final int categoryID){
 
         final Cursor queryCursor;
@@ -706,10 +759,19 @@ public class POISFragment extends Fragment {
     }
     private String setConnectionWithLiquidGalaxy(String command) throws JSchException {
 
+        //We get the mandatory settings to be able to connect with Liquid Galaxy system.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String user = prefs.getString("User", "lg");
+        String password = prefs.getString("Password", "lqgalaxy");
+        String hostname = prefs.getString("HostName", "172.26.17.21");
+        int port = Integer.parseInt(prefs.getString("Port", "22"));
+
+        Toast.makeText(getActivity(), user + password + hostname + port, Toast.LENGTH_LONG).show();
+
         JSch jsch = new JSch();
 
-        Session session = jsch.getSession("lg", "172.26.17.21", 22);
-        session.setPassword("lqgalaxy");
+        Session session = jsch.getSession(user, hostname, port);
+        session.setPassword(password);
 
         Properties prop = new Properties();
         prop.put("StrictHostKeyChecking", "no");
@@ -725,5 +787,9 @@ public class POISFragment extends Fragment {
         channelssh.disconnect();
 
         return baos.toString();
+    }
+    public static void giveStopButtonControl(Button stopTour) {
+
+        stopButton = stopTour;
     }
 }

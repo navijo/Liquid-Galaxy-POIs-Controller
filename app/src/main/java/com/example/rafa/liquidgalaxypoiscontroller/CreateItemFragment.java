@@ -378,7 +378,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 TourPOIsAdapter.setType("creating");
                 TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
                 viewHolderTour.addedPois.setAdapter(adapter);
-                viewHolderTour.addedPois.invalidateViews();
+//                viewHolderTour.addedPois.invalidateViews();
 //------------------
 //            AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
 //            animationAdapter.setAbsListView(viewHolderTour.addedPois);
@@ -389,7 +389,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 //            viewHolderTour.addedPois.setCheeseList(tourPOIsNames);
 //            viewHolderTour.addedPois.setAdapter(adapter);
 //            viewHolderTour.addedPois.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            }
+            }else{
+            Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
+        }
         }else{
             throw new Exception("Please, first type a value for the Global POI Interval field.");
         }
