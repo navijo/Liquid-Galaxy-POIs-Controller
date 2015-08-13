@@ -26,7 +26,6 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
     private FragmentActivity poisFragmentAct;
     private String tourStatus = "Avaliable";
     private static final String TAG = LiquidGalaxyTourView.class.getSimpleName();
-    private int TRAVEL_TIME = 10*1000;
 
 
     /**
@@ -137,7 +136,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
     private void sendTourPOI(final Integer duration, final String command) {
 
         try {
-            Thread.sleep(duration*1000 + TRAVEL_TIME);
+            Thread.sleep(duration*1000);
             setConnectionWithLiquidGalaxy(command);
         } catch (InterruptedException e) {
             e.printStackTrace();

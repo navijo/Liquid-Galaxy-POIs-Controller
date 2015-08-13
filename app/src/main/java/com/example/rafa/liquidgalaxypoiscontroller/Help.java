@@ -1,7 +1,7 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,7 +13,6 @@ public class Help extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

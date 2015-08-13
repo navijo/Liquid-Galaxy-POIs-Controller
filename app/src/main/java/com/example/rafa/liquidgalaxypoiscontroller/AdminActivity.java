@@ -14,7 +14,11 @@ public class AdminActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.admin_container, new AdminFragment()).commit();
+            AdminFragment fragment = new AdminFragment();
+            Bundle args = new Bundle();
+            args.putString("EDITABLE", "POIS");
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().add(R.id.admin_container, fragment).commit();
         }
     }
 

@@ -29,6 +29,7 @@ public class AdminFragment extends Fragment {
 
     private String filePath = "";
     private ViewHolder viewHolder;
+    private String EDITABLE = "";
 
     public AdminFragment() {
     }
@@ -39,7 +40,9 @@ public class AdminFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_admin, container, false);
         viewHolder = new ViewHolder(rootView);
 
-        managementOfPoisToursAndCategories();
+        EDITABLE = getArguments().getString("EDITABLE");
+
+        managementOfPoisToursAndCategories(rootView);
         setLogOutButtonBehaviour();
         setImportPOIsButtonBehaviour();
         setNewItemHereButtonBehaviour();
@@ -49,56 +52,63 @@ public class AdminFragment extends Fragment {
     }
 
     //Manage the buttons visibility depending on the button the user clicks.
-    private void managementOfPoisToursAndCategories() {
-        viewHolder.poisManagement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, new POISFragment(), "ADMIN/POIS").commit();
-                if(viewHolder.createPOI.getVisibility() == View.GONE){
-                    viewHolder.createTour.setVisibility(View.GONE);
-                    viewHolder.createCategory.setVisibility(View.GONE);
-                    viewHolder.createPOI.setVisibility(View.VISIBLE);
-                    viewHolder.createTourhere.setVisibility(View.GONE);
-                    viewHolder.createCategoryhere.setVisibility(View.GONE);
-                    viewHolder.createPOIhere.setVisibility(View.GONE);
-                    POISFragment.setAdminView(getView());
-                }
-            }
-        });
 
-        viewHolder.toursManagement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, new POISFragment(), "ADMIN/TOURS").commit();
-                if(viewHolder.createTour.getVisibility() == View.GONE){
-                    viewHolder.createPOI.setVisibility(View.GONE);
-                    viewHolder.createCategory.setVisibility(View.GONE);
-                    viewHolder.createTour.setVisibility(View.VISIBLE);
-                    viewHolder.createPOIhere.setVisibility(View.GONE);
-                    viewHolder.createCategoryhere.setVisibility(View.GONE);
-                    viewHolder.createTourhere.setVisibility(View.GONE);
-                    POISFragment.setAdminView(getView());
-                }
-            }
-        });
+    private void managementOfPoisToursAndCategories(View rootView) {
 
-        viewHolder.categoriesManagement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, new POISFragment(), "ADMIN/CATEGORIES").commit();
-                if(viewHolder.createCategory.getVisibility() == View.GONE){
-                    viewHolder.createPOI.setVisibility(View.GONE);
-                    viewHolder.createTour.setVisibility(View.GONE);
-                    viewHolder.createCategory.setVisibility(View.VISIBLE);
-                    viewHolder.createPOIhere.setVisibility(View.GONE);
-                    viewHolder.createTourhere.setVisibility(View.GONE);
-                    viewHolder.createCategoryhere.setVisibility(View.GONE);
-                    POISFragment.setAdminView(getView());
-                }
+        POISFragment fragment = new POISFragment();
+        Bundle args = new Bundle();
+
+        if(EDITABLE.equals("POIS")) {
+
+            args.putString("EDITABLE", "ADMIN/POIS");
+            fragment.setArguments(args);
+
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, fragment).commit();
+            if (viewHolder.createPOI.getVisibility() == View.GONE) {
+                viewHolder.createTour.setVisibility(View.GONE);
+                viewHolder.createCategory.setVisibility(View.GONE);
+                viewHolder.createPOI.setVisibility(View.VISIBLE);
+                viewHolder.createTourhere.setVisibility(View.GONE);
+                viewHolder.createCategoryhere.setVisibility(View.GONE);
+                viewHolder.createPOIhere.setVisibility(View.GONE);
+//                POISFragment.setAdminView(rootView);
             }
-        });
+        }
+
+        else if(EDITABLE.equals("TOURS")) {
+
+            args.putString("EDITABLE", "ADMIN/TOURS");
+            fragment.setArguments(args);
+
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, fragment).commit();
+            if (viewHolder.createTour.getVisibility() == View.GONE) {
+                viewHolder.createPOI.setVisibility(View.GONE);
+                viewHolder.createCategory.setVisibility(View.GONE);
+                viewHolder.createTour.setVisibility(View.VISIBLE);
+                viewHolder.createPOIhere.setVisibility(View.GONE);
+                viewHolder.createCategoryhere.setVisibility(View.GONE);
+                viewHolder.createTourhere.setVisibility(View.GONE);
+//                POISFragment.setAdminView(rootView);
+            }
+        }
+
+        else if(EDITABLE.equals("CATEGORIES")) {
+
+            args.putString("EDITABLE", "ADMIN/CATEGORIES");
+            fragment.setArguments(args);
+
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, fragment).commit();
+            if (viewHolder.createCategory.getVisibility() == View.GONE) {
+                viewHolder.createPOI.setVisibility(View.GONE);
+                viewHolder.createTour.setVisibility(View.GONE);
+                viewHolder.createCategory.setVisibility(View.VISIBLE);
+                viewHolder.createPOIhere.setVisibility(View.GONE);
+                viewHolder.createTourhere.setVisibility(View.GONE);
+                viewHolder.createCategoryhere.setVisibility(View.GONE);
+//                POISFragment.setAdminView(rootView);
+            }
+        }
     }
-
     //Behaviour for leaving Administration section.
     private void setLogOutButtonBehaviour() {
         viewHolder.logout.setOnClickListener(new View.OnClickListener() {
@@ -395,3 +405,53 @@ public class AdminFragment extends Fragment {
     }
 
 }
+
+//    private void managementOfPoisToursAndCategories() {
+//        viewHolder.poisManagement.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, new POISFragment(), "ADMIN/POIS").commit();
+//                if(viewHolder.createPOI.getVisibility() == View.GONE){
+//                    viewHolder.createTour.setVisibility(View.GONE);
+//                    viewHolder.createCategory.setVisibility(View.GONE);
+//                    viewHolder.createPOI.setVisibility(View.VISIBLE);
+//                    viewHolder.createTourhere.setVisibility(View.GONE);
+//                    viewHolder.createCategoryhere.setVisibility(View.GONE);
+//                    viewHolder.createPOIhere.setVisibility(View.GONE);
+//                    POISFragment.setAdminView(getView());
+//                }
+//            }
+//        });
+//
+//        viewHolder.toursManagement.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, new POISFragment(), "ADMIN/TOURS").commit();
+//                if(viewHolder.createTour.getVisibility() == View.GONE){
+//                    viewHolder.createPOI.setVisibility(View.GONE);
+//                    viewHolder.createCategory.setVisibility(View.GONE);
+//                    viewHolder.createTour.setVisibility(View.VISIBLE);
+//                    viewHolder.createPOIhere.setVisibility(View.GONE);
+//                    viewHolder.createCategoryhere.setVisibility(View.GONE);
+//                    viewHolder.createTourhere.setVisibility(View.GONE);
+//                    POISFragment.setAdminView(getView());
+//                }
+//            }
+//        });
+//
+//        viewHolder.categoriesManagement.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.management_button_container, new POISFragment(), "ADMIN/CATEGORIES").commit();
+//                if(viewHolder.createCategory.getVisibility() == View.GONE){
+//                    viewHolder.createPOI.setVisibility(View.GONE);
+//                    viewHolder.createTour.setVisibility(View.GONE);
+//                    viewHolder.createCategory.setVisibility(View.VISIBLE);
+//                    viewHolder.createPOIhere.setVisibility(View.GONE);
+//                    viewHolder.createTourhere.setVisibility(View.GONE);
+//                    viewHolder.createCategoryhere.setVisibility(View.GONE);
+//                    POISFragment.setAdminView(getView());
+//                }
+//            }
+//        });
+//    }

@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.rafa.liquidgalaxypoiscontroller.LGPC">
+
+    <item android:id="@+id/action_information_help"
+        android:title="Help"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_admin"
+        android:title="Administration tools"
+        app:showAsAction="never" />
+</menu>

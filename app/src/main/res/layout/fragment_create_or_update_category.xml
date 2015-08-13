@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -35,29 +36,34 @@
         android:layout_marginBottom="200dp"
         android:layout_toRightOf = "@+id/category_name"
         android:layout_below="@id/new_category_text"/>
-    <Button
+    <android.support.design.widget.FloatingActionButton
+        android:src="@drawable/ic_check_white_24dp"
         android:id="@+id/create_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/create_category"
         android:layout_below="@id/father_spinner"
+        app:backgroundTint="@color/green"
         android:layout_toRightOf="@id/category_hide"/>
-    <Button
+    <android.support.design.widget.FloatingActionButton
+        android:src="@drawable/ic_check_white_24dp"
         android:id="@+id/update_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/update_category"
         android:layout_below="@+id/father_spinner"
+        app:backgroundTint="@color/green"
         android:layout_toRightOf="@+id/category_hide"
         android:visibility="gone"/>
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
+        android:src="@drawable/ic_close_white_24dp"
         android:id="@+id/cancel_come_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:background="@color/red"
+        app:backgroundTint="@color/red"
         android:text="@string/cancel"/>
 
 

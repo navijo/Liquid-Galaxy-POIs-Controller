@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -79,23 +80,17 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="2">
                 <RelativeLayout
                     android:id="@+id/fragment_tour_pois"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
+                    android:layout_height="wrap_content"/>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
-                <!--<com.nhaarman.listviewanimations.itemmanipulation.DynamicListView-->
-                <!--android:id="@+id/tour_pois_listview"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:scrollbars="vertical"-->
-                <!--android:divider="@null"/>-->
+
                 <TextView
                     android:id="@+id/tour_pois"
                     android:layout_width="wrap_content"
@@ -111,40 +106,37 @@
                     android:descendantFocusability="beforeDescendants"
                     android:divider="@null"
                     android:layout_below="@id/tour_pois"/>
-                <!--<liquidgalaxypoiscontrolleraxypoiscontroller.DynamicListView-->
-                <!--android:id="@+id/tour_pois_listview"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"/>-->
-                <!--android:scrollbars="vertical"-->
-                <!--android:divider="@null"/>-->
 
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1">
-        <Button
+        <android.support.design.widget.FloatingActionButton
+            android:src="@drawable/ic_close_white_24dp"
             android:id="@+id/cancel_come_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:background="@color/red"
+            app:backgroundTint="@color/red"
             android:text="@string/cancel"/>
-        <Button
+        <android.support.design.widget.FloatingActionButton
+            android:src="@drawable/ic_check_white_24dp"
             android:id="@+id/create_tour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/holo_green_light"
+            app:backgroundTint="@color/green"
             android:layout_toRightOf="@+id/cancel_come_back"
             android:text="@string/create_tour"/>
-        <Button
+        <android.support.design.widget.FloatingActionButton
+            android:src="@drawable/ic_check_white_24dp"
             android:id="@+id/update_tour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/update_tour"
-            android:background="@android:color/holo_green_light"
+            app:backgroundTint="@color/green"
             android:layout_toRightOf="@+id/cancel_come_back"
             android:visibility="gone"/>
 

@@ -37,6 +37,7 @@ public class SettingsActivity extends PreferenceActivity
         bindPreferenceSummaryToValue(findPreference("Password"));
         bindPreferenceSummaryToValue(findPreference("HostName"));
         bindPreferenceSummaryToValue(findPreference("Port"));
+        bindPreferenceSummaryToValue(findPreference("AdminPassword"));
     }
 
     /**

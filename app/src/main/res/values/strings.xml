@@ -26,8 +26,8 @@
     <string name="categories_button">Categories</string>
     <string name="edit_poi">Edit</string>
     <string name="delete_poi">Delete</string>
-    <string name="title_activity_create_item">CreateItemActivity</string>
-    <string name="title_activity_update_item">UpdateItemActivity</string>
+    <string name="title_activity_create_item">New Item</string>
+    <string name="title_activity_update_item">Update Item</string>
     <string name="new_poi_here">New POI inside this category</string>
     <string name="new_tour_here">New TOUR inside this category</string>
     <string name="new_category_here">New Category inside this category</string>
@@ -39,5 +39,16 @@
     <string name="global_interval_text">Duration of each POI (25 by default)</string>
     <string name="tour_pois">Tour POIs</string>
     <string name="title_activity_help">Help</string>
+    <string name="title_activity_lgpc">Liquid Galaxy POIs Controller</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_activity_lgpcadmin">Liquid Galaxy Administration</string>
+    <string name="inst_send_POI_tittle">Instructions to send a POI to Liquid Galaxy system:</string>
+    <string name="inst_send_POI_">1.	Check all the settings are correct by making click on ‘Settings’ option inside the menu located on the main screen’s top right corner. If they are incorrect, modify them. The settings to check are: user name, password, host IP and port.\n2.	After checking settings correctness, you are able to select one POI to watch it in LG screens.
+</string>
+    <string name="inst_send_TOUR_tittle">Instructions to send a Tour to Liquid Galaxy system:</string>
+    <string name="inst_send_TOUR">1.	Check all the settings are correct by making click on ‘Settings’ option inside the menu located on the main screen’s top right corner. If they are incorrect, modify them. The settings to check are: user name, password, host IP and port.\n2.	After checking settings correctness, you are able to select one POI to watch it in LG screens.\n3.	To stop the Tour view in the LG screens, click on the red STOP button located on the bottom right corner of the main screen.
+</string>
 
 </resources>

@@ -127,7 +127,6 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.POIS_container, new POISFragment(), "USER/TOURS").commit();
-                POISFragment.giveStopButtonControl(stopTour);
                 showToastMessage("TOUR");
             }
         });

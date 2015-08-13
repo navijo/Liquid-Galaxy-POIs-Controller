@@ -35,68 +35,68 @@
         android:layout_below="@+id/pois_management"
         />
 
-    <Button
-        android:id="@+id/new_poi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_poi"
-        android:layout_toRightOf="@+id/categories_management"
-        android:visibility="gone"/>
-    <Button
-        android:id="@+id/new_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_category"
-        android:layout_toRightOf="@+id/categories_management"
-        android:visibility="gone"/>
-    <Button
-        android:id="@+id/new_tour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_tour"
-        android:layout_toRightOf="@+id/categories_management"
-        android:visibility="gone"/>
+        <Button
+            android:id="@+id/new_poi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_poi"
+            android:layout_toRightOf="@+id/categories_management"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/new_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_category"
+            android:layout_toRightOf="@+id/categories_management"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/new_tour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_tour"
+            android:layout_toRightOf="@+id/categories_management"
+            android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/new_poi_here"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_poi_here"
-        android:layout_toRightOf="@+id/new_poi"
-        android:visibility="gone"/>
-    <Button
-        android:id="@+id/new_category_here"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_category_here"
-        android:layout_toRightOf="@+id/new_category"
-        android:visibility="gone"/>
-    <Button
-        android:id="@+id/new_tour_here"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/new_tour_here"
-        android:layout_toRightOf="@+id/new_tour"
-        android:visibility="gone"/>
+        <Button
+            android:id="@+id/new_poi_here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_poi_here"
+            android:layout_toRightOf="@+id/new_poi"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/new_category_here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_category_here"
+            android:layout_toRightOf="@+id/new_category"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/new_tour_here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_tour_here"
+            android:layout_toRightOf="@+id/new_tour"
+            android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/admin_logout"
-        android:text="LOG OUT"
-        android:textColor="@color/white"
-        android:background="@color/red"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"/>
-    <Button
-        android:id="@+id/import_pois"
-        android:text="IMPORT POIs"
-        android:textColor="@color/black"
-        android:background="@color/sunshine_dark_blue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
+        <Button
+            android:id="@+id/admin_logout"
+            android:text="LOG OUT"
+            android:textColor="@color/white"
+            android:background="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"/>
+        <Button
+            android:id="@+id/import_pois"
+            android:text="IMPORT POIs"
+            android:textColor="@color/black"
+            android:background="@color/sunshine_dark_blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"/>
 
 
     <!--<TableLayout-->
@@ -107,5 +107,3 @@
 
 
 </RelativeLayout>
-
-    <!-- Lleida@Seu Vella@flytoview=<LookAt><longitude>0.6267461450285272</longitude><latitude>41.61796999750354</latitude><altitude>0</altitude><heading>-5.844793361804502</heading><tilt>77.03132415289358</tilt><range>263.5306757549815</range><gx:altitudeMode>relativeToGround</gx:altitudeMode></LookAt> -->

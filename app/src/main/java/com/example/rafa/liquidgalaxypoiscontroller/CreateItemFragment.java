@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -108,9 +109,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         public EditText altitudeModeET;
         public EditText hide;
         public Spinner categoryID;
-        public Button createPOI;
-        public Button updatePOI;
-        public Button cancel;
+        public FloatingActionButton createPOI;
+        public FloatingActionButton updatePOI;
+        public FloatingActionButton cancel;
 
         public ViewHolderPoi(View rootView) {
 
@@ -125,9 +126,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             altitudeModeET = (EditText) rootView.findViewById(R.id.altitudeMode);
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
             hide = (EditText) rootView.findViewById(R.id.poi_hide);
-            createPOI = (Button) rootView.findViewById(R.id.create_poi);
-            updatePOI = (Button) rootView.findViewById(R.id.update_poi);
-            cancel = (Button) rootView.findViewById(R.id.cancel_come_back);
+            createPOI = (FloatingActionButton) rootView.findViewById(R.id.create_poi);
+            updatePOI = (FloatingActionButton) rootView.findViewById(R.id.update_poi);
+            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
         }
     }
     public static class ViewHolderTour {
@@ -135,9 +136,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         public EditText tourName;
         public EditText hide;
         public Spinner categoryID;
-        public Button createTOUR;
-        public Button updateTOUR;
-        public Button cancel;
+        public android.support.design.widget.FloatingActionButton createTOUR;
+        public android.support.design.widget.FloatingActionButton updateTOUR;
+        public android.support.design.widget.FloatingActionButton cancel;
         public ListView addedPois;
         public EditText globalInterval;
 //        public DynamicListView addedPois;
@@ -147,11 +148,11 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             tourName = (EditText) rootView.findViewById(R.id.tour_name);
             hide = (EditText) rootView.findViewById(R.id.tour_hide);
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
-            createTOUR = (Button) rootView.findViewById(R.id.create_tour);
-            updateTOUR = (Button) rootView.findViewById(R.id.update_tour);
+            createTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.create_tour);
+            updateTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.update_tour);
 //            addedPois = (DynamicListView) rootView.findViewById(R.id.tour_pois_listview);
             addedPois = (ListView) rootView.findViewById(R.id.tour_pois_listview);
-            cancel = (Button) rootView.findViewById(R.id.cancel_come_back);
+            cancel = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
             globalInterval = (EditText) rootView.findViewById(R.id.pois_interval);
         }
     }
@@ -160,18 +161,18 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         public EditText categoryName;
         public EditText hide;
         public Spinner fatherID;
-        public Button createCategory;
-        public Button updateCategory;
-        public Button cancel;
+        public FloatingActionButton createCategory;
+        public FloatingActionButton updateCategory;
+        public FloatingActionButton cancel;
 
         public ViewHolderCategory(View rootView) {
 
             categoryName = (EditText) rootView.findViewById(R.id.category_name);
             hide = (EditText) rootView.findViewById(R.id.category_hide);
             fatherID = (Spinner) rootView.findViewById(R.id.father_spinner);
-            createCategory = (Button) rootView.findViewById(R.id.create_category);
-            updateCategory = (Button) rootView.findViewById(R.id.update_category);
-            cancel = (Button) rootView.findViewById(R.id.cancel_come_back);
+            createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
+            updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
+            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
         }
 
 
@@ -185,7 +186,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), contentValues);
             Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(getActivity(), AdminActivity.class);
+            Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
             startActivity(intent);
         }catch (NumberFormatException e){
             Toast.makeText(getActivity(),"The attributes 'Longitude, Latitude, Altitude, Heading, Tilt and Range' must have numeric values.", Toast.LENGTH_LONG).show();
@@ -255,7 +256,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), contentValues);
             Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(getActivity(), AdminActivity.class);
+            Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
             startActivity(intent);
         }catch(android.database.SQLException e){
             Toast.makeText(getActivity(), "This category already exists. Modify the attribute 'Name'", Toast.LENGTH_LONG).show();
@@ -313,7 +314,12 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             fillCategorySpinner(viewHolderTour.categoryID);
         }
         setCancelComeBackBehaviour(viewHolderTour.cancel);
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_tour_pois, new POISFragment(), "ADMIN/TOUR_POIS").commit();
+        POISFragment fragment = new POISFragment();
+        Bundle args = new Bundle();
+        args.putString("createORupdate", "create");
+        args.putString("EDITABLE", "ADMIN/TOUR_POIS");
+        fragment.setArguments(args);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_tour_pois, fragment).commit();
     }
     private int createTour() throws Exception {
         int tourID = 0;
@@ -429,7 +435,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             Toast.makeText(getActivity(), "You must type a global POI interval in seconds.", Toast.LENGTH_LONG).show();
         }
 
-        Intent intent = new Intent(getActivity(), AdminActivity.class);
+        Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
         startActivity(intent);
     }
     public static void deleteButtonTreatment(View view, final String name){
@@ -530,14 +536,14 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             return Integer.parseInt(spinnerIDsAndShownNames.get(shownNameSelected));
         }
     }
-    private void setCancelComeBackBehaviour(Button cancel){
+    private void setCancelComeBackBehaviour(android.support.design.widget.FloatingActionButton cancel){
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TourPOIsAdapter.getDurationList().clear();
-                Intent admin = new Intent(getActivity(), AdminActivity.class);
-                startActivity(admin);
+                Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+                startActivity(intent);
             }
         });
     }
