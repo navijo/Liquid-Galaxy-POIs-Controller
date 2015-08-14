@@ -44,11 +44,17 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
     <string name="title_activity_lgpcadmin">Liquid Galaxy Administration</string>
-    <string name="inst_send_POI_tittle">Instructions to send a POI to Liquid Galaxy system:</string>
-    <string name="inst_send_POI_">1.	Check all the settings are correct by making click on ‘Settings’ option inside the menu located on the main screen’s top right corner. If they are incorrect, modify them. The settings to check are: user name, password, host IP and port.\n2.	After checking settings correctness, you are able to select one POI to watch it in LG screens.
-</string>
-    <string name="inst_send_TOUR_tittle">Instructions to send a Tour to Liquid Galaxy system:</string>
-    <string name="inst_send_TOUR">1.	Check all the settings are correct by making click on ‘Settings’ option inside the menu located on the main screen’s top right corner. If they are incorrect, modify them. The settings to check are: user name, password, host IP and port.\n2.	After checking settings correctness, you are able to select one POI to watch it in LG screens.\n3.	To stop the Tour view in the LG screens, click on the red STOP button located on the bottom right corner of the main screen.
-</string>
-
+    <string name="inst_send_POI_tittle"><u>Instructions to send a POI to Liquid Galaxy system:</u></string>
+    <string name="inst_send_POI_">1.	Check all the settings are correct by making click on ‘Settings’ option inside the menu located on the main screen’s top right corner. If they are incorrect, modify them. The settings to check are: user name, password, host IP and port.\n2.	After checking settings correctness, you are able to select one POI to watch it in LG screens.\n</string>
+    <string name="inst_send_TOUR_tittle"><u>Instructions to send a Tour to Liquid Galaxy system:</u></string>
+    <string name="inst_send_TOUR">1.	Check all the settings are correct by making click on ‘Settings’ option inside the menu located on the main screen’s top right corner. If they are incorrect, modify them. The settings to check are: user name, password, host IP and port.\n2.	After checking settings correctness, you are able to select one POI to watch it in LG screens.\n3.	To stop the Tour view in the LG screens, click on the red STOP button located on the bottom right corner of the main screen.\n</string>
+    <string name="icons_tittle"><u>Icons meaning</u></string>
+    <string name="add">It has two functionalities: the first and most used works in order to add a new item (POI, Tour or Category) inside the data base; the other is used to add an existing POI inside a Tour when the administration user is creating or updating it.</string>
+    <string name="edit">Its functioctionality is to edit one existing item, being a POI, Tour or Category.</string>
+    <string name="cancelButton">Cancels any operation which could consists in creating, updating, adding...</string>
+    <string name="delete">Removes an existing item, being a POI, Tour or Category.</string>
+    <string name="confirm">Confirms one action as creating or updating one item.</string>
+    <string name="stop">Stops the Tours view on one Liquid Galaxy system.</string>
+    <string name="addBox">It is used to add one item (POI, Tour or Category) inside the category which is current shown in the screen, better said, it is added inside the category that the user is seeing on the screen.</string>
+    <string name="searchText">When user clicks on it, the place written inside the field of the left side is searched in the Liquid Galaxy system.</string>
 </resources>

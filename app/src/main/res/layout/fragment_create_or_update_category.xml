@@ -41,19 +41,19 @@
         android:id="@+id/create_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:text="@string/create_category"
-        android:layout_below="@id/father_spinner"
-        app:backgroundTint="@color/green"
-        android:layout_toRightOf="@id/category_hide"/>
+        android:layout_toLeftOf="@+id/cancel_come_back"
+        app:backgroundTint="@color/green"/>
     <android.support.design.widget.FloatingActionButton
         android:src="@drawable/ic_check_white_24dp"
         android:id="@+id/update_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:text="@string/update_category"
-        android:layout_below="@+id/father_spinner"
         app:backgroundTint="@color/green"
-        android:layout_toRightOf="@+id/category_hide"
+        android:layout_toLeftOf="@+id/cancel_come_back"
         android:visibility="gone"/>
 
     <android.support.design.widget.FloatingActionButton
@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         app:backgroundTint="@color/red"
         android:text="@string/cancel"/>
 

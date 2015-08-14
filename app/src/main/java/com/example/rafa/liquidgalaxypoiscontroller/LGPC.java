@@ -80,7 +80,7 @@ public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
     private void showLogo() {
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.lg);
+        getSupportActionBar().setLogo(R.drawable.lg_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
 

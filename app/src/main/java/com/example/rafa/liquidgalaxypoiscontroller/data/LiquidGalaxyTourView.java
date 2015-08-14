@@ -1,5 +1,7 @@
 package com.example.rafa.liquidgalaxypoiscontroller.data;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -7,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.example.rafa.liquidgalaxypoiscontroller.POISFragment;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -48,7 +51,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
         final List<Integer> poisDuration = new ArrayList<Integer>();
 
         if(params.length == 0 || params == null){
-            return "ERROR";
+            return "Error. There's no item selected.";
         }
 
         try {
@@ -63,9 +66,34 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
         }catch (Exception ex){
             Log.d(TAG, "First send" + ex.getMessage().toString());
         }
-        sendTourPOIs(pois, poisDuration);
-
+        try {
+            sendTourPOIs(pois, poisDuration);
+        }catch (IndexOutOfBoundsException e){
+            return "Error. There's probably no POI inside the Tour.";
+        }
         return "";
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        this.cancel(true);
+        POISFragment.resetTourSettings();
+        // prepare the alert box
+        if(s.startsWith("Error")) {
+            AlertDialog.Builder alertbox = new AlertDialog.Builder(poisFragmentAct);
+
+            // set the message to display
+            alertbox.setTitle("Error");
+            alertbox.setMessage("There's probably no POI inside this Tour");
+
+            // set a positive/yes button and create a listener
+            alertbox.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface arg0, int arg1) {
+                }
+            });
+            alertbox.show();
+        }
     }
 
     public void setActivity(FragmentActivity activity){

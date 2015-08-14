@@ -64,8 +64,17 @@ public class POISFragment extends Fragment {
     private TextView seeingOptions, poisListViewTittle, route;
     public static int routeID = 0;
     private LinearLayout additionLayout, poisfragment;
-    private FloatingActionButton createPOI, createPOIhere, createTour, createCategory, createTourhere, createCategoryhere, stopButton, cancel, edit, delete;
-    private boolean tourIsWorking = false;
+    private FloatingActionButton createPOI;
+    private FloatingActionButton createPOIhere;
+    private FloatingActionButton createTour;
+    private FloatingActionButton createCategory;
+    private FloatingActionButton createTourhere;
+    private FloatingActionButton createCategoryhere;
+    private static FloatingActionButton stopButton;
+    private FloatingActionButton cancel;
+    private FloatingActionButton edit;
+    private FloatingActionButton delete;
+    private static boolean tourIsWorking = false;
 
     public POISFragment() {
     }
@@ -414,8 +423,8 @@ public class POISFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 int itemSelectedID = cursor.getInt(0);
-                if(EDITABLE_TAG.startsWith("ADMIN")) {
-                    if(EDITABLE_TAG.endsWith("/TOUR_POIS")) {
+                if (EDITABLE_TAG.startsWith("ADMIN")) {
+                    if (EDITABLE_TAG.endsWith("/TOUR_POIS")) {
                         String completeName = cursor.getString(1);
                         delete.setVisibility(View.GONE);
                         edit.setVisibility(View.GONE);
@@ -424,7 +433,7 @@ public class POISFragment extends Fragment {
                         dialog.show();
                         cancelButtonTreatment(cancel, dialog);
                         addTourPOIsButtonTreatment(itemSelectedID, completeName, add);
-                    }else{
+                    } else {
 //                        popupView = createAndShowItemSelectedPopup();
                         dialog.show();
                         cancelButtonTreatment(cancel, dialog);
@@ -432,17 +441,17 @@ public class POISFragment extends Fragment {
                         String whereClauseForRefreshing = POIsContract.POIEntry.COLUMN_CATEGORY_ID + " = " + String.valueOf(categoryID);
                         deleteButtonTreatment(itemSelectedID, POI_URI, POI_IDselection, "POI", getWhereClauseCategory("CATEGORY LEVEL"), whereClauseForRefreshing, delete, dialog);
                     }
-                }else{//IF BASIC USER CLICKS ON ONE POI...
+                } else {//IF BASIC USER CLICKS ON ONE POI...
                     try {
                         HashMap<String, String> poi = getPOIData(itemSelectedID);
                         String command = buildCommand(poi);
                         try {
                             setConnectionWithLiquidGalaxy(command);
                         } catch (JSchException e) {
-                            Toast.makeText(getActivity(),"Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip", Toast.LENGTH_LONG).show();
                         }
-                    }catch (Exception ex){
-                        Toast.makeText(getActivity(),"Error. " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    } catch (Exception ex) {
+                        Toast.makeText(getActivity(), "Error. " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -590,12 +599,12 @@ public class POISFragment extends Fragment {
                         editButtonTreatment(String.valueOf(itemSelectedID), "TOUR", edit, dialog);
                         deleteButtonTreatment(itemSelectedID, TOUR_URI, TOUR_IDselection, "TOUR", null, null, delete, dialog);
                     } else {
+
                         final LiquidGalaxyTourView tour = new LiquidGalaxyTourView();
                         tour.setActivity(getActivity());
+                        tour.execute(String.valueOf(itemSelectedID));
                         stopButton.setVisibility(View.VISIBLE);
                         stopButton.setClickable(true);
-                        tour.execute(String.valueOf(itemSelectedID));
-
                         invalidateOtherClickableElements();
                         stopButtonBehaviour(tour);
                     }
@@ -603,11 +612,13 @@ public class POISFragment extends Fragment {
             }
         });
     }
+    public static void resetTourSettings(){
+        stopButton.setVisibility(View.GONE);
+        stopButton.setClickable(false);
+        tourIsWorking = false;
+    }
     private void invalidateOtherClickableElements() {
         tourIsWorking = true;
-        categoriesListView.setFocusable(false);
-        categoriesListView.setClickable(false);
-        categoriesListView.setItemsCanFocus(false);
     }
     private void stopButtonBehaviour(final LiquidGalaxyTourView tour) {
         stopButton.setOnClickListener(new View.OnClickListener() {
