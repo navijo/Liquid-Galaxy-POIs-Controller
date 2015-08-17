@@ -64,7 +64,7 @@ public class LGTools extends Fragment {
         shutDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sentence = "/usr/bin/sudo -H -u lg /home/lg/bin/lg-relaunch";
+                String sentence = "/home/lg/bin/lg-sudo 'shutdown -h 0' > /home/lg/log.txt";
                 showAlertAndExecution(sentence, "shut down");
             }
         });
@@ -75,7 +75,7 @@ public class LGTools extends Fragment {
         reboot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sentence = "echo '/usr/bin/sudo -H -u lg /home/lg/bin/lg-sudo reboot'";
+                String sentence = "/home/lg/bin/lg-sudo reboot > /home/lg/log.txt";
                 showAlertAndExecution(sentence, "reboot");
             }
         });
@@ -86,7 +86,7 @@ public class LGTools extends Fragment {
         relaunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sentence = "'/usr/bin/sudo -H -u lg /home/lg/bin/lg-relaunch'";
+                String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt";
                 showAlertAndExecution(sentence, "relaunch");
             }
         });

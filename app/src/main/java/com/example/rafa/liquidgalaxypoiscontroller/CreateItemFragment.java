@@ -9,11 +9,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -79,7 +79,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                     }catch (NumberFormatException e){
                         Toast.makeText(getActivity(), "The duration of each POI must be in seconds (numeric type).", Toast.LENGTH_LONG).show();
                     }catch (Exception e){
-                        Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        if(e.getMessage() != null) {
+                            Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });
@@ -440,6 +442,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
     }
     public static void deleteButtonTreatment(View view, final String name){
         final ImageView delete = (ImageView) view.findViewById(R.id.delete);
+        screenSizeTreatment(delete);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -454,25 +457,32 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 TourPOIsAdapter.setType("creating");
                 TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
                 viewHolderTour.addedPois.setAdapter(adapter);
-//                FragmentActivity activity = (FragmentActivity) rootView.getContext();
-//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
-//                viewHolderTour.addedPois.setAdapter(adapter);
 //
             }
         });
     }
-    private void popupItemSelected(){
-        viewHolderTour.addedPois.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = (String) parent.getItemAtPosition(position);
-                View popup = createPopup();
-                cancelButtonTreatment(popup);
-                deleteButtonTreatment(popup, name);
-                return true;
-            }
-        });
+
+    private static void screenSizeTreatment(ImageView delete) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        FragmentActivity act = (FragmentActivity) rootView.getContext();
+        act.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+
+
+        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+
+        float smallestWidth = Math.min(widthDp, heightDp);
+
+        if (smallestWidth >= 1000) {
+            delete.setImageResource(R.drawable.ic_remove_circle_black_36dp);
+        }
     }
+
     private void cancelButtonTreatment(View view){
 
         final Button cancelButton = (Button) view.findViewById(R.id.cancel_poi_selection);

@@ -2,13 +2,16 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +23,10 @@ public class TourPOIsAdapter extends BaseAdapter {
 
     private static List<String> pois;
     private static List<Integer> poisDuration = new ArrayList<Integer>();
-    private FragmentActivity activity;
+    private static FragmentActivity activity;
     private static String type = "creating";
     private static int global_interval = 0, updated_position, lastPost;
     private boolean MOVE_TAG = false;
-    private int recently_changed = 999999;
 
     public TourPOIsAdapter(FragmentActivity activity, List<String> tourPOIsNames) {
         this.activity = activity;
@@ -49,7 +51,13 @@ public class TourPOIsAdapter extends BaseAdapter {
      * @return The data at the specified position.
      */
     @Override
-    public Object getItem(int position) {
+    public Object getItem(int position) throws ArrayIndexOutOfBoundsException{
+
+        if(position < 0){
+            throw new ArrayIndexOutOfBoundsException("You can't move this item up, try to move it down.");
+        }else if(position > pois.size()-1){
+            throw new ArrayIndexOutOfBoundsException("You can't move this item down, try to move it up");
+        }
         return pois.get(position);
     }
 
@@ -126,7 +134,7 @@ public class TourPOIsAdapter extends BaseAdapter {
             seconds.setText(String.valueOf(poi_interval));
         }
 
-        //setArrowsVisibility(view, position);
+        //setArrowsVisibility(view, position, poi);
         setArrowsBehaviour(view, position, parent);
         setDeleteItemButtonBehaviour(view, poi);
 
@@ -159,6 +167,8 @@ public class TourPOIsAdapter extends BaseAdapter {
     }
 
     private void setArrowsBehaviour(View view, final int position, final ViewGroup parent) {
+
+        screenSizeTreatment(view);
         view.findViewById(R.id.move_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,65 +188,96 @@ public class TourPOIsAdapter extends BaseAdapter {
         });
     }
 
-    private void updateLV(int position, int otherPosition, ListView parent) {
-        View row;
-        EditText secET;
-        row = parent.getAdapter().getView(position, null, parent);
-        secET = (EditText) row.findViewById(R.id.poi_seconds);
-        secET.setText(poisDuration.get(position).toString());
-        row = parent.getAdapter().getView(otherPosition, null, parent);
-        secET = (EditText) row.findViewById(R.id.poi_seconds);
-        secET.setText(poisDuration.get(otherPosition).toString());
-        notifyDataSetChanged();
+    private static void screenSizeTreatment(View view) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+
+
+        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+
+        float smallestWidth = Math.min(widthDp, heightDp);
+
+        if (smallestWidth >= 1000) {
+            ImageView down = (ImageView) view.findViewById(R.id.move_down);
+            ImageView up = (ImageView) view.findViewById(R.id.move_up);
+
+            down.setImageResource(R.drawable.ic_keyboard_arrow_down_black_36dp);
+            up.setImageResource(R.drawable.ic_keyboard_arrow_up_black_36dp);
+        }
     }
 
-    private void setArrowsVisibility(View view, int position) {
-        if(position == 0){
+    private void setArrowsVisibility(View view, int position, String poi) {
+
+        screenSizeTreatment(view);
+
+        if(poi.equals(pois.get(0))){
             view.findViewById(R.id.move_up).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.move_down).setVisibility(View.VISIBLE);
+            notifyDataSetChanged();
         }
-        if(position == getCount() - 1){
+        else if(poi.equals(pois.get(pois.size()-1))){
             view.findViewById(R.id.move_down).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.move_up).setVisibility(View.VISIBLE);
+            notifyDataSetChanged();
         }
-    }
-    private void moveUp(int position){
-        String toMoveUp = (String) getItem(position);
-        String toMoveDown = (String) getItem(position - 1);
-        if(poisDuration.size() > 0) {
-            int current_item_duration = poisDuration.get(position);
-            int above_item_duration = poisDuration.get(position - 1);
 
-            poisDuration.remove(position);
-            poisDuration.remove(position - 1);
-            poisDuration.add(position - 1, current_item_duration);
-            poisDuration.add(position, above_item_duration);
+    }
+
+    private void moveUp(int position){
+        String toMoveUp = "";
+        String toMoveDown = "";
+        try {
+            toMoveUp = (String) getItem(position);
+            toMoveDown = (String) getItem(position - 1);
+            if(poisDuration.size() > 0) {
+                int current_item_duration = poisDuration.get(position);
+                int above_item_duration = poisDuration.get(position - 1);
+
+                poisDuration.remove(position);
+                poisDuration.remove(position - 1);
+                poisDuration.add(position - 1, current_item_duration);
+                poisDuration.add(position, above_item_duration);
+            }
+            pois.remove(position);
+            pois.remove(position - 1);
+            pois.add(position - 1, toMoveUp);
+            pois.add(position, toMoveDown);
+            MOVE_TAG = true;
+            notifyDataSetChanged();
+        }catch (ArrayIndexOutOfBoundsException ex){
+            Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
         }
-        pois.remove(position);
-        pois.remove(position - 1);
-        pois.add(position - 1, toMoveUp);
-        pois.add(position, toMoveDown);
-        MOVE_TAG = true;
-        recently_changed = position;
-        notifyDataSetChanged();
+
     }
     private void moveDown(int position){
-        String toMoveDown = (String) getItem(position);
-        String toMoveUp = (String) getItem(position + 1);
-        if(poisDuration.size() > 0) {
-            int current_item_duration = poisDuration.get(position);
-            int below_item_duration = poisDuration.get(position + 1);
+        try {
+            String toMoveDown = (String) getItem(position);
+            String toMoveUp = (String) getItem(position + 1);
+            if (poisDuration.size() > 0) {
+                int current_item_duration = poisDuration.get(position);
+                int below_item_duration = poisDuration.get(position + 1);
 
-            poisDuration.remove(position + 1);
-            poisDuration.remove(position);
-            poisDuration.add(position, below_item_duration);
-            poisDuration.add(position + 1, current_item_duration);
+                poisDuration.remove(position + 1);
+                poisDuration.remove(position);
+                poisDuration.add(position, below_item_duration);
+                poisDuration.add(position + 1, current_item_duration);
+            }
+            pois.remove(position + 1);
+            pois.remove(position);
+            pois.add(position, toMoveUp);
+            pois.add(position + 1, toMoveDown);
+            MOVE_TAG = true;
+            notifyDataSetChanged();
+        }catch (ArrayIndexOutOfBoundsException ex){
+            Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
         }
-        pois.remove(position + 1);
-        pois.remove(position);
-        pois.add(position, toMoveUp);
-        pois.add(position + 1, toMoveDown);
-        MOVE_TAG = true;
-        recently_changed = position;
-        notifyDataSetChanged();
+
     }
 
     private void updateDurations(ListView addedPois) {

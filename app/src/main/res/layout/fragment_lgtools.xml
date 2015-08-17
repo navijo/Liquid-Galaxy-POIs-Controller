@@ -26,6 +26,8 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:layout_width="0dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_height="match_parent" />
 
         <Button
@@ -35,6 +37,8 @@
             android:background="#00C853"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
     </LinearLayout>
@@ -50,6 +54,8 @@
             android:id="@+id/reboot"
             android:text="Reboot LG"
             android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
             android:background="#FFEB3B"
             android:layout_weight="1"
             android:layout_gravity="center"
@@ -62,6 +68,8 @@
             android:textColor="@color/black"
             android:background="#F44336"
             android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
             android:layout_gravity="center"
             android:layout_width="0dp"
             android:layout_height="match_parent" />

@@ -15,7 +15,7 @@ import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourPOIsEnt
 public class POIsDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 31;
+    private static final int DATABASE_VERSION = 33;
     static final String DATABASE_NAME = "poi_controller.db";
 
     public POIsDbHelper(Context context) {
@@ -29,6 +29,35 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(createPOInEntryTable());
         db.execSQL(createTourEntryTable());
         db.execSQL(createTourPOIsEntryTable());
+        createBaseCategories(db);
+    }
+
+    private void createBaseCategories(SQLiteDatabase db) {
+        db.execSQL(Earth());
+        db.execSQL(Moon());
+        db.execSQL(Mars());
+    }
+
+    private String Earth(){
+
+        final String SQL_CREATE_EARTH_CATEGORY = "INSERT INTO " + CategoryEntry.TABLE_NAME +
+                "(Name, Father_ID, Shown_Name, Hide) VALUES ('EARTH', 0, 'EARTH/', 0);";
+
+        return SQL_CREATE_EARTH_CATEGORY;
+    }
+
+    private String Moon(){
+        final String SQL_CREATE_MOON_CATEGORY = "INSERT INTO " + CategoryEntry.TABLE_NAME +
+                "(Name, Father_ID, Shown_Name, Hide) VALUES ('MOON', 0, 'MOON/', 0);";
+
+        return SQL_CREATE_MOON_CATEGORY;
+    }
+
+    private String Mars(){
+        final String SQL_CREATE_MARS_CATEGORY = "INSERT INTO " + CategoryEntry.TABLE_NAME +
+                "(Name, Father_ID, Shown_Name, Hide) VALUES ('MARS', 0, 'MARS/', 0);";
+
+        return SQL_CREATE_MARS_CATEGORY;
     }
 
     private String createPOInEntryTable() {

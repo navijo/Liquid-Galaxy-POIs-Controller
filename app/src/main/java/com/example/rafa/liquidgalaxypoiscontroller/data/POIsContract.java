@@ -150,7 +150,7 @@ public class POIsContract {
         }
 
         public static Cursor getAllCategories(FragmentActivity fragmentActivity){
-            return fragmentActivity.getContentResolver().query(CONTENT_URI,null, null, null, null);
+            return fragmentActivity.getContentResolver().query(CONTENT_URI, null, null, null, null);
         }
         public static Cursor getCategoriesByFatherID(FragmentActivity fragmentActivity, String fatherID) {
             return fragmentActivity.getContentResolver().query(
@@ -222,6 +222,11 @@ public class POIsContract {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
         }
         public static Cursor getIDsAndShownNamesOfAllCategories(FragmentActivity fragmentActivity) {
+            return fragmentActivity.getContentResolver().query(CONTENT_URI,
+                    new String[]{_ID, COLUMN_SHOWN_NAME}, null, null, COLUMN_SHOWN_NAME + " ASC");
+        }
+
+        public static Cursor getShownNamesOfAllCategories(FragmentActivity fragmentActivity) {
             return fragmentActivity.getContentResolver().query(CONTENT_URI,
                     new String[]{_ID, COLUMN_SHOWN_NAME}, null, null, COLUMN_SHOWN_NAME + " ASC");
         }

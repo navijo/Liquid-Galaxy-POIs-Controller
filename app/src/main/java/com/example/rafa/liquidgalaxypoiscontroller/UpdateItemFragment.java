@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -187,6 +188,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
             updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
             cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
+
         }
     }
 
@@ -461,6 +463,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
     }
     public static void deleteButtonTreatment(View view, final String name){
         final ImageView delete = (ImageView) view.findViewById(R.id.delete);
+        screenSizeTreatment(delete);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -489,6 +492,28 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             }
         });
     }
+
+    private static void screenSizeTreatment(ImageView delete) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        FragmentActivity act = (FragmentActivity) rootView.getContext();
+        act.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+
+
+        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+
+        float smallestWidth = Math.min(widthDp, heightDp);
+
+        if (smallestWidth >= 1000) {
+            delete.setImageResource(R.drawable.ic_remove_circle_black_36dp);
+        }
+    }
+
     private void cancelButtonTreatment(View view){
 
         final Button cancelButton = (Button) view.findViewById(R.id.cancel_poi_selection);

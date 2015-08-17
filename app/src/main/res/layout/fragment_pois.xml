@@ -44,7 +44,7 @@
 
             <ImageView
                 android:id="@+id/back_icon"
-                android:src="@drawable/back"
+                android:src="@drawable/ic_reply_black_24dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -52,7 +52,7 @@
                 android:focusable="false"/>
             <ImageView
                 android:id="@+id/back_start_icon"
-                android:src="@drawable/back_home"
+                android:src="@drawable/ic_home_black_24dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"

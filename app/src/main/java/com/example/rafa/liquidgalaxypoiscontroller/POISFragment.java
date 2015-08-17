@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,19 +62,12 @@ public class POISFragment extends Fragment {
     private List<String> backIDs = new ArrayList<String>(){{
             add("0");
     }};
-    private TextView seeingOptions, poisListViewTittle, route;
+    private TextView seeingOptions, poisListViewTittle, route, categories_tittle;
     public static int routeID = 0;
     private LinearLayout additionLayout, poisfragment;
-    private FloatingActionButton createPOI;
-    private FloatingActionButton createPOIhere;
-    private FloatingActionButton createTour;
-    private FloatingActionButton createCategory;
-    private FloatingActionButton createTourhere;
-    private FloatingActionButton createCategoryhere;
+    private FloatingActionButton createPOI, createPOIhere, createTour, createCategory, createTourhere,createCategoryhere,cancel,edit,delete;
     private static FloatingActionButton stopButton;
-    private FloatingActionButton cancel;
-    private FloatingActionButton edit;
-    private FloatingActionButton delete;
+
     private static boolean tourIsWorking = false;
 
     public POISFragment() {
@@ -83,11 +77,11 @@ public class POISFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        EDITABLE_TAG = this.getTag();
         if(getArguments() !=null) {
             createORupdate = getArguments().getString("createORupdate");
             EDITABLE_TAG = getArguments().getString("EDITABLE");
         }
+
         poisView = inflater.inflate(R.layout.fragment_pois, container, false);
 
         ListTreatment();
@@ -107,6 +101,7 @@ public class POISFragment extends Fragment {
         route = (TextView) poisView.findViewById(R.id.fragment_pois_route);
         poisfragment = (LinearLayout) poisView.findViewById(R.id.pois_xml_fragment);
         stopButton = (android.support.design.widget.FloatingActionButton) poisView.findViewById(R.id.tour_stop);
+        categories_tittle = (TextView) poisView.findViewById(R.id.categories_textview);
 
         additionLayout = (LinearLayout) poisView.findViewById(R.id.addition_buttons_layout);
         createPOI = (android.support.design.widget.FloatingActionButton) poisView.findViewById(R.id.new_poi);
@@ -122,7 +117,49 @@ public class POISFragment extends Fragment {
         edit = (FloatingActionButton) dialogView.findViewById(R.id.edit_poi);
         delete = (FloatingActionButton) dialogView.findViewById(R.id.delete_poi);
 
+        screenSizeTreatment();
+    }
+    private void screenSizeTreatment() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+
+
+        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+
+        float smallestWidth = Math.min(widthDp, heightDp);
+
+        if (smallestWidth >= 1000) {
+            seeingOptions.setTextSize(28);
+            categories_tittle.setTextSize(28);
+            route.setTextSize(28);
+            poisListViewTittle.setTextSize(28);
+            backStartIcon.setImageResource(R.drawable.ic_home_black_48dp);
+            backIcon.setImageResource(R.drawable.ic_reply_black_48dp);
+        } else if(smallestWidth >720 && smallestWidth<1000){
+            seeingOptions.setTextSize(24);
+            categories_tittle.setTextSize(24);
+            route.setTextSize(24);
+            poisListViewTittle.setTextSize(24);
+            backStartIcon.setImageResource(R.drawable.ic_home_black_36dp);
+            backIcon.setImageResource(R.drawable.ic_reply_black_36dp);
+        }
+        else if(smallestWidth <= 720 && smallestWidth >= 600 ){
+            seeingOptions.setTextSize(22);
+            categories_tittle.setTextSize(2);
+            route.setTextSize(2);
+            poisListViewTittle.setTextSize(22);
+        } else if(smallestWidth < 600 && smallestWidth >= 500 ){
+            seeingOptions.setTextSize(17);
+            categories_tittle.setTextSize(17);
+            route.setTextSize(17);
+            poisListViewTittle.setTextSize(17);
+        }
     }
 
     @Override
@@ -703,7 +740,6 @@ public class POISFragment extends Fragment {
 
         return queryCursor.getCount();
     }
-
     private Dialog getDialogByView(View v){
             // prepare the alert box
         Dialog dialog = new Dialog(getActivity());
@@ -885,50 +921,3 @@ public class POISFragment extends Fragment {
         });
     }
 }
-
-//    private void showAllPois(){
-//        final Cursor queryCursor;
-//        if(EDITABLE_TAG.startsWith("USER")) {
-//            queryCursor = POIsContract.POIEntry.getAllNotHidenPOIs(getActivity());
-//        }else{//ADMIN
-//            queryCursor = POIsContract.POIEntry.getAllPOIs(getActivity());
-//        }
-//        route.setText("/");
-//        adapterPOI = new POIsAdapter(getActivity(), queryCursor, 0);
-//        adapterPOI.setItemName("POI");
-//
-//        poisListView.setVisibility(View.VISIBLE);
-//        categoriesListView.setVisibility(View.GONE);
-//        //---------------------
-////        AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
-////        animationAdapter.setAbsListView(poisListView);
-////        poisListView.enableDragAndDrop();
-////        poisListView.setDraggableManager(new TouchViewDraggableManager(R.id.poi_list_item_textview));
-//        //---------------------
-//
-//        poisListView.setAdapter(adapterPOI);
-//
-//        poisListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-//                int itemSelectedID = cursor.getInt(0);
-//                if (EDITABLE_TAG.startsWith("ADMIN")) {
-//                    if (EDITABLE_TAG.endsWith("/TOUR_POIS")) {
-//                        String completeName = cursor.getString(1);
-//                        createAndShowTourPOIsView();
-//                        cancelButtonTreatment(tourPOIsView);
-//                        addTourPOIsButtonTreatment(itemSelectedID, completeName);
-//                    } else {//ends with only /POIS
-//                        createAndShowItemSelectedPopup();
-//                        cancelButtonTreatment(popupView);
-//                        editButtonTreatment(String.valueOf(itemSelectedID), "POI");
-//                        deleteButtonTreatment(itemSelectedID, POI_URI, POI_IDselection, "POI", null, null, delete, dialog);
-//                    }
-//                } else {
-//                    Toast.makeText(getActivity(), cursor.getString(1), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//    }

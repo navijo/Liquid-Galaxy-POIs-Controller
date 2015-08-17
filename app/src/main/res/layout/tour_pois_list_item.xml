@@ -25,7 +25,7 @@
         android:descendantFocusability="blocksDescendants"/>
     <ImageView
         android:id="@+id/move_up"
-        android:src="@drawable/move_up"
+        android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
@@ -34,7 +34,7 @@
         android:focusable="false"/>
     <ImageView
         android:id="@+id/move_down"
-        android:src="@drawable/move_down"
+        android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
         android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
 
     <ImageView
         android:id="@+id/delete"
-        android:src="@drawable/delete"
+        android:src="@drawable/ic_remove_circle_black_24dp"
         android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
