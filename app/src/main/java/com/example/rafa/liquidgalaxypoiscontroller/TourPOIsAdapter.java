@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,8 +133,7 @@ public class TourPOIsAdapter extends BaseAdapter {
             seconds.setText(String.valueOf(poi_interval));
         }
 
-        //setArrowsVisibility(view, position, poi);
-        setArrowsBehaviour(view, position, parent);
+        setArrowsBehaviour(view, position, name);
         setDeleteItemButtonBehaviour(view, poi);
 
         return view;
@@ -158,7 +156,6 @@ public class TourPOIsAdapter extends BaseAdapter {
     public static void setGlobalInterval(int globalInterval) {
         global_interval = globalInterval;
     }
-    public static int getGlobalInterval(){return global_interval;}
     public static void addToDurationList() {
         poisDuration.add(global_interval);
     }
@@ -166,9 +163,9 @@ public class TourPOIsAdapter extends BaseAdapter {
         return poisDuration;
     }
 
-    private void setArrowsBehaviour(View view, final int position, final ViewGroup parent) {
+    private void setArrowsBehaviour(View view, final int position, TextView poi) {
 
-        screenSizeTreatment(view);
+        screenSizeTreatment(view, poi);
         view.findViewById(R.id.move_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,7 +185,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         });
     }
 
-    private static void screenSizeTreatment(View view) {
+    private static void screenSizeTreatment(View view, TextView poi) {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
@@ -209,24 +206,14 @@ public class TourPOIsAdapter extends BaseAdapter {
 
             down.setImageResource(R.drawable.ic_keyboard_arrow_down_black_36dp);
             up.setImageResource(R.drawable.ic_keyboard_arrow_up_black_36dp);
+            poi.setTextSize(24);
+        }else if(smallestWidth >720 && smallestWidth<1000){
+            poi.setTextSize(22);
+        } else if(smallestWidth <= 720 && smallestWidth >= 600 ){
+            poi.setTextSize(20);
+        } else if(smallestWidth < 600 && smallestWidth >= 500 ){
+            poi.setTextSize(16);
         }
-    }
-
-    private void setArrowsVisibility(View view, int position, String poi) {
-
-        screenSizeTreatment(view);
-
-        if(poi.equals(pois.get(0))){
-            view.findViewById(R.id.move_up).setVisibility(View.INVISIBLE);
-            view.findViewById(R.id.move_down).setVisibility(View.VISIBLE);
-            notifyDataSetChanged();
-        }
-        else if(poi.equals(pois.get(pois.size()-1))){
-            view.findViewById(R.id.move_down).setVisibility(View.INVISIBLE);
-            view.findViewById(R.id.move_up).setVisibility(View.VISIBLE);
-            notifyDataSetChanged();
-        }
-
     }
 
     private void moveUp(int position){
@@ -279,32 +266,6 @@ public class TourPOIsAdapter extends BaseAdapter {
         }
 
     }
-
-    private void updateDurations(ListView addedPois) {
-
-        //CreateItemFragment.proba();
-
-        //notifyDataSetChanged();
-        View row;
-        for(int i = 0; i < addedPois.getCount(); i++){
-            row = addedPois.getAdapter().getView(i, null, addedPois);
-            EditText secET = (EditText) row.findViewById(R.id.poi_seconds);
-            String sec = secET.getEditableText().toString();
-            if(isNumeric(sec)){
-                int seconds = Integer.parseInt(sec);
-                if(poisDuration.get(i) != seconds){
-                    poisDuration.remove(i);
-                    poisDuration.add(i, seconds);
-                }
-            }else{
-                if(poisDuration.get(i) != global_interval){
-                    poisDuration.remove(i);
-                    poisDuration.add(i, global_interval);
-                }
-            }
-        }
-    }
-
     private static boolean isNumeric(String str){
         try
         {
@@ -316,7 +277,6 @@ public class TourPOIsAdapter extends BaseAdapter {
         }
         return true;
     }
-
     public static void deleteDurationByPosition(int durationIndex) {
         poisDuration.remove(durationIndex);
     }

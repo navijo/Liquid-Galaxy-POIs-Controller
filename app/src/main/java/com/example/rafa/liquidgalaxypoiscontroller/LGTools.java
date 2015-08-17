@@ -64,8 +64,12 @@ public class LGTools extends Fragment {
         shutDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sentence = "/home/lg/bin/lg-sudo 'shutdown -h 0' > /home/lg/log.txt";
-                showAlertAndExecution(sentence, "shut down");
+                try {
+                    String sentence = "/home/lg/bin/lg-sudo 'shutdown -h 0' > /home/lg/log.txt";
+                    showAlertAndExecution(sentence, "shut down");
+                }catch (Exception e){
+                    Toast.makeText(getActivity(),"Error with Liquid Galaxy.",Toast.LENGTH_LONG);
+                }
             }
         });
     }
@@ -75,8 +79,12 @@ public class LGTools extends Fragment {
         reboot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sentence = "/home/lg/bin/lg-sudo reboot > /home/lg/log.txt";
-                showAlertAndExecution(sentence, "reboot");
+                try {
+                    String sentence = "/home/lg/bin/lg-sudo reboot > /home/lg/log.txt";
+                    showAlertAndExecution(sentence, "reboot");
+                }catch (Exception e){
+                    Toast.makeText(getActivity(),"Error with Liquid Galaxy.",Toast.LENGTH_LONG);
+                }
             }
         });
     }
@@ -86,8 +94,12 @@ public class LGTools extends Fragment {
         relaunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt";
-                showAlertAndExecution(sentence, "relaunch");
+                try {
+                    String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt";
+                    showAlertAndExecution(sentence, "relaunch");
+                }catch (Exception e){
+                    Toast.makeText(getActivity(),"Error with Liquid Galaxy.",Toast.LENGTH_LONG);
+                }
             }
         });
     }

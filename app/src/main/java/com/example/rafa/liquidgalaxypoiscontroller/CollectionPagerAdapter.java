@@ -17,15 +17,23 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Bundle args = new Bundle();
         Fragment fr;
-        switch (position){
+        switch (position) {
             case 0:
+                if(POISFragment.getTourState()){
+                    POISFragment.resetTourSettings();
+                }
                 fr = new SearchFragment();//NOU FRAGMENT AMB SEARCH
                 return fr;
+
             case 1:
+                if(POISFragment.getTourState()){
+                    POISFragment.resetTourSettings();
+                }
                 fr = new POISFragment();
                 args.putString("EDITABLE", "USER/POIS");
                 fr.setArguments(args);
                 return fr;
+
             case 2:
                 fr = new POISFragment();
                 args.putString("EDITABLE", "USER/TOURS");
