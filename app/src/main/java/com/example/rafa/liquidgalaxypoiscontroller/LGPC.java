@@ -17,7 +17,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-
+/*This is the MAIN Activity, the first that appears when the application is opened. On the
+* bar there are some Tabs corresponding on some different contents.*/
 public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
 
     /**
@@ -107,6 +108,8 @@ public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
         }
 
         if (id == R.id.action_admin){
+            //When the user decides to enter to the Administration section, first appears one
+            //popup asking for a password.
             showPasswordAlert();
         }
 

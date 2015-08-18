@@ -1,4 +1,4 @@
-package com.example.rafa.liquidgalaxypoiscontroller.data;
+package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.example.rafa.liquidgalaxypoiscontroller.POISFragment;
+import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -24,10 +24,12 @@ import java.util.Properties;
 /**
  * Created by RAFA on 09/08/2015.
  */
+
+/*To send a Tour to the Liquid Galaxy, we use an async task to let
+ the user do other things in the app.*/
 public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
 
     private FragmentActivity poisFragmentAct;
-    private String tourStatus = "Avaliable";
     private static final String TAG = LiquidGalaxyTourView.class.getSimpleName();
 
 
@@ -55,6 +57,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
         }
 
         try {
+            //Here we get all the POIs inside the Tour selected to be shown and we save it in a list.
             Cursor c = POIsContract.TourPOIsEntry.getPOIsByTourID(poisFragmentAct, params[0]);
             int poiID = 0;
             while(c.moveToNext()){
@@ -64,9 +67,10 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
                 pois.add(poi);
             }
         }catch (Exception ex){
-            Log.d(TAG, "First send" + ex.getMessage().toString());
+            return "Error. Tour POIs cannot be read.";
         }
         try {
+            //This method is the responsible to send POIs to Liquid Galaxy.
             sendTourPOIs(pois, poisDuration);
         }catch (IndexOutOfBoundsException e){
             return "Error. There's probably no POI inside the Tour.";
@@ -118,6 +122,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
         return poi;
     }
     private String buildCommand(HashMap<String, String> poi){
+        //This is the command to be sent to the Liquid Galaxy and be able to see on its screens the POI wished.
         return "echo 'flytoview=<LookAt><longitude>" + poi.get("longitude") +
                 "</longitude><latitude>" + poi.get("latitude") +
                 "</latitude><altitude>" + poi.get("altitude") +
@@ -129,6 +134,9 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
     }
     private void sendTourPOIs(List<HashMap<String, String>> pois, List<Integer> poisDuration) {
 
+        //To view and send a Tour to the Liquid Galaxy, we send each of its POIs after each interval
+        //time, so firstly we went the first Tour POI, and after that, in the second method (the once
+        //called sendOtherToursPOIs(...)) we wait many seconds as the POI indicates to send the following POI.
         sendFirstTourPOI(pois.get(0));
         sendOtherTourPOIs(pois, poisDuration);
     }
@@ -146,10 +154,6 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
                 i = 0;
             }
         }
-
-        if(tourStatus.equals("Error")){
-            Log.d(TAG, "Error connectiong with LG. Change settings, please.");
-        }
     }
     private void sendFirstTourPOI(HashMap<String, String> firstPoi) {
         String command = buildCommand(firstPoi);
@@ -160,9 +164,9 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String>{
             Log.d(TAG, "Error in connection with Liquid Galaxy.");
         }
     }
-
     private void sendTourPOI(final Integer duration, final String command) {
 
+        //Here we wait X seconds, depending of each POI, and we send to LG that POI to be shown.
         try {
             Thread.sleep(duration*1000);
             setConnectionWithLiquidGalaxy(command);

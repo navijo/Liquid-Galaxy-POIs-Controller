@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-
+/*This class makes reference to the functionalities to apply to Liquid Galaxy. This class is the once
+* which is able to reboot the LG, relaunch it or shut it down. It also is able to import files containing
+ * a list of POIs and save it persistently in the application data base.*/
 public class LGTools extends Fragment {
 
     private String filePath = "";
@@ -60,6 +62,7 @@ public class LGTools extends Fragment {
     }
 
     /*SHUT DOWN*/
+    //When shut down Liquid Galaxy button is clicked, the sentence to achieve it is send to the LG.
     private void setShutDownButtonBehaviour() {
         shutDown.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +78,7 @@ public class LGTools extends Fragment {
     }
 
     /*REBOOT*/
+    //When reboot Liquid Galaxy button is clicked, the sentence to achieve it is send to the LG.
     private void setRebootButtonBehaviour() {
         reboot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +94,7 @@ public class LGTools extends Fragment {
     }
 
     /*RELAUNCH*/
+    //When relaunch Liquid Galaxy button is clicked, the sentence to achieve it is send to the LG.
     private void setRelaunchButtonBehaviour() {
         relaunch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,7 +166,6 @@ public class LGTools extends Fragment {
 
         channelssh.setCommand(command);
         channelssh.connect();
-        Toast.makeText(getActivity(),baos.toString(),Toast.LENGTH_LONG).show();
         channelssh.disconnect();
 
     }

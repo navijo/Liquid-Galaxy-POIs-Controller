@@ -100,29 +100,39 @@ public class TourPOIsAdapter extends BaseAdapter {
             view = inf.inflate(R.layout.tour_pois_list_item, parent, false);
         }
 
+        //we get the poi name
         TextView name = (TextView) view.findViewById(R.id.poi_complete_name);
         name.setText(poi);
 
+        //we get the POI field called Seconds and we set its behaviour when user types on it.
         final EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
+        secondsBehaviour(view, seconds, position);
 
+        setArrowsBehaviour(view, position, name);
+        setDeleteItemButtonBehaviour(view, poi);
+
+        return view;
+    }
+
+    private void secondsBehaviour(View view, final EditText seconds, final int position){
         seconds.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-            int s = 0;
-            if (!hasFocus) {
-                String sec = seconds.getText().toString();
-                if(isNumeric(sec)){
-                    s = Integer.parseInt(sec);
-                    if(s != poisDuration.get(position)){
-                        if(MOVE_TAG == false){
-                            poisDuration.remove(position);
-                            poisDuration.add(position, s);
-                        }else{
-                            MOVE_TAG = false;
+                int s = 0;
+                if (!hasFocus) {
+                    String sec = seconds.getText().toString();
+                    if (isNumeric(sec)) {
+                        s = Integer.parseInt(sec);
+                        if (s != poisDuration.get(position)) {
+                            if (MOVE_TAG == false) {
+                                poisDuration.remove(position);
+                                poisDuration.add(position, s);
+                            } else {
+                                MOVE_TAG = false;
+                            }
                         }
                     }
                 }
-            }
             }
         });
 
@@ -132,13 +142,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         }else {
             seconds.setText(String.valueOf(poi_interval));
         }
-
-        setArrowsBehaviour(view, position, name);
-        setDeleteItemButtonBehaviour(view, poi);
-
-        return view;
     }
-
     private void setDeleteItemButtonBehaviour(View view, String name) {
         if(type.equals("creating")) {
             CreateItemFragment.deleteButtonTreatment(view, name);
@@ -156,21 +160,21 @@ public class TourPOIsAdapter extends BaseAdapter {
     public static void setGlobalInterval(int globalInterval) {
         global_interval = globalInterval;
     }
+    public static int getGlobalInterval(){
+        return global_interval;
+    }
     public static void addToDurationList() {
         poisDuration.add(global_interval);
     }
     public static List<Integer> getDurationList() {
         return poisDuration;
     }
-
     private void setArrowsBehaviour(View view, final int position, TextView poi) {
 
         screenSizeTreatment(view, poi);
         view.findViewById(R.id.move_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //updateDurations((ListView) parent);
                 moveDown(position);
             }
         });
@@ -178,13 +182,10 @@ public class TourPOIsAdapter extends BaseAdapter {
         view.findViewById(R.id.move_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //updateDurations((ListView) parent);
                 moveUp(position);
-                //CreateItemFragment.proba(pois);
             }
         });
     }
-
     private static void screenSizeTreatment(View view, TextView poi) {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -215,7 +216,6 @@ public class TourPOIsAdapter extends BaseAdapter {
             poi.setTextSize(16);
         }
     }
-
     private void moveUp(int position){
         String toMoveUp = "";
         String toMoveDown = "";

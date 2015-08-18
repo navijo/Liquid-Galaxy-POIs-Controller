@@ -11,7 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
+/*This is the Administration Activity, On the bar there are some Tabs corresponding on some
+different contents to manage POIs, Tours, Categories and LG functionalities.*/
 public class LGPCAdminActivity extends ActionBarActivity implements ActionBar.TabListener {
 
     /**

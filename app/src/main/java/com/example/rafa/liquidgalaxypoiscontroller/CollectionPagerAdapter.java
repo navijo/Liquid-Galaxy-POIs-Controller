@@ -7,12 +7,16 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by RAFA on 10/08/2015.
+ * Adapter for let the user type or select the place to see on the LG screens.
  */
 public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
     public CollectionPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
+    //When some new page is selected and before it is shown, it must assure that no tour is being
+    //shown or run, but if it is, that tour is cancelled and other settings are reseted inside the static
+    //method called 'resetTourSettings'.
     @Override
     public Fragment getItem(int position) {
         Bundle args = new Bundle();
@@ -22,7 +26,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 if(POISFragment.getTourState()){
                     POISFragment.resetTourSettings();
                 }
-                fr = new SearchFragment();//NOU FRAGMENT AMB SEARCH
+                fr = new SearchFragment();
                 return fr;
 
             case 1:

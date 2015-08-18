@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by RAFA on 10/08/2015.
+ * This is the adapter that shows on the device screen the views to create elements and execute
+ * specific Liquid Galaxy functionalities.
  */
 public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
     public AdminCollectionPagerAdapter(FragmentManager fm) {
@@ -17,6 +19,7 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Bundle args = new Bundle();
 
+        //Depending on the page selected, the user will see one list content or other.
         switch (position) {
             case 0:
                 POISFragment fragmentPOIs = new POISFragment();
@@ -50,6 +53,7 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
+        //Set the tittle to each tab page.
         switch (position) {
             case 0:
                 return "POIS";
@@ -58,7 +62,7 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 return "CATEGORIES";
             case 3:
-                return "LIQUID GALAXY TOOLS";
+                return "TOOLS";
             default:
                 return "PAGE" + (position - 1);
         }

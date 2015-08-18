@@ -1,8 +1,6 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
-import android.app.ActionBar;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,17 +8,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*This class has the same objective that CreateItemFragment once but it is called when one user
+wants to update one item already created. The pages are structurally equals with the fragment mentioned before,
+however there is a differences: all fields are filled by the values of the item to update.
+*/
 public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
     private static View rootView;
@@ -42,10 +40,6 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
     private static Map<String,String> spinnerIDsAndShownNames, categoriesOfPOIsSpinner;
     private static List<String> tourPOIsNames, tourPOIsIDs, tourExistingPOIsNames, tourExistingPOIsIDs;
     private static HashMap<String, String> namesAndIDs = new HashMap<String, String>();
-    PopupWindow popupPoiSelected;
-    //If I declare the value as Integer, it gives me this error:
-    //java.lang.NullPointerException: Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference
-
     private static final String POI_IDselection = POIsContract.POIEntry._ID + " =?";
     private static final String TOUR_IDselection = POIsContract.TourEntry._ID + " =?";
     private static final String Category_IDselection = POIsContract.CategoryEntry._ID + " =?";
@@ -286,11 +280,10 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
                 int updatedRows = POIsContract.POIEntry.updateByID(getActivity(), contentValues, itemSelectedID);
                 //int updatedRows = getActivity().getContentResolver().update(POIsContract.POIEntry.CONTENT_URI, contentValues, POI_IDselection, new String[]{itemSelectedID});
-                if(updatedRows > 0) {
-                    Toast.makeText(getActivity(), "UPDATED OK", Toast.LENGTH_SHORT).show();
+                if (updatedRows > 0) {
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
                     startActivity(intent);
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
                     startActivity(intent);
@@ -378,13 +371,9 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 contentValues.put(POIsContract.CategoryEntry.COLUMN_HIDE, hideValue);
 
                 int updatedRows = POIsContract.CategoryEntry.updateByID(getActivity(), contentValues, itemSelectedID);
-//                int updatedRows = getActivity().getContentResolver().update(POIsContract.CategoryEntry.CONTENT_URI, contentValues, Category_IDselection, new String[]{itemSelectedID});
-                if(updatedRows > 0) {
-                    Toast.makeText(getActivity(), "UPDATED OK", Toast.LENGTH_SHORT).show();
-                }else{
+                if(updatedRows <= 0) {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                 }
-
                 updateSubCategoriesShownName(viewHolder, oldItemShownName);
             }
         });
@@ -416,8 +405,6 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                         Category_IDselection, new String[]{itemTreatedID});
             }
         }
-
-        Toast.makeText(getActivity(), String.valueOf(updatedRows), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
         startActivity(intent);
     }
@@ -439,25 +426,11 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         Cursor query = getAllSelectedItemData(POIsContract.TourEntry.CONTENT_URI, TOUR_IDselection);
         fillPOIsCategoriesSpinner(viewHolder.categoryID);
         setDataToTourLayout(query, viewHolder);
-//        popupItemSelected();
         viewHolder.updateTOUR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateTourModifications();
                 updateTourPOIsModifications();
-            }
-        });
-
-    }
-    private void popupItemSelected(){
-        viewHolderTour.addedPois.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = (String) parent.getItemAtPosition(position);
-                View popup = createPopup();
-                cancelButtonTreatment(popup);
-                deleteButtonTreatment(popup, name);
-                return true;
             }
         });
     }
@@ -477,22 +450,12 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
                 POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(activity, itemSelectedID, id);
                 TourPOIsAdapter.deleteDurationByPosition(position);
-                //----------------
-
                 TourPOIsAdapter.setType("updating");
                 TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
                 viewHolderTour.addedPois.setAdapter(adapter);
-                //----------------
-
-//                FragmentActivity activity = (FragmentActivity) rootView.getContext();
-//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
-//                viewHolderTour.addedPois.setAdapter(adapter);
-
-//                popupPoiSelected.dismiss();
             }
         });
     }
-
     private static void screenSizeTreatment(ImageView delete) {
         DisplayMetrics metrics = new DisplayMetrics();
         FragmentActivity act = (FragmentActivity) rootView.getContext();
@@ -513,33 +476,10 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             delete.setImageResource(R.drawable.ic_remove_circle_black_36dp);
         }
     }
-
-    private void cancelButtonTreatment(View view){
-
-        final Button cancelButton = (Button) view.findViewById(R.id.cancel_poi_selection);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupPoiSelected.dismiss();
-            }
-        });
-    }
-    private View createPopup(){
-        final LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View popupView = layoutInflater.inflate(R.layout.popup_tour_poi_selected, null);
-
-        popupPoiSelected = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        popupPoiSelected.setTouchable(true);
-        popupPoiSelected.setFocusable(true);
-        popupPoiSelected.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-
-        return popupView;
-    }
     private void updateTourModifications() {
         ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
         int updatedRows = POIsContract.TourEntry.updateByID(getActivity(), contentValues, itemSelectedID);
-        Toast.makeText(getActivity(), updatedRows + "rows updated", Toast.LENGTH_SHORT).show();
     }
     private void updateTourPOIsModifications() {
         ContentValues contentValues = new ContentValues();
@@ -554,10 +494,8 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, durationList.get(i-1));
             if(tourExistingPOIsIDs.contains(poiID)) {
                 int updatedRows = POIsContract.TourPOIsEntry.updateByTourIdAndPoiID(getActivity(), contentValues, itemSelectedID, poiID);
-                Toast.makeText(getActivity(), updatedRows + "tourPois rows updated.", Toast.LENGTH_SHORT).show();
             }else{
                 Uri insertedUri = POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
-                Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
             }
             i++;
         }
@@ -576,7 +514,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             int global_interval = query.getInt(viewHolder.INTERVAL);
             viewHolder.global_interval.setText(String.valueOf(global_interval));
             setListOfPOIs();
-            setDataToTourPOIsLayout(viewHolder, global_interval);
+            setDataToTourPOIsLayout(global_interval);
         }
     }
     private void setListOfPOIs(){
@@ -587,7 +525,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         fragment.setArguments(args);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_tour_pois, fragment).commit();
     }
-    private void setDataToTourPOIsLayout(ViewHolderTour viewHolder, int globalInterval) {
+    private void setDataToTourPOIsLayout(int globalInterval) {
         FragmentActivity fragmentActivity = getActivity();
         Cursor cursor = POIsContract.TourPOIsEntry.getPOIsByTourID(fragmentActivity, itemSelectedID);
         String name, id;
@@ -634,13 +572,11 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             namesAndIDs.put(completeName, poiSelected);
 
             TourPOIsAdapter.setType("updating");
-//            TourPOIsAdapter.updatePOIsDurations(viewHolderTour.addedPois);
             TourPOIsAdapter.addToDurationList(); //the new POI will initially have a duration of 'general duration' and this method introduces that duration to the list of durations.
 
             FragmentActivity activity = (FragmentActivity) rootView.getContext();
             TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
             viewHolderTour.addedPois.setAdapter(adapter);
-//            adapter.notifyDataSetChanged();
         }else{
             Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
         }

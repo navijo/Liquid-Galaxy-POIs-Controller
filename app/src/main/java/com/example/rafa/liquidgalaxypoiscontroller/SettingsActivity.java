@@ -74,7 +74,7 @@ public class SettingsActivity extends PreferenceActivity
     }
 
     /**
-     * Això és per a que un cop entrem a settings, al tornar enrere(osigui a MainActivity) continui tal qual estava, és a dir,
+     * Això és per a que un cop entrem a settings, al tornar enrere(osigui a LGPCActivity) continui tal qual estava, és a dir,
      * que el contingut del DetailFragment sigui el mateix que abans i no estigui en blanc.
      * @return
      */

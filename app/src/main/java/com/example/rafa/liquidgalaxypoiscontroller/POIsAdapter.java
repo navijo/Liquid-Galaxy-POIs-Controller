@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 /**
  * Created by RAFA on 07/06/2015.
+ * This adapter is used for showing POIs in a list.
  */
 public class POIsAdapter extends CursorAdapter{
 
@@ -34,6 +35,7 @@ public class POIsAdapter extends CursorAdapter{
         View view = LayoutInflater.from(context).inflate(R.layout.poi_list_item, parent, false);
         return view;
     }
+    /*Changes letter sizes depending on the screen size*/
     private void screenSizeTreatment(View view, TextView poi) {
         DisplayMetrics metrics = new DisplayMetrics();
         FragmentActivity x = (FragmentActivity) view.getContext();

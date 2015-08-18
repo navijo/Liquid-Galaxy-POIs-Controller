@@ -1,8 +1,6 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
-import android.app.ActionBar;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,16 +8,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -30,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/*This fragment is the responsible to create POIs, Tours and Categories*/
 public class CreateItemFragment extends android.support.v4.app.Fragment {
 
     private String creationType;
@@ -39,7 +34,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
     private static Map<String, String> spinnerIDsAndShownNames, namesAndIDs;
     private static ArrayList<String> tourPOIsNames, tourPOIsIDs;
     private static ViewHolderTour viewHolderTour;
-    private PopupWindow popupPoiSelected;
 
     public CreateItemFragment() {
         tourPOIsIDs = new ArrayList<String>();
@@ -57,11 +51,14 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             this.creationType = extras.getString("CREATION_TYPE");
         }
 
+        //When creation button (the once with the arrow's symbol inside, located in POIsFragment) is
+        //clicked, this class looks at extras Bundle to know what kind of item it has to create.
         if(creationType.startsWith("POI")){
+            //If admin user is creating a POI, first of all layout settings are shown on the screen.
             final ViewHolderPoi viewHolder = setPOILayoutSettings(inflater, container);
             viewHolder.createPOI.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v) {//When POIs Creation button is clicked
                     createPOI(viewHolder);
                 }
             });
@@ -69,7 +66,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         else if(creationType.startsWith("TOUR")){
 
             setTourLayoutSettings(inflater, container);
-//            popupItemSelected();
             viewHolderTour.createTOUR.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -98,6 +94,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         return rootView;
     }
 
+    //These three ViewHolder classes are a kind of containers which contain all the elements related
+    //to the creation of one item. The POIs once contains the elements for creating a POI, the Tour
+    //once to be able to create a Tour and the same with the Categories once.
     public static class ViewHolderPoi {
 
         public EditText name;
@@ -183,11 +182,13 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
     /*POIs TREATMENT*/
     private void createPOI(ViewHolderPoi viewHolder){
         try {
+            //We get the values that user has typed inside input objects.
             ContentValues contentValues = getContentValuesFromDataFromPOIInputForm(viewHolder);
 
             Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), contentValues);
-            Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
 
+            //After creation, the next view page on screen would be the once corresponding to the
+            //admin once.
             Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
             startActivity(intent);
         }catch (NumberFormatException e){
@@ -211,9 +212,12 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         altitudeMode = viewHolder.altitudeModeET.getText().toString();
         hide = getHideValueFromInputForm(viewHolder.hide);
 
+        //If, in POIsFragment, admin has clicked Creation Here button, the algorythm takes the
+        //category ID of the once shown on screen.
         if(creationType.endsWith("HERE")) {
             categoryID = POISFragment.routeID;
         }else{
+            //Contrary, the algorythm takes the category name selected and gets its ID.
             String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
             categoryID = getFatherIDValueFromInputForm(shownName);
         }
@@ -236,27 +240,30 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         return contentValues;
     }
     private ViewHolderPoi setPOILayoutSettings(LayoutInflater inflater, ViewGroup container){
+
         rootView = inflater.inflate(R.layout.fragment_create_or_update_poi, container, false);
         final ViewHolderPoi viewHolder = new ViewHolderPoi(rootView);
         viewHolder.updatePOI.setVisibility(View.GONE);
         viewHolder.createPOI.setVisibility(View.VISIBLE);
 
+        //If user has clicked on Create Here, obviously, no spinner categories option will be shown.
         if(creationType.endsWith("HERE")){
             viewHolder.categoryID.setVisibility(View.GONE);
         }else{
             fillCategorySpinner(viewHolder.categoryID);
         }
+        //On the screen there is a button to cancel the creation and return to the main administration view
         setCancelComeBackBehaviour(viewHolder.cancel);
         return viewHolder;
     }
 
     /*CATEGORIES TREATMENT*/
     private void createCategory(ViewHolderCategory viewHolder){
+        //The same with POIs, but with categories
         ContentValues contentValues = getContentValuesFromDataFromCategoryInputForm(viewHolder);
 
         try{
             Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), contentValues);
-            Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
             startActivity(intent);
@@ -311,11 +318,14 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         viewHolderTour.updateTOUR.setVisibility(View.GONE);
         viewHolderTour.createTOUR.setVisibility(View.VISIBLE);
         if(creationType.endsWith("HERE")){
-            viewHolderTour.categoryID.setVisibility(View.GONE);
+            viewHolderTour.categoryID.setVisibility(View.INVISIBLE);
         }else{
             fillCategorySpinner(viewHolderTour.categoryID);
         }
         setCancelComeBackBehaviour(viewHolderTour.cancel);
+
+        //On the screen will be located an instance of POIsFragment, containing the categories and POIs
+        //to add inside the tour to be created.
         POISFragment fragment = new POISFragment();
         Bundle args = new Bundle();
         args.putString("createORupdate", "create");
@@ -329,7 +339,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
         Uri insertedUri = POIsContract.TourEntry.createNewTOUR(getActivity(), contentValues);
-        Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
         tourID = POIsContract.TourEntry.getIdByUri(insertedUri);
 
         return tourID;
@@ -362,12 +371,16 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 
         return contentValues;
     }
+/*    To be able to add one POI inside the Tour POIs List, as it is said inside setTourLayoutSettings method,
+     user will select one POI by clicking on one instance of POIsFragment and adding it to the list and
+    for this reason is why this method is called by POIsFragment class.*/
     public static void setPOItoTourPOIsList(String poiSelected, String completeName) throws Exception {
 
         String global_interval = viewHolderTour.globalInterval.getText().toString();
-        if(isNumeric(global_interval)) {
+        if(isNumeric(global_interval)) {//Frist of all, user must type the global interval time value.
             if (!tourPOIsIDs.contains(poiSelected)) {
                 if(tourPOIsNames.isEmpty()){
+                    //Adapter empties its own POIs Durations list.
                     TourPOIsAdapter.getDurationList().clear();
                 }
                 tourPOIsIDs.add(poiSelected);
@@ -375,24 +388,14 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 namesAndIDs.put(completeName, poiSelected);
 
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
-                if(viewHolderTour.addedPois.getCount() == 0){
+                if(viewHolderTour.addedPois.getCount() == 0 || Integer.parseInt(global_interval) != TourPOIsAdapter.getGlobalInterval()){
                     TourPOIsAdapter.setGlobalInterval(Integer.parseInt(global_interval));
                 }
-                TourPOIsAdapter.addToDurationList();
+                TourPOIsAdapter.addToDurationList();//This method add the momentarily current POI interval time to the list.
                 TourPOIsAdapter.setType("creating");
                 TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
                 viewHolderTour.addedPois.setAdapter(adapter);
-//                viewHolderTour.addedPois.invalidateViews();
-//------------------
-//            AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(adapter);
-//            animationAdapter.setAbsListView(viewHolderTour.addedPois);
-//            viewHolderTour.addedPois.enableDragAndDrop();
-//            viewHolderTour.addedPois.setDraggableManager(new TouchViewDraggableManager(android.R.id.text1));
-                //----------------------
-//            StableArrayAdapter adapter = new StableArrayAdapter(activity, R.layout.adapter_textview, tourPOIsNames);
-//            viewHolderTour.addedPois.setCheeseList(tourPOIsNames);
-//            viewHolderTour.addedPois.setAdapter(adapter);
-//            viewHolderTour.addedPois.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
             }else{
             Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
         }
@@ -407,9 +410,11 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         int i = 1, pois_number = viewHolderTour.addedPois.getCount(), seconds = 0;
         try{
             int global_interval = Integer.parseInt(viewHolderTour.globalInterval.getText().toString());
+            //because all the POIs are inside tourPOIsNames list, we add each one
             for(String poiName : tourPOIsNames){
                 contentValues.clear();
                 if(i <= pois_number) {
+                    //we get the POI interval time value
                     sec = (EditText) viewHolderTour.addedPois.getChildAt(i - 1).findViewById(R.id.poi_seconds);
                     if(sec.getText().toString().equals("")){
                         seconds = global_interval;
@@ -429,7 +434,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, i);
                 contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, seconds);
                 Uri insertedUri = POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
-                Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
                 i++;
             }
 
@@ -441,6 +445,8 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         startActivity(intent);
     }
     public static void deleteButtonTreatment(View view, final String name){
+        //when one POI of the Tours POIs List is deleted, we also have to remove it from the lists
+        //we use to help its functionalities.
         final ImageView delete = (ImageView) view.findViewById(R.id.delete);
         screenSizeTreatment(delete);
         delete.setOnClickListener(new View.OnClickListener() {
@@ -457,11 +463,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 TourPOIsAdapter.setType("creating");
                 TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
                 viewHolderTour.addedPois.setAdapter(adapter);
-//
             }
         });
     }
-
     private static void screenSizeTreatment(ImageView delete) {
         DisplayMetrics metrics = new DisplayMetrics();
         FragmentActivity act = (FragmentActivity) rootView.getContext();
@@ -483,28 +487,6 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    private void cancelButtonTreatment(View view){
-
-        final Button cancelButton = (Button) view.findViewById(R.id.cancel_poi_selection);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupPoiSelected.dismiss();
-            }
-        });
-    }
-    private View createPopup(){
-        final LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View popupView = layoutInflater.inflate(R.layout.popup_tour_poi_selected, null);
-
-        popupPoiSelected = new PopupWindow(popupView, ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        popupPoiSelected.setTouchable(true);
-        popupPoiSelected.setFocusable(true);
-        popupPoiSelected.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-
-        return popupView;
-    }
-
     /*OTHER UTILITIES*/
     private void fillCategorySpinner(Spinner spinner){
 
@@ -523,7 +505,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-    }
+    } //Fill the spinner with all the categories.
     private int getHideValueFromInputForm(EditText editText){
         final String hide = editText.getText().toString();
         int hideValue = 0;

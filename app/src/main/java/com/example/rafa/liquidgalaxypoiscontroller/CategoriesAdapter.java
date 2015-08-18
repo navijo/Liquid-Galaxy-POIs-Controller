@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 /**
  * Created by RAFA on 22/05/2015.
+ * Adapter for Categories list items.
  */
 public class CategoriesAdapter extends CursorAdapter {
 
@@ -29,6 +30,7 @@ public class CategoriesAdapter extends CursorAdapter {
         return view;
     }
 
+    //Depending on the screen size, the POIs list items will change their text name size.
     private void screenSizeTreatment(View view, TextView poi) {
         DisplayMetrics metrics = new DisplayMetrics();
         FragmentActivity x = (FragmentActivity) view.getContext();
@@ -60,6 +62,9 @@ public class CategoriesAdapter extends CursorAdapter {
 
         TextView poiName = (TextView) view.findViewById(R.id.category_list_item_textview);
         screenSizeTreatment(view, poiName);
+        //If admin user decides to hide one item, it will not appears in the user page, but in the
+        //admin page it will appear coulored in red. If one item is not hide, it's color is a mix
+        //between blue and green, which is called 'accent material light' color.
         poiName.setTextColor(context.getResources().getColor(R.color.accent_material_light));
         if(cursor.getInt(CATEGORY_COLUMN_HIDE) == 1){
             poiName.setTextColor(context.getResources().getColor(R.color.red));
