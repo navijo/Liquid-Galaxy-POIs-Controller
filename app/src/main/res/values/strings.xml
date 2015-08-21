@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:https="http://schemas.android.com/apk/res-auto">
 
     <string name="app_name">Liquid Galaxy POIs Controller</string>
     <string name="tittle">Liquid Galaxy Controller</string>
@@ -57,4 +57,10 @@
     <string name="stop">Stops the Tours view on one Liquid Galaxy system.</string>
     <string name="addBox">It is used to add one item (POI, Tour or Category) inside the category which is current shown in the screen, better said, it is added inside the category that the user is seeing on the screen.</string>
     <string name="searchText">When user clicks on it, the place written inside the field of the left side is searched in the Liquid Galaxy system.</string>
+    <string name="import_pois_tittle"><u>Instructions to import POIs:</u></string>
+    <string name="import_introduction">To be able to import POIs, you must keep an eye on the following mandatory steps, but I firstly have to say that the importation process would be absolutely effective or not depending on the file explorer you use. The once that always works is the once called Root Explorer: <a href="https://play.google.com/store/apps/details?id=com.speedsoftware.rootexplorer&amp;hl=es">Root Explorer Download</a></string>
+    <string name="import_instructions">1.	Create one folder and put some place-marks in Google Eearth corresponding on the POIs you want to save.\n2.	Save that place (foler with all POIs) and export it with a kmz extension.\n3.	Extract the <i>doc.kml</i> file which is inside the kmz that you have just created.\n4.	Download and execute the script of the following link: <a href="https://github.com/asherat/LG_Benchmarking/blob/master/Tools/kml2query.sh">KML to query.txt</a> by typing in a console: <i>sh kml2query.sh doc.kml</i>\n5.	Now you get a <i>query.txt</i> file. This file contains your POIs. Finally, you only have to change its name and set the Category name where you want the POIs to be saved.\n6.	Save that <i>CATEGORY_NAME.txt</i> file inside your device.\n7.	Ather these steps, go to your LGPC app, travel to the Administration Tools section and click on IMPORT POIS button.\n8.	Select your file explorer, preferably Root Explorer once, and select the X.txt file you want to import.\n
+</string>
+    <string name="title_activity_info">InfoActivity</string>
+    <string name="more_information">All the complete information to help you with the Liquid Galaxy POIs Controller correct use is in: <a href="https://github.com/rafads7/Liquid_Galaxy_POIs_Controller/wiki">Liquid Galaxy POIs Controller Wiki</a>\n</string>
 </resources>

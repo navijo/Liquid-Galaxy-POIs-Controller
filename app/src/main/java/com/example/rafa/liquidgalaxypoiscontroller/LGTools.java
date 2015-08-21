@@ -148,8 +148,6 @@ public class LGTools extends Fragment {
         String hostname = prefs.getString("HostName", "172.26.17.21");
         int port = Integer.parseInt(prefs.getString("Port", "22"));
 
-        Toast.makeText(getActivity(), user + password + hostname + port, Toast.LENGTH_LONG).show();
-
         JSch jsch = new JSch();
 
         Session session = jsch.getSession(user, hostname, port);

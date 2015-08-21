@@ -93,7 +93,7 @@ public class LGPCAdminActivity extends ActionBarActivity implements ActionBar.Ta
             return true;
         }
         if (id == R.id.action_information_help){
-            Intent intent = new Intent(this, Help.class);
+            Intent intent = new Intent(this, InfoActivity.class);
             startActivity(intent);
             return true;
         }

@@ -100,9 +100,12 @@ public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        //echo 'planet=moon' > /tmp/query.txt
+
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_information_help){
-            Intent intent = new Intent(this, Help.class);
+            Intent intent = new Intent(this, InfoActivity.class);
             startActivity(intent);
             return true;
         }
@@ -110,10 +113,33 @@ public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
         if (id == R.id.action_admin){
             //When the user decides to enter to the Administration section, first appears one
             //popup asking for a password.
-            showPasswordAlert();
+            if(!POISFragment.getTourState()) {
+                showPasswordAlert();
+            }else{
+                showAlert();
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAlert(){
+        // prepare the alert box
+        final AlertDialog.Builder alertbox = new AlertDialog.Builder(LGPC.this);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        // set the message to display
+        alertbox.setMessage("Please, first stop the Tour.");
+
+        // set a positive/yes button and create a listener
+        alertbox.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            // When button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+
+            }
+        });
+        // display box
+        alertbox.show();
     }
 
     private void showPasswordAlert(){

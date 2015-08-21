@@ -23,6 +23,7 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 POISFragment fragmentPOIs = new POISFragment();
+
                 args.clear();
                 args.putString("EDITABLE", "ADMIN/POIS");
                 fragmentPOIs.setArguments(args);

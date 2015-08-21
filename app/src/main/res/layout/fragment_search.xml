@@ -32,5 +32,36 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/searchButton"/>
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/earth"
+            android:src="@drawable/earth"
+            android:maxHeight="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="15dp"/>
+        <ImageView
+            android:id="@+id/moon"
+            android:src="@drawable/moon"
+            android:maxHeight="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@id/earth"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="15dp"/>
+        <ImageView
+            android:id="@+id/mars"
+            android:src="@drawable/mars"
+            android:maxHeight="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@id/moon"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="15dp"/>
     </RelativeLayout>
 </RelativeLayout>
