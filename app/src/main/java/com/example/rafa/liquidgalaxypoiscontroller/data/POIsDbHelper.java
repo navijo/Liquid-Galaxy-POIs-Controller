@@ -25,20 +25,24 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        createTables(db);
+        createBaseCategories(db);
+    }
+
+    public static void createTables(SQLiteDatabase db){
         db.execSQL(createCategoryEntryTable());
         db.execSQL(createPOInEntryTable());
         db.execSQL(createTourEntryTable());
         db.execSQL(createTourPOIsEntryTable());
-        createBaseCategories(db);
     }
 
-    private void createBaseCategories(SQLiteDatabase db) {
+    public static void createBaseCategories(SQLiteDatabase db) {
         db.execSQL(Earth());
         db.execSQL(Moon());
         db.execSQL(Mars());
     }
 
-    private String Earth(){
+    public static String Earth(){
 
         final String SQL_CREATE_EARTH_CATEGORY = "INSERT INTO " + CategoryEntry.TABLE_NAME +
                 "(Name, Father_ID, Shown_Name, Hide) VALUES ('EARTH', 0, 'EARTH/', 0);";
@@ -46,21 +50,21 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         return SQL_CREATE_EARTH_CATEGORY;
     }
 
-    private String Moon(){
+    public static String Moon(){
         final String SQL_CREATE_MOON_CATEGORY = "INSERT INTO " + CategoryEntry.TABLE_NAME +
                 "(Name, Father_ID, Shown_Name, Hide) VALUES ('MOON', 0, 'MOON/', 0);";
 
         return SQL_CREATE_MOON_CATEGORY;
     }
 
-    private String Mars(){
+    public static String Mars(){
         final String SQL_CREATE_MARS_CATEGORY = "INSERT INTO " + CategoryEntry.TABLE_NAME +
                 "(Name, Father_ID, Shown_Name, Hide) VALUES ('MARS', 0, 'MARS/', 0);";
 
         return SQL_CREATE_MARS_CATEGORY;
     }
 
-    private String createPOInEntryTable() {
+    public static String createPOInEntryTable() {
         // Create a table to hold POIs.
         final String SQL_CREATE_POI_TABLE = "CREATE TABLE " + POIsContract.POIEntry.TABLE_NAME + " (" +
                 POIEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -81,7 +85,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
 
         return SQL_CREATE_POI_TABLE;
     }
-    private String createCategoryEntryTable(){
+    public static String createCategoryEntryTable(){
 
         final String SQL_CREATE_CATEGORY_TABLE = "CREATE TABLE " + POIsContract.CategoryEntry.TABLE_NAME + " (" +
                 CategoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -92,7 +96,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
                 " );";
         return SQL_CREATE_CATEGORY_TABLE;
     }
-    private String createTourEntryTable(){
+    public static String createTourEntryTable(){
 
         final String SQL_CREATE_TOUR_TABLE = "CREATE TABLE " + POIsContract.TourEntry.TABLE_NAME + " (" +
                 TourEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -108,7 +112,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         return SQL_CREATE_TOUR_TABLE;
     }
 
-    private String createTourPOIsEntryTable(){
+    public static String createTourPOIsEntryTable(){
 
         final String SQL_CREATE_TOUR_TABLE = "CREATE TABLE " + POIsContract.TourPOIsEntry.TABLE_NAME + " (" +
                 TourPOIsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

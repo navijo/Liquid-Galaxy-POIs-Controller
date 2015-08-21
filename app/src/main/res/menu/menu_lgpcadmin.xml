@@ -4,9 +4,12 @@
     tools:context="com.example.rafa.liquidgalaxypoiscontroller.LGPCAdminActivity">
 
     <item android:id="@+id/action_information_help" android:title="Help"
-        android:orderInCategory="98" app:showAsAction="never" />
+        android:orderInCategory="97" app:showAsAction="never" />
 
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="98" app:showAsAction="never" />
+
+    <item android:id="@+id/reset_db" android:title="@string/action_resetDB"
         android:orderInCategory="99" app:showAsAction="never" />
 
     <item android:id="@+id/log_out" android:title="Log Out"

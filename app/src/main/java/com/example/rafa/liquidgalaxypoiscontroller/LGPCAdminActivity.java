@@ -1,7 +1,10 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -10,6 +13,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.rafa.liquidgalaxypoiscontroller.data.POIsProvider;
 
 /*This is the Administration Activity, On the bar there are some Tabs corresponding on some
 different contents to manage POIs, Tours, Categories and LG functionalities.*/
@@ -70,7 +75,34 @@ public class LGPCAdminActivity extends ActionBarActivity implements ActionBar.Ta
         }
 
     }
+    private void showResetAlert(){
+        // prepare the alert box
+        AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+        final FragmentActivity act = this;
 
+        // set the message to display
+        alertbox.setMessage("Are you sure to delete all the LGPC data base? You will not have any POI neither Tour.");
+
+        // set a positive/yes button and create a listener
+        alertbox.setPositiveButton("Yes, I am sure", new DialogInterface.OnClickListener() {
+
+            // When button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                POIsProvider.deleteAllDataBase();
+                Intent intent = new Intent(act, LGPC.class);
+                startActivity(intent);
+            }
+        });
+
+        // set a negative/no button and create a listener
+        alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            // When button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        });
+        // display box
+        alertbox.show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,6 +128,9 @@ public class LGPCAdminActivity extends ActionBarActivity implements ActionBar.Ta
             Intent intent = new Intent(this, InfoActivity.class);
             startActivity(intent);
             return true;
+        }
+        if( id == R.id.reset_db){
+            showResetAlert();
         }
         if(id == R.id.log_out){
             Intent intent = new Intent(this, LGPC.class);

@@ -319,5 +319,15 @@ public class POIsProvider extends ContentProvider {
         return db.rawQuery(sql, new String[]{itemSelectedID});
     }
 
+    public static void deleteAllDataBase(){
+        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + POIsContract.CategoryEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + POIsContract.POIEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + POIsContract.TourEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + POIsContract.TourPOIsEntry.TABLE_NAME);
+        POIsDbHelper.createTables(db);
+        POIsDbHelper.createBaseCategories(db);
+    }
+
 
 }
