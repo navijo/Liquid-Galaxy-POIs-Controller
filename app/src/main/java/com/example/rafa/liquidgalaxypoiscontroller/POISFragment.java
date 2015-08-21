@@ -918,11 +918,7 @@ public class POISFragment extends Fragment {
                 int deletedRows = POIsContract.delete(getActivity(), uri, whereClause, new String[]{String.valueOf(itemSelectedID)});
                 if(deletedRows > 0) {
                     refreshPOIsListView(uri, itemName, categoryRefreshListSelection, POIorTOURRefreshSelection);
-                    if(itemName.equals("POI")){
-                        Toast.makeText(getActivity(), deletePOIsOfTours(String.valueOf(itemSelectedID)) + " rows deleted", Toast.LENGTH_SHORT).show();
-                    }
                     dialog.dismiss();
-                    Toast.makeText(getActivity(), String.valueOf(deletedRows) + " rows deleted", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -950,8 +946,6 @@ public class POISFragment extends Fragment {
         String password = prefs.getString("Password", "lqgalaxy");
         String hostname = prefs.getString("HostName", "172.26.17.21");
         int port = Integer.parseInt(prefs.getString("Port", "22"));
-
-        Toast.makeText(getActivity(), user + password + hostname + port, Toast.LENGTH_LONG).show();
 
         JSch jsch = new JSch();
 

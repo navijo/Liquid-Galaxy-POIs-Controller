@@ -196,13 +196,11 @@ public class LGTools extends Fragment {
                     //We get the file name in order to create the category which will contain the POIs.
                     String category = getFileName();
                     int categoryID = createCategory(category);
-                    if(categoryID != 0){
+
                         //We read the file and create the POIs described inside it.
                         List<ContentValues> poisToImport = readFile(categoryID);
                         createPOis(poisToImport);
-                    }else{
-                        Toast.makeText(getActivity(), "There is an error creating the category. Try to solve it renaming the file.", Toast.LENGTH_LONG).show();
-                    }
+
                 }
             }
         }
@@ -323,11 +321,12 @@ public class LGTools extends Fragment {
         try {
             Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), category);
             categoryID = POIsContract.CategoryEntry.getIdByUri(insertedUri);
-            Toast.makeText(getActivity(), "Category: " + insertedUri.toString(), Toast.LENGTH_LONG).show();
+            return categoryID;
         }catch (android.database.SQLException e){
             Toast.makeText(getActivity(), "Already exists one category with the same name. Please, change it.", Toast.LENGTH_SHORT).show();
+            categoryID = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName + "/");
+            return categoryID;
         }
-        return categoryID;
     }
     private String pathTreatment(String path, String absolutePath){
         int start = 0;

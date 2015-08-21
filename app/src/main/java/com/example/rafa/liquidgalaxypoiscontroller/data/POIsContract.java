@@ -262,6 +262,18 @@ public class POIsContract {
         public static Cursor getAllNotHidenCategories(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI,null, COLUMN_HIDE + " = 0", null, null);
         }
+
+        public static int getIdByShownName(FragmentActivity activity, String shownName) {
+            Cursor c = activity.getContentResolver().query( CONTENT_URI,new String[]{_ID},
+                    COLUMN_SHOWN_NAME + " = ?", new String[]{shownName},null);
+
+            if(c!=null && c.getCount() == 1){
+                c.moveToNext();
+                return c.getInt(0);
+            }else{
+                return 0;
+            }
+        }
     }
 
     //TAULA TOURS
