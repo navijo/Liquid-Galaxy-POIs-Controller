@@ -61,7 +61,7 @@ public class POISFragment extends Fragment {
     private String EDITABLE_TAG, notify, createORupdate = "";
     private ImageView backIcon, backStartIcon;
     private List<String> backIDs = new ArrayList<String>(){{
-            add("0");
+        add("0");
     }};
     private TextView seeingOptions, poisListViewTittle, route, categories_tittle;
     public static int routeID = 0;
@@ -776,7 +776,7 @@ public class POISFragment extends Fragment {
 
     //When admin user clicks on one Tour, this dialog appears to offer him/her different options to do with that tour.
     private Dialog getDialogByView(View v){
-            // prepare the alert box
+        // prepare the alert box
         Dialog dialog = new Dialog(getActivity());
         dialog.setTitle("Item Options");
         dialog.setContentView(v);

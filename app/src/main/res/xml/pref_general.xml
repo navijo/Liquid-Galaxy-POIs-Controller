@@ -18,7 +18,8 @@
         android:title="Liquid Galaxy connection Host Name (IP)"
         android:key="HostName"
         android:defaultValue="172.26.17.21"
-        android:inputType="numberDecimal"
+        android:inputType="number"
+        android:digits="0123456789."
         android:singleLine="true" />
 
     <EditTextPreference

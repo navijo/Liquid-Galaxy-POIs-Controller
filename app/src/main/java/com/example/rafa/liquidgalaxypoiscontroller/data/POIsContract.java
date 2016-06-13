@@ -360,7 +360,7 @@ public class POIsContract {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
         }
         public static Cursor getPOIsByTourID(FragmentActivity fragmentActivity, String itemSelectedID) {
-           return POIsProvider.queryByPoiJOINTourPois(itemSelectedID);
+            return POIsProvider.queryByPoiJOINTourPois(itemSelectedID);
         }
         public static int updateByID(FragmentActivity activity, ContentValues contentValues, String itemSelectedID) {
             String TourPOIs_IDselection = _ID + " = ?";
@@ -386,4 +386,3 @@ public class POIsContract {
     }
 
 }
-

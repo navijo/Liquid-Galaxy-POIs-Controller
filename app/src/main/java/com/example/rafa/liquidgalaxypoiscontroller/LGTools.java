@@ -139,6 +139,8 @@ public class LGTools extends Fragment {
         // display box
         alertbox.show();
     }
+
+    //Here is where the connection to LG is established
     private void setConnectionWithLiquidGalaxy(String command) throws JSchException {
 
         //We get the mandatory settings to be able to connect with Liquid Galaxy system.
@@ -197,9 +199,9 @@ public class LGTools extends Fragment {
                     String category = getFileName();
                     int categoryID = createCategory(category);
 
-                        //We read the file and create the POIs described inside it.
-                        List<ContentValues> poisToImport = readFile(categoryID);
-                        createPOis(poisToImport);
+                    //We read the file and create the POIs described inside it.
+                    List<ContentValues> poisToImport = readFile(categoryID);
+                    createPOis(poisToImport);
 
                 }
             }

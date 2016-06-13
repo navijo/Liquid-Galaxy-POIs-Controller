@@ -87,7 +87,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
             viewHolder.createCategory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   createCategory(viewHolder);
+                    createCategory(viewHolder);
                 }
             });
         }
@@ -371,9 +371,9 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
 
         return contentValues;
     }
-/*    To be able to add one POI inside the Tour POIs List, as it is said inside setTourLayoutSettings method,
-     user will select one POI by clicking on one instance of POIsFragment and adding it to the list and
-    for this reason is why this method is called by POIsFragment class.*/
+    /*    To be able to add one POI inside the Tour POIs List, as it is said inside setTourLayoutSettings method,
+         user will select one POI by clicking on one instance of POIsFragment and adding it to the list and
+        for this reason is why this method is called by POIsFragment class.*/
     public static void setPOItoTourPOIsList(String poiSelected, String completeName) throws Exception {
 
         String global_interval = viewHolderTour.globalInterval.getText().toString();
@@ -397,8 +397,8 @@ public class CreateItemFragment extends android.support.v4.app.Fragment {
                 viewHolderTour.addedPois.setAdapter(adapter);
 
             }else{
-            Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
-        }
+                Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
+            }
         }else{
             throw new Exception("Please, first type a value for the Global POI Interval field.");
         }
