@@ -64,4 +64,10 @@
 </string>
     <string name="title_activity_info">InfoActivity</string>
     <string name="more_information">All the complete information to help you with the Liquid Galaxy POIs Controller correct use is in: <a href="https://github.com/rafads7/Liquid_Galaxy_POIs_Controller/wiki">Liquid Galaxy POIs Controller Wiki</a>\n</string>
+
+    <!--Added by Ivan-->
+    <string name="import_pois_dialog_title">Import POIS</string>
+    <string name="import_pois_dialog_msg">Choose the way you want to import POIS</string>
+    <string name="import_pois_dialog_fromFile">Import from file</string>
+    <string name="import_pois_dialog_fromPW">Import from Physical Web Beacon</string>
 </resources>

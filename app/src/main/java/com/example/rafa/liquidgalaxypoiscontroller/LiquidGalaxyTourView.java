@@ -26,8 +26,8 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     private FragmentActivity poisFragmentAct;
 
     /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LiquidGalaxyTourView.1 */
-    class C01831 implements OnClickListener {
-        C01831() {
+    class TourDialog implements OnClickListener {
+        TourDialog() {
         }
 
         public void onClick(DialogInterface arg0, int arg1) {
@@ -70,7 +70,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
             Builder alertbox = new Builder(this.poisFragmentAct);
             alertbox.setTitle("Error");
             alertbox.setMessage("There's probably no POI inside this Tour");
-            alertbox.setPositiveButton("OK", new C01831());
+            alertbox.setPositiveButton("OK", new TourDialog());
             alertbox.show();
         }
     }

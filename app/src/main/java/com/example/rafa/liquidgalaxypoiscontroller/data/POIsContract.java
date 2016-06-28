@@ -161,6 +161,15 @@ public class POIsContract {
                     null);
         }
 
+        public static Cursor getCategoriesByName(FragmentActivity fragmentActivity, String categoryName) {
+            return fragmentActivity.getContentResolver().query(
+                    CONTENT_URI,
+                    null,
+                    COLUMN_NAME + " LIKE ?",
+                    new String[]{categoryName},
+                    null);
+        }
+
         public static Cursor getNotHidenCategoriesByFatherID(FragmentActivity fragmentActivity, String fatherID) {
             return fragmentActivity.getContentResolver().query(
                     CONTENT_URI,

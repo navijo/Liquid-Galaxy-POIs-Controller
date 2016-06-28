@@ -2,10 +2,12 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -176,10 +179,38 @@ public class LGTools extends Fragment {
             @Override
             public void onClick(View v) {
                 //Complete procedure to get the file with the POIs to import
-                selectFileToImport();
+                //FIXME: Add the option to import them from PW Beacon
+
+                final AlertDialog chooseDialog = new AlertDialog.Builder(getActivity()).create();
+                chooseDialog.setTitle(getResources().getString(R.string.import_pois_dialog_title));
+                chooseDialog.setMessage(getResources().getString(R.string.import_pois_dialog_msg));
+                chooseDialog.setButton(Dialog.BUTTON_NEGATIVE,getResources().getString(R.string.cancel), new DialogInterface.OnClickListener()    {
+                    public void onClick(DialogInterface dialog, int which) {
+                        chooseDialog.dismiss();
+                    }
+                });
+
+                chooseDialog.setButton( Dialog.BUTTON_NEUTRAL, getResources().getString(R.string.import_pois_dialog_fromFile), new DialogInterface.OnClickListener()    {
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectFileToImport();
+                    }
+                });
+
+                chooseDialog.setButton(Dialog.BUTTON_POSITIVE,getResources().getString(R.string.import_pois_dialog_fromPW), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        openBluetoothImport();
+                    }
+                });
+
+                chooseDialog.show();
             }
         });
     }
+
+    //TODO: Give me code!
+    private void openBluetoothImport() {
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -196,18 +227,19 @@ public class LGTools extends Fragment {
                         filePath = pathTreatment(data.getData().getPath(), Environment.getExternalStorageDirectory().getAbsolutePath());
                     }
                     //We get the file name in order to create the category which will contain the POIs.
-                    String category = getFileName();
-                    int categoryID = createCategory(category);
+                    //FIXME: The category must not be taken from the filename, instead it must be taken from the string before the @<name>@
+//                    String category = getFileName();
+//                    int categoryID = createCategory(category);
 
                     //We read the file and create the POIs described inside it.
-                    List<ContentValues> poisToImport = readFile(categoryID);
+                    List<ContentValues> poisToImport = readFile(/*categoryID*/);
                     createPOis(poisToImport);
 
                 }
             }
         }
     }
-    private List<ContentValues> readFile(int categoryID) {
+    private List<ContentValues> readFile(/*int categoryID*/) {
         List<ContentValues> poisList = new ArrayList<ContentValues>();
         File file = new File(filePath);
         if(file.exists()) {
@@ -217,14 +249,15 @@ public class LGTools extends Fragment {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-            String line = "";
-
             try {
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                String line = "";
+
                 while ((line = br.readLine()) != null) {
                     //for each POI described inside the file we read and introduce it inside a POIs list.
                     if(!line.equals("") && line != null) {
-                        readPOI(poisList, line, categoryID);
+                        readPOI(poisList, line/*, categoryID*/);
                     }
                 }
                 br.close();
@@ -236,10 +269,17 @@ public class LGTools extends Fragment {
         }
         return poisList;
     }
-    private void readPOI(List<ContentValues> poisList, String line, int categoryID){
+    private void readPOI(List<ContentValues> poisList, String line/*, int categoryID*/){
 
         try {
             ContentValues poi = new ContentValues();
+            /**
+             * Added by Ivan Josa
+             */
+            int categoryId = getOrCreatePoiCategoryByName(line);
+
+
+            /**************/
             String name = getPOIName(line);
             String visited_place = name;
             String longitude = getPOIAttribute("longitude", line);
@@ -260,10 +300,12 @@ public class LGTools extends Fragment {
             poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
             poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
             poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
-            poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
+           // poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
+            poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryId);
 
             poisList.add(poi);
         }catch (Exception e){
+            e.printStackTrace();
             Toast.makeText(getActivity(),"Error reading POIs. Remember POI name must be between two '@' and other features between '<featureName>' fields.", Toast.LENGTH_LONG).show();
         }
     }
@@ -280,11 +322,29 @@ public class LGTools extends Fragment {
             startActivityForResult(intent, 1);
         }
     }
+
+    private int getOrCreatePoiCategoryByName(String line){
+        int firstArrova = line.indexOf("@");
+        int categoryId = 0;
+        String categoryName = line.substring(0,firstArrova);
+        Cursor categories =  POIsContract.CategoryEntry.getCategoriesByName(getActivity(), categoryName.toUpperCase());
+        if(categories!=null && categories.moveToFirst()){
+            //Category Exists, we fetch it
+            categoryId =  POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName.toUpperCase() + "/");
+        }else{
+            //Category not exist, we need to create it
+            categoryId = createCategory(categoryName);
+        }
+
+        return categoryId;
+    }
+
     private String getPOIName(String line){
         int start = line.indexOf("@") + 1;
         int end = line.lastIndexOf("@");
         return line.substring(start, end);
     }
+
     private String getPOIAttribute(String attribute, String line){
 
         int attributeSize = attribute.length();
@@ -307,6 +367,7 @@ public class LGTools extends Fragment {
                 Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
             }catch (android.database.SQLException e){
                 String poiName = poi.get(POIsContract.POIEntry.COLUMN_COMPLETE_NAME).toString();
+                e.printStackTrace();
                 Toast.makeText(getActivity(), "Already exists one POI with the same name: " + poiName + ". Please, change it.", Toast.LENGTH_LONG).show();
             }
         }

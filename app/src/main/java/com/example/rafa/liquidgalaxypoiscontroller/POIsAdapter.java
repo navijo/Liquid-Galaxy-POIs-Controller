@@ -15,7 +15,9 @@ import com.example.rafa.liquidgalaxypoiscontroller.R;
  */
 public class POIsAdapter extends CursorAdapter{
 
-    public static final int POI_COLUMN_VISITED_PLACE_NAME = 3;
+    //FIXME: Changed from 3 to 1 in order to display the poi Name
+    public static final int POI_COLUMN_VISITED_PLACE_NAME = 1;
+
     public static final int TOUR_COLUMN_NAME = 1;
     public static final int CATEGORY_COLUMN_NAME = 1;
 

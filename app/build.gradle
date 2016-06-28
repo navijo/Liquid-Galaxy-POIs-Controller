@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "com.example.rafa.liquidgalaxypoiscontroller"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.2"
     }
     buildTypes {
         release {
