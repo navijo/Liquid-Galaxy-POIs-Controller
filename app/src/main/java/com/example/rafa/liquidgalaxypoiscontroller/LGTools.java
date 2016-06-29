@@ -13,12 +13,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.rafa.liquidgalaxypoiscontroller.PW.NearbyBeaconsFragment;
 import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.jcraft.jsch.ChannelExec;
@@ -178,7 +180,7 @@ public class LGTools extends Fragment {
         importPois.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Complete procedure to get the file with the POIs to import
+
                 //FIXME: Add the option to import them from PW Beacon
 
                 final AlertDialog chooseDialog = new AlertDialog.Builder(getActivity()).create();
@@ -192,6 +194,7 @@ public class LGTools extends Fragment {
 
                 chooseDialog.setButton( Dialog.BUTTON_NEUTRAL, getResources().getString(R.string.import_pois_dialog_fromFile), new DialogInterface.OnClickListener()    {
                     public void onClick(DialogInterface dialog, int which) {
+                        //Complete procedure to get the file with the POIs to import
                         selectFileToImport();
                     }
                 });
@@ -209,6 +212,8 @@ public class LGTools extends Fragment {
 
     //TODO: Give me code!
     private void openBluetoothImport() {
+        //getFragmentManager().beginTransaction().add(this.getId(),NearbyBeaconsFragment.newInstance()).commit();
+        ((LGPCAdminActivity) getActivity()).mViewPager.setCurrentItem(4);
     }
 
     @Override
@@ -226,7 +231,7 @@ public class LGTools extends Fragment {
                     }else {
                         filePath = pathTreatment(data.getData().getPath(), Environment.getExternalStorageDirectory().getAbsolutePath());
                     }
-                    //We get the file name in order to create the category which will contain the POIs.
+
                     //FIXME: The category must not be taken from the filename, instead it must be taken from the string before the @<name>@
 //                    String category = getFileName();
 //                    int categoryID = createCategory(category);

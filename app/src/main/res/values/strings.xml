@@ -66,8 +66,26 @@
     <string name="more_information">All the complete information to help you with the Liquid Galaxy POIs Controller correct use is in: <a href="https://github.com/rafads7/Liquid_Galaxy_POIs_Controller/wiki">Liquid Galaxy POIs Controller Wiki</a>\n</string>
 
     <!--Added by Ivan-->
+    <!--import dialog-->
     <string name="import_pois_dialog_title">Import POIS</string>
     <string name="import_pois_dialog_msg">Choose the way you want to import POIS</string>
     <string name="import_pois_dialog_fromFile">Import from file</string>
     <string name="import_pois_dialog_fromPW">Import from Physical Web Beacon</string>
+    <!--**********-->
+
+     <!--Beacons-->
+    <string name="discovery_service_prefs_key">org.physical_web.physicalweb.DISCOVERY_SERVICE_PREFS</string>
+    <plurals name="numFoundBeacons">
+        <item quantity="one">Beacon Nearby</item>
+        <item quantity="other">Beacons Nearby</item>
+    </plurals>
+    <string name="summary_notification_pull_down">Pull down to see them.</string>
+    <string name="nearby_beacon_favicon_content_description">favicon for the given URL for this entry</string>
+    <string name="notification_view_more_beacons">View more beacons</string>
+    <string name="empty_nearby_beacons_list_text">Searching for beacons</string>
+    <string name="title_nearby_beacons">Found Physical Web Beacons</string>
+    <string name="importingContents">Importing Contents</string>
+    <string name="parsingError">Parsing Document Error</string>
+
+
 </resources>

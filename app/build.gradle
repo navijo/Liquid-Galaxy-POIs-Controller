@@ -21,9 +21,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile(name: 'uribeacon-library-release', ext: 'aar')
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.mcxiaoke.volley:library-aar:1.0.1'
     compile files('libs/jsch-0.1.53.jar')
     compile files('libs/jzlib-1.1.1.jar')
 }
