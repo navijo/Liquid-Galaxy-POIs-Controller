@@ -17,6 +17,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(createPOInEntryTable());
         db.execSQL(createTourEntryTable());
         db.execSQL(createTourPOIsEntryTable());
+        db.execSQL(createTasksEntryTable());
         createBaseCategories(db);
     }
 
@@ -62,11 +63,26 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         return "CREATE TABLE Tour_POIs (_id INTEGER PRIMARY KEY AUTOINCREMENT,Tour INTEGER NOT NULL, POI INTEGER NOT NULL, POI_Order INTEGER NOT NULL, POI_Duration INTEGER DEFAULT 0,  FOREIGN KEY (Tour) REFERENCES tour (_id)  FOREIGN KEY (POI) REFERENCES poi (_id)  );";
     }
 
+    private String createTasksEntryTable() {
+        return "CREATE TABLE LG_TASK (_id INTEGER PRIMARY KEY AUTOINCREMENT,Title TEXT NOT NULL, Description TEXT, Script TEXT NOT NULL);";
+    }
+
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS category");
         db.execSQL("DROP TABLE IF EXISTS poi");
         db.execSQL("DROP TABLE IF EXISTS tour");
         db.execSQL("DROP TABLE IF EXISTS Tour_POIs");
+        db.execSQL("DROP TABLE IF EXISTS LG_TASK");
+        onCreate(db);
+    }
+
+
+    public void resetDatabase(SQLiteDatabase db){
+        db.execSQL("DROP TABLE IF EXISTS category");
+        db.execSQL("DROP TABLE IF EXISTS poi");
+        db.execSQL("DROP TABLE IF EXISTS tour");
+        db.execSQL("DROP TABLE IF EXISTS Tour_POIs");
+        db.execSQL("DROP TABLE IF EXISTS LG_TASK");
         onCreate(db);
     }
 }

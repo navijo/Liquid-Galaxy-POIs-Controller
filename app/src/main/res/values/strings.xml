@@ -84,8 +84,36 @@
     <string name="notification_view_more_beacons">View more beacons</string>
     <string name="empty_nearby_beacons_list_text">Searching for beacons</string>
     <string name="title_nearby_beacons">Found Physical Web Beacons</string>
+
+
+
     <string name="importingContents">Importing Contents</string>
     <string name="parsingError">Parsing Document Error</string>
+    <string name="viewing_poi">Viewing POI in LG</string>
+    <string name="parsingContents">Reading contents from Physical Web Beacon</string>
+    <string name="something_wrong">Ops! Something went wrong</string>
+    <string name="connection_failure">Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip</string>
+    <string name="please_enter_search">Please, first type some place to search.</string>
+    <string name="searching">Searching...</string>
+    <string name="sending_command">Sending Command to LG</string>
+    <string name="getting_connection">Getting Connection to LG</string>
+    <string name="desc_lg_icon">Liquid Galaxy</string>
+    <string name="context_menu_edit_task">Edit task</string>
+    <string name="context_menu_launch_task">Launch task in Liquid Galaxy</string>
+    <string name="context_menu_delete_task">Delete Task</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add_task_header">Add New Task</string>
+    <string name="save_new_task">Save</string>
+    <string name="new_task_script">Bash Script</string>
+    <string name="new_task_description">Task Description</string>
+    <string name="new_task_name">Task Title</string>
+    <string name="empty_name_error">The name must not be empty</string>
+    <string name="add_new_task">Add New Task</string>
+    <string name="task_added_ok">The task was successfully created</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="task_updated_ok">The task was successfully updated</string>
 
 
 </resources>

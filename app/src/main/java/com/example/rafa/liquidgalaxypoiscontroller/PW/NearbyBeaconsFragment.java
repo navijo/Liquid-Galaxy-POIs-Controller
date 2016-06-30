@@ -539,7 +539,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
         String fileId;
         String downloadUrl = "";
-        private ProgressDialog dialog;
+        private ProgressDialog importingDialog;
+
 
         public ImportPOISTask(String fileUrl) {
             String[] urlSplitted = fileUrl.split("/");
@@ -551,29 +552,30 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (dialog == null) {
-                dialog = new ProgressDialog(getActivity());
-                dialog.setMessage(getResources().getString(R.string.importingContents));
-                dialog.setIndeterminate(false);
-                dialog.setMax(100);
-                dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                dialog.setCancelable(true);
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            if (importingDialog == null) {
+                importingDialog = new ProgressDialog(getActivity());
+                importingDialog.setMessage(getResources().getString(R.string.importingContents));
+                importingDialog.setIndeterminate(false);
+                importingDialog.setMax(100);
+                importingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                importingDialog.setCancelable(true);
+                importingDialog.setCanceledOnTouchOutside(false);
+                importingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
                         cancel(true);
                     }
                 });
-                dialog.show();
+                importingDialog.show();
             }
+
         }
 
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                return importAsVisit();
+                return importPOIS();
             } catch (Exception e) {
                 cancel(true);
                 return null;
@@ -581,7 +583,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         }
 
 
-        private boolean importAsVisit() throws IOException {
+        private boolean importPOIS() throws IOException {
             URL url = null;
             boolean success= false;
             HttpURLConnection urlConnection = null;
@@ -594,7 +596,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 CustomXmlPullParser customXmlPullParser = new CustomXmlPullParser();
                 final List<POI> poisList = customXmlPullParser.parse(in, getActivity());
 
-                //createTourGalaxyDocument(poisList);
 
                 success = createPOIS(poisList);
 
@@ -606,8 +607,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 e.printStackTrace();
             } finally {
                 urlConnection.disconnect();
+                return success;
             }
-            return success;
         }
 
 
@@ -637,7 +638,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            dialog.setProgress(values[0]);
+            importingDialog.setProgress(values[0]);
         }
 
         private ContentValues getFromImportedPOI(POI poiImported, int earthCategory) {
@@ -672,11 +673,13 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         @Override
         protected void onPostExecute(Boolean success) {
             super.onPostExecute(success);
-            if (success) {
-                if (dialog != null) {
-                    dialog.hide();
-                    dialog.dismiss();
+                if (importingDialog != null) {
+                    importingDialog.hide();
+                    importingDialog.dismiss();
                 }
+
+            if (!success) {
+                Toast.makeText(getActivity(),getResources().getString(R.string.something_wrong),Toast.LENGTH_LONG);
             }
         }
 

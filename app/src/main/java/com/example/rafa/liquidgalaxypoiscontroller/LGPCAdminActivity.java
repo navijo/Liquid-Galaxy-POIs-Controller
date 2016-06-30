@@ -1,6 +1,12 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -13,9 +19,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.rafa.liquidgalaxypoiscontroller.data.POIsProvider;
+
 public class LGPCAdminActivity extends ActionBarActivity implements TabListener {
     AdminCollectionPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+
+    PendingIntent intent;
 
     /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LGPCAdminActivity.1 */
     class C02741 extends SimpleOnPageChangeListener {
@@ -42,6 +52,8 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         for (int i = 0; i < this.mSectionsPagerAdapter.getCount(); i++) {
             actionBar.addTab(actionBar.newTab().setText(this.mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
         }
+
+       intent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(getIntent()), PendingIntent.FLAG_ONE_SHOT);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -54,7 +66,13 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if (id == R.id.action_information_help) {
+        }
+        else if (id == R.id.reset_db) {
+            resetDatabase();
+//            resetApp();
+            return true;
+        }
+        else if (id == R.id.action_information_help) {
             startActivity(new Intent(this, Help.class));
             return true;
         } else if (id != R.id.log_out) {
@@ -64,6 +82,22 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
             return true;
         }
     }
+
+    public void resetDatabase() {
+       //this.deleteDatabase("com.example.rafa.liquidgalaxypoiscontroller/poi_controller.db");
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        ContentProviderClient client = resolver.acquireContentProviderClient("com.example.rafa.liquidgalaxypoiscontroller");
+        POIsProvider provider = (POIsProvider) client.getLocalContentProvider();
+        provider.resetDatabase();
+        client.release();
+    }
+
+    public void resetApp() {
+        AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, intent);
+        System.exit(2);
+    }
+
 
     public void onTabSelected(Tab tab, FragmentTransaction fragmentTransaction) {
         this.mViewPager.setCurrentItem(tab.getPosition());

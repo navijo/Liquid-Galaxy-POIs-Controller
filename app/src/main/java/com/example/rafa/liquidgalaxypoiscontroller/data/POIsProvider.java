@@ -7,22 +7,28 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+
+import com.example.rafa.liquidgalaxypoiscontroller.advancedTools.LGTask;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.CategoryEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.POIEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourPOIsEntry;
+import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.LGTaskEntry;
 
 public class POIsProvider extends ContentProvider {
     static final int ALL_CATEGORIES = 300;
     static final int ALL_POIS = 100;
     static final int ALL_TOURS = 200;
     static final int ALL_TOUR_POIS = 400;
+    static final int ALL_TASKS = 500;
     private static final String Category_IDselection = "category._id = ?";
     private static final String POI_IDselection = "poi._id = ?";
     static final int SINGLE_CATEGORY = 301;
     static final int SINGLE_POI = 101;
     static final int SINGLE_TOUR = 201;
     static final int SINGLE_TOUR_POIS = 401;
+    static final int SINGLE_TASK = 501;
+    private static final String LGTasks_IDselection = "LG_TASK._id = ?";
     private static final String TourPOIs_IDselection = "Tour_POIs._id = ?";
     private static final String Tour_IDselection = "tour._id = ?";
     private static POIsDbHelper mOpenHelper;
@@ -43,6 +49,9 @@ public class POIsProvider extends ContentProvider {
         matcher.addURI(POIsContract.CONTENT_AUTHORITY, "tour/#", SINGLE_TOUR);
         matcher.addURI(POIsContract.CONTENT_AUTHORITY, POIsContract.PATH_TOUR_POIS, ALL_TOUR_POIS);
         matcher.addURI(POIsContract.CONTENT_AUTHORITY, "tourPois/#", SINGLE_TOUR_POIS);
+
+        matcher.addURI(POIsContract.CONTENT_AUTHORITY, POIsContract.PATH_LG_TASK, ALL_TASKS);
+        matcher.addURI(POIsContract.CONTENT_AUTHORITY, "lgTask/#", SINGLE_TASK);
         return matcher;
     }
 
@@ -78,6 +87,12 @@ public class POIsProvider extends ContentProvider {
             case SINGLE_TOUR_POIS /*401*/:
                 cursor = mOpenHelper.getReadableDatabase().query(TourPOIsEntry.TABLE_NAME, projection, TourPOIs_IDselection, selectionArgs, null, null, sortOrder);
                 break;
+            case ALL_TASKS /*500*/:
+                cursor = mOpenHelper.getReadableDatabase().query(LGTaskEntry.TABLE_NAME, projection, LGTasks_IDselection, selectionArgs, null, null, sortOrder);
+                break;
+            case SINGLE_TASK /*501*/:
+                cursor = mOpenHelper.getReadableDatabase().query(LGTaskEntry.TABLE_NAME, projection, LGTasks_IDselection, selectionArgs, null, null, sortOrder);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -103,6 +118,10 @@ public class POIsProvider extends ContentProvider {
                 return TourPOIsEntry.CONTENT_TYPE;
             case SINGLE_TOUR_POIS /*401*/:
                 return TourPOIsEntry.CONTENT_ITEM_TYPE;
+            case ALL_TASKS /*500*/:
+                return LGTaskEntry.CONTENT_TYPE;
+            case SINGLE_TASK /*501*/:
+                return LGTaskEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -138,6 +157,13 @@ public class POIsProvider extends ContentProvider {
                 _id = db.insert(TourPOIsEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
                     returnUri = TourPOIsEntry.buildTourUri(_id);
+                    break;
+                }
+                throw new SQLException("Failed to insert row into " + uri);
+            case ALL_TASKS /*500*/:
+                _id = db.insert(LGTaskEntry.TABLE_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = LGTaskEntry.buildTourUri(_id);
                     break;
                 }
                 throw new SQLException("Failed to insert row into " + uri);
@@ -180,6 +206,12 @@ public class POIsProvider extends ContentProvider {
                     throw new SQLException("Failed to delete rows from " + uri);
                 }
                 break;
+            case ALL_TASKS /*500*/:
+                rowsDeleted = db.delete(LGTaskEntry.TABLE_NAME, selection, selectionArgs);
+                if (rowsDeleted < 0) {
+                    throw new SQLException("Failed to delete rows from " + uri);
+                }
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -217,6 +249,12 @@ public class POIsProvider extends ContentProvider {
                     throw new SQLException("Failed to update rows from " + uri);
                 }
                 break;
+            case ALL_TASKS /*500*/:
+                rowsUpdated = db.update(LGTaskEntry.TABLE_NAME, values, selection, selectionArgs);
+                if (rowsUpdated < 0) {
+                    throw new SQLException("Failed to update rows from " + uri);
+                }
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -226,8 +264,24 @@ public class POIsProvider extends ContentProvider {
         return rowsUpdated;
     }
 
+    public static Cursor queryByTaskId(String itemSelectedID) {
+        String sql = "SELECT t._id,t.title, t.description, t.script FROM LG_TASK t WHERE t._id = ?";
+        return mOpenHelper.getReadableDatabase().rawQuery("SELECT t._id,t.title, t.description, t.script FROM LG_TASK t WHERE t._id = ?", new String[]{itemSelectedID});
+    }
+
+    public static Cursor getAllLGTasks() {
+        String sql = "SELECT t._id,t.title, t.description, t.script FROM LG_TASK t";
+        return mOpenHelper.getReadableDatabase().rawQuery(sql, new String[]{});
+    }
+
     public static Cursor queryByPoiJOINTourPois(String itemSelectedID) {
         String sql = "SELECT t.POI, p.Name, t.POI_Duration FROM poi p INNER JOIN Tour_POIs t ON p._id = t.POI WHERE t.Tour = ? ORDER BY t.POI_Order ASC";
         return mOpenHelper.getReadableDatabase().rawQuery("SELECT t.POI, p.Name, t.POI_Duration FROM poi p INNER JOIN Tour_POIs t ON p._id = t.POI WHERE t.Tour = ? ORDER BY t.POI_Order ASC", new String[]{itemSelectedID});
+    }
+
+    public void resetDatabase() {
+        mOpenHelper.close();
+        mOpenHelper = new POIsDbHelper(getContext());
+        mOpenHelper.resetDatabase(mOpenHelper.getWritableDatabase());
     }
 }

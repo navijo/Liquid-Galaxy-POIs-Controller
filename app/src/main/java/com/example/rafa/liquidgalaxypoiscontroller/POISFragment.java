@@ -2,12 +2,15 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -251,6 +254,7 @@ public class POISFragment extends Fragment {
         }
         return queryCursor;
     }
+
     private void showCategoriesOnScreen(Cursor queryCursor){
         adapter = new CategoriesAdapter(getActivity(), queryCursor, 0);
 
@@ -267,6 +271,7 @@ public class POISFragment extends Fragment {
             }
         }
     }
+
     private void updateRouteAndPOIsOrToursViews(){
         String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), backIDs.get(0));
         route.setText(routeShownName);
@@ -560,11 +565,12 @@ public class POISFragment extends Fragment {
         try {
             HashMap<String, String> poi = getPOIData(itemSelectedID);//we get the POI data to be shown on LG
             String command = buildCommand(poi); //we build the sentence to send to LG system
-            try {
-                setConnectionWithLiquidGalaxy(command); //we set connection with LG and send the sentence to watch the wished on the LG.
-            } catch (JSchException e) {
-                Toast.makeText(getActivity(), "Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip", Toast.LENGTH_LONG).show();
-            }
+
+                //FIXME: NertWork on Main thread forced us to create an AsyncTask
+                VisitPoiTask visitPoiTask = new VisitPoiTask(command);
+                visitPoiTask.execute();
+               // setConnectionWithLiquidGalaxy(command); //we set connection with LG and send the sentence to watch the wished on the LG.
+
         } catch (Exception ex) {
             Toast.makeText(getActivity(), "Error. " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
         }
@@ -939,7 +945,7 @@ public class POISFragment extends Fragment {
 
     /**/
     private String setConnectionWithLiquidGalaxy(String command) throws JSchException {
-
+        Looper.prepare();
         //We get the mandatory settings to be able to connect with Liquid Galaxy system.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String user = prefs.getString("User", "lg");
@@ -1028,5 +1034,58 @@ public class POISFragment extends Fragment {
                 startActivity(createTourIntent);
             }
         });
+    }
+
+    private class VisitPoiTask extends AsyncTask<Void, Void, String> {
+
+        String command;
+        private ProgressDialog dialog;
+
+        public VisitPoiTask(String command) {
+            this.command = command;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (dialog == null) {
+                dialog = new ProgressDialog(getActivity());
+                dialog.setMessage(getResources().getString(R.string.viewing_poi));
+                dialog.setIndeterminate(false);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setCancelable(true);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel(true);
+                    }
+                });
+                dialog.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                return setConnectionWithLiquidGalaxy(command);
+            } catch (JSchException e) {
+                cancel(true);
+                Toast.makeText(getActivity(), "Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip", Toast.LENGTH_LONG).show();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String success) {
+            super.onPostExecute(success);
+            if (success!=null) {
+                if (dialog != null) {
+                    dialog.hide();
+                    dialog.dismiss();
+                }
+            }
+        }
+
     }
 }

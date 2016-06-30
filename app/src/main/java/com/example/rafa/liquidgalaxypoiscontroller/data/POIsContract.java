@@ -32,6 +32,7 @@ public class POIsContract {
     public static final String PATH_TOUR = "tour";
     public static final String PATH_CATEGORY = "category";
     public static final String PATH_TOUR_POIS = "tourPois";
+    public static final String PATH_LG_TASK = "lgTask";
 
     public static final class POIEntry implements BaseColumns {
 
@@ -239,10 +240,12 @@ public class POIsContract {
             return fragmentActivity.getContentResolver().query(CONTENT_URI,
                     new String[]{_ID, COLUMN_SHOWN_NAME}, null, null, COLUMN_SHOWN_NAME + " ASC");
         }
+
         public static int updateByID(FragmentActivity activity, ContentValues contentValues, String itemSelectedID) {
             String Category_IDselection = _ID + " = ?";
             return activity.getContentResolver().update(CONTENT_URI, contentValues, Category_IDselection, new String[]{itemSelectedID});
         }
+
         public static String getShownNameByID(FragmentActivity activity, String id) {
             Cursor cursor = activity.getContentResolver().query(
                     CONTENT_URI,
@@ -256,6 +259,7 @@ public class POIsContract {
                 return "/";
             }
         }
+
         public static String getShownNameByID(FragmentActivity fragmentActivity, int categoryID) {
             Cursor c = fragmentActivity.getContentResolver().query( CONTENT_URI,new String[]{COLUMN_SHOWN_NAME},
                     _ID + " = ?", new String[]{String.valueOf(categoryID)},null);
@@ -392,6 +396,50 @@ public class POIsContract {
 
     public static int delete(FragmentActivity fragmentActivity,Uri uri, String whereClause, String[] whereClauseArgs){
         return fragmentActivity.getContentResolver().delete(uri, whereClause, whereClauseArgs);
+    }
+
+    //TAULA LG_TASKS
+    public static final class LGTaskEntry implements BaseColumns{
+        //CONTENT_URI = content://com.example.rafa.liquidgalaxypoiscontroller/lgTask/
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LG_TASK).build();
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LG_TASK;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LG_TASK;
+
+        // Table name
+        public static final String TABLE_NAME = "LG_TASK";
+
+        //Table columns
+        public static final String COLUMN_LG_TASK_ID = "_id";
+        public static final String COLUMN_LG_TASK_DESC = "Description";
+        public static final String COLUMN_LG_TASK_TITLE= "Title";
+        public static final String COLUMN_LG_TASK_SCRIPT = "Script";
+
+        public static Uri buildTourUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri createNewTask(FragmentActivity activity, ContentValues contentValues) {
+            return activity.getContentResolver().insert(CONTENT_URI, contentValues);
+        }
+
+        public static Cursor getTaskById(FragmentActivity fragmentActivity, String itemSelectedID) {
+            return POIsProvider.queryByTaskId(itemSelectedID);
+        }
+
+        public static int updateByTaskId(FragmentActivity activity, ContentValues contentValues,String taskId) {
+            String Task_IDselection = COLUMN_LG_TASK_ID + " = ?";
+            return activity.getContentResolver().update(CONTENT_URI, contentValues, Task_IDselection, new String[]{taskId});
+        }
+        public static int deleteByTaskID(FragmentActivity activity, String taskId) {
+            String whereClause = COLUMN_LG_TASK_ID + " = ?";
+            return activity.getContentResolver().delete(CONTENT_URI, whereClause, new String[]{taskId});
+        }
+
+        public static Cursor getAllLGTasks(FragmentActivity activity) {
+            return activity.getContentResolver().query(CONTENT_URI, null,null, null, null);
+        }
+
     }
 
 }

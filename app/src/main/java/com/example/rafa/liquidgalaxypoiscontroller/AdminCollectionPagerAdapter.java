@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.rafa.liquidgalaxypoiscontroller.PW.NearbyBeaconsFragment;
+import com.example.rafa.liquidgalaxypoiscontroller.advancedTools.AdvancedToolsFragment;
 import com.jcraft.jsch.ChannelSftp;
 
 public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
@@ -38,13 +39,15 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return new LGTools();
             case 4 /*4*/:
                 return NearbyBeaconsFragment.newInstance();
+            case 5 /*5*/:
+                return AdvancedToolsFragment.newInstance();
             default:
                 return null;
         }
     }
 
     public int getCount() {
-        return 5;
+        return 6;
     }
 
     public CharSequence getPageTitle(int position) {
@@ -59,6 +62,8 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return "TOOLS";
             case 4 /*4*/:
                 return "SCAN BEACON";
+            case 5 /*5*/:
+                return "ADVANCED TOOLS";
             default:
                 return "PAGE" + (position - 1);
         }

@@ -1,6 +1,11 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -169,14 +174,15 @@ public class SearchFragment extends Fragment {
             public void onClick(View v) {
                 String placeToSearch = editSearch.getText().toString();
                 if (!placeToSearch.equals("") && placeToSearch != null) {
-                    try {
+
                         String command = buildSearchCommand(placeToSearch);
-                        setConnectionWithLiquidGalaxy(command);
-                    } catch (JSchException ex) {
-                        Toast.makeText(getActivity(), "Error connecting with Liquid Galaxy. Try changing username, password, host IP or port.", Toast.LENGTH_LONG).show();
-                    }
+                        //FIXME: NetworkOnMainThread Exception
+                        //setConnectionWithLiquidGalaxy(command);
+                    SearchTask searchTask = new SearchTask(command);
+                    searchTask.execute();
+
                 } else {
-                    Toast.makeText(getActivity(), "Please, first type some place to search.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.please_enter_search), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -186,10 +192,16 @@ public class SearchFragment extends Fragment {
     }
     private String setConnectionWithLiquidGalaxy(String command) throws JSchException {
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String user = prefs.getString("User", "lg");
+        String password = prefs.getString("Password", "lqgalaxy");
+        String hostname = prefs.getString("HostName", "172.26.17.21");
+        int port = Integer.parseInt(prefs.getString("Port", "22"));
+
         JSch jsch = new JSch();
 
-        Session session = jsch.getSession("lg", "172.26.17.21", 22);
-        session.setPassword("lqgalaxy");
+        Session session = jsch.getSession(user, hostname, port);
+        session.setPassword(password);
 
         Properties prop = new Properties();
         prop.put("StrictHostKeyChecking", "no");
@@ -205,6 +217,60 @@ public class SearchFragment extends Fragment {
         channelssh.disconnect();
 
         return baos.toString();
+    }
+
+
+    private class SearchTask extends AsyncTask<Void, Void, String> {
+
+        String command;
+        private ProgressDialog dialog;
+
+        public SearchTask(String command) {
+            this.command = command;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (dialog == null) {
+                dialog = new ProgressDialog(getActivity());
+                dialog.setMessage(getResources().getString(R.string.searching));
+                dialog.setIndeterminate(false);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setCancelable(true);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel(true);
+                    }
+                });
+                dialog.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                return setConnectionWithLiquidGalaxy(command);
+            } catch (JSchException e) {
+                cancel(true);
+                Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String success) {
+            super.onPostExecute(success);
+            if (success!=null) {
+                if (dialog != null) {
+                    dialog.hide();
+                    dialog.dismiss();
+                }
+            }
+        }
+
     }
 
 }

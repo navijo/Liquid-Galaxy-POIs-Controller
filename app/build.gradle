@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -23,8 +31,12 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile(name: 'uribeacon-library-release', ext: 'aar')
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:design:22.2.1'
     compile 'com.mcxiaoke.volley:library-aar:1.0.1'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.android.support:cardview-v7:22.2.1'
+    compile 'com.github.kanytu:android-parallax-recyclerview:v1.7'
+
     compile files('libs/jsch-0.1.53.jar')
     compile files('libs/jzlib-1.1.1.jar')
 }
