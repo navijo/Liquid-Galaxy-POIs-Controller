@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:gravity="center_horizontal">
     <ImageView
         android:id="@+id/lg_icon"
@@ -11,5 +11,13 @@
         android:layout_marginBottom="10dp"
         android:contentDescription="@string/desc_lg_icon"
         android:src="@drawable/lg_icon_trans" />
+
+    <TextView
+        android:id="@+id/lg_header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/desc_lg_icon"
+        android:text="@string/context_menu_launch_task"/>
 
 </LinearLayout>

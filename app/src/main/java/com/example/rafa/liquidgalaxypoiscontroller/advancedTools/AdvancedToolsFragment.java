@@ -1,13 +1,17 @@
 package com.example.rafa.liquidgalaxypoiscontroller.advancedTools;
 
-import android.bluetooth.BluetoothAdapter;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,33 +24,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rafa.liquidgalaxypoiscontroller.R;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.LGTaskEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsProvider;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by lgwork on 30/06/16.
  */
-public class AdvancedToolsFragment extends Fragment{
+public class AdvancedToolsFragment extends Fragment {
 
     private RecyclerView rv = null;
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fab;
 
-    public static AdvancedToolsFragment newInstance(){
+    public static AdvancedToolsFragment newInstance() {
         Bundle args = new Bundle();
 
         AdvancedToolsFragment fragment = new AdvancedToolsFragment();
         fragment.setArguments(args);
         return fragment;
     }
-
 
 
     @Nullable
@@ -77,7 +88,7 @@ public class AdvancedToolsFragment extends Fragment{
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                       populateUI();
+                        populateUI();
                     }
                 }
         );
@@ -90,8 +101,8 @@ public class AdvancedToolsFragment extends Fragment{
         });
     }
 
-    private void populateUI() {
-       Cursor allTasksCursor =  POIsProvider.getAllLGTasks();
+    public void populateUI() {
+        Cursor allTasksCursor = POIsProvider.getAllLGTasks();
         List<LGTask> taksList = new ArrayList<LGTask>();
         try {
             while (allTasksCursor.moveToNext()) {
@@ -106,7 +117,7 @@ public class AdvancedToolsFragment extends Fragment{
     }
 
     private LGTask getTaskData(int taskId) {
-        Cursor taskCursor = LGTaskEntry.getTaskById(this.getActivity(),String.valueOf(taskId));
+        Cursor taskCursor = LGTaskEntry.getTaskById(this.getActivity(), String.valueOf(taskId));
         LGTask lgTask = new LGTask();
         if (taskCursor.moveToNext()) {
             lgTask.setId(taskCursor.getLong(taskCursor.getColumnIndex(LGTaskEntry.COLUMN_LG_TASK_ID)));
@@ -118,13 +129,36 @@ public class AdvancedToolsFragment extends Fragment{
         return lgTask;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        populateUI();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        populateUI();
+    }
+
+    //This private class handles when the dialog dismiss and refresh the ui with the changes
+    private class DialogFragmentDismissHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            populateUI();
+        }
+    }
+
     void showCreateDialog() {
         CreateTaskFragment newFragment = CreateTaskFragment.newInstance();
+        newFragment.setHandler(new DialogFragmentDismissHandler());
         newFragment.show(getFragmentManager(), "createDialog");
     }
 
     void showEditDialog(long taskId) {
         EditTaskFragment newFragment = EditTaskFragment.newInstance(taskId);
+        newFragment.setHandler(new DialogFragmentDismissHandler());
         newFragment.show(getFragmentManager(), "editDialog");
     }
 
@@ -138,7 +172,7 @@ public class AdvancedToolsFragment extends Fragment{
                 taskHolder.id = lgTask.getId();
                 taskHolder.taskTitle.setText(lgTask.getTitle());
                 taskHolder.taskDescription.setText(lgTask.getDescription());
-                taskHolder.taskScript = lgTask.getScript();
+                taskHolder.script = lgTask.getScript();
             }
 
             @Override
@@ -167,8 +201,8 @@ public class AdvancedToolsFragment extends Fragment{
             @Override
             public void onClick(View view, int i) {
                 LGTask task = tasks.get(i);
-//                POISListFragment poisListFragment = POISListFragment.newInstance(document);
-//                fragmentStackManager.loadFragment(poisListFragment, R.id.main_frame);
+                SendCommandTask sendCommandTask = new SendCommandTask(task.getScript());
+                sendCommandTask.execute();
             }
         });
     }
@@ -180,11 +214,7 @@ public class AdvancedToolsFragment extends Fragment{
         ImageView filePhoto;
 
         long id;
-        String taskScript;
-
-
-        LGTask task;
-
+        String script;
 
         public LGTaskHolder(View itemView) {
             super(itemView);
@@ -203,15 +233,10 @@ public class AdvancedToolsFragment extends Fragment{
                     switch (item.getItemId()) {
                         case R.id.editTask:
                             showEditDialog(id);
-//                            POISListFragment poisListFragment = POISListFragment.newInstance(document);
-//                            fragmentStackManager.loadFragment(poisListFragment, R.id.main_frame);
                             break;
                         case R.id.launchTask:
-//                            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//                            BluetoothUtils.ensureBluetoothIsEnabled(getActivity(), bluetoothAdapter);
-//
-//                            BeaconConfigFragment beaconConfigFragment = BeaconConfigFragment.newInstance(fileLink);
-//                            fragmentStackManager.loadFragment(beaconConfigFragment, R.id.main_frame);
+                            SendCommandTask sendCommandTask = new SendCommandTask(script);
+                            sendCommandTask.execute();
                             break;
 
                         case R.id.deleteTask:
@@ -220,8 +245,8 @@ public class AdvancedToolsFragment extends Fragment{
 
                             alert.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-//                                    deleteTask = new MakeDeleteTask(mCredential, fileResourceId);
-//                                    deleteTask.execute();
+                                    POIsContract.LGTaskEntry.deleteByTaskID(getActivity(), String.valueOf(id));
+                                    populateUI();
                                 }
                             });
 
@@ -239,64 +264,116 @@ public class AdvancedToolsFragment extends Fragment{
         }
 
 
-
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//            menu.setHeaderTitle(getResources().getString(R.string.context_menu_title));
-//
-//            MenuItem deleteItem = menu.add(0, v.getId(), 2, R.string.context_menu_delete);
-//            deleteItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//                @Override
-//                public boolean onMenuItemClick(MenuItem item) {
-//
-//                    AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-//                    alert.setTitle(getResources().getString(R.string.are_you_sure));
-//
-//                    alert.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int whichButton) {
-//                            deleteTask = new MakeDeleteTask(mCredential, fileResourceId);
-//                            deleteTask.execute();
-//                        }
-//                    });
-//
-//                    alert.setNegativeButton(getResources().getString(R.string.no),
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int whichButton) {
-//                                }
-//                            });
-//
-//                    alert.show();
-//                    return true;
-//                }
-//            });
-//
-//
-//            MenuItem shareitem = menu.add(0, v.getId(), 0, R.string.context_menu_share);
-//            shareitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//                @Override
-//                public boolean onMenuItemClick(MenuItem item) {
-//
-//                    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//                    BluetoothUtils.ensureBluetoothIsEnabled(getActivity(), bluetoothAdapter);
-//
-//                    BeaconConfigFragment beaconConfigFragment = BeaconConfigFragment.newInstance(fileLink);
-//                    fragmentStackManager.loadFragment(beaconConfigFragment, R.id.main_frame);
-//
-//                    return true;
-//                }
-//            });
-//
-//
-//            MenuItem editItem = menu.add(0, v.getId(), 1, R.string.context_menu_edit);
-//            editItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//                @Override
-//                public boolean onMenuItemClick(MenuItem item) {
-//                    RenameDocumentFragment renameDocumentFragment = RenameDocumentFragment.newInstance(fileResourceId, documentTitle.getText().toString(),
-//                            documentDescription.getText().toString());
-//                    fragmentStackManager.loadFragment(renameDocumentFragment, R.id.main_frame);
-//                    return true;
-//                }
-//            });
+
         }
     }
+
+    private class SendCommandTask extends AsyncTask<Void, Void, Boolean> {
+
+        String command;
+        private ProgressDialog dialog;
+
+        public SendCommandTask(String command) {
+            this.command = command;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (dialog == null) {
+                dialog = new ProgressDialog(getActivity());
+                dialog.setMessage(getResources().getString(R.string.sending_command));
+                dialog.setIndeterminate(false);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setCancelable(true);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel(true);
+                    }
+                });
+                dialog.show();
+            }
+        }
+
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                return sendCommandToLG(command);
+            } catch (JSchException e) {
+                cancel(true);
+                if (dialog != null) {
+                    dialog.hide();
+                    dialog.dismiss();
+                }
+                Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
+                return null;
+            } catch (IOException e) {
+                cancel(true);
+                if (dialog != null) {
+                    dialog.hide();
+                    dialog.dismiss();
+                }
+                e.printStackTrace();
+                return null;
+            } catch (Exception e) {
+                cancel(true);
+                if (dialog != null) {
+                    dialog.hide();
+                    dialog.dismiss();
+                }
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (dialog != null) {
+                dialog.hide();
+                dialog.dismiss();
+            }
+        }
+
+        private Boolean sendCommandToLG(String command) throws Exception {
+
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String user = prefs.getString("User", "lg");
+            String password = prefs.getString("Password", "lqgalaxy");
+            String hostname = prefs.getString("HostName", "172.26.17.21");
+            int port = Integer.parseInt(prefs.getString("Port", "22"));
+
+            JSch jsch = new JSch();
+
+            Session session = jsch.getSession(user, hostname, port);
+            session.setPassword(password);
+
+            Properties prop = new Properties();
+            prop.put("StrictHostKeyChecking", "no");
+            session.setConfig(prop);
+            session.connect();
+
+            ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            channelExec.setOutputStream(baos);
+
+            channelExec.setCommand(command);
+
+            channelExec.connect();
+
+            channelExec.disconnect();
+
+            return true;
+        }
+
+    }
+
 }

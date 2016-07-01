@@ -40,12 +40,6 @@
             android:textSize="15sp"
             android:textStyle="italic" />
 
-        <TextView
-            android:id="@+id/document_extension"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/task_description"
-            android:layout_toEndOf="@+id/file_photo" />
 
         <LinearLayout
             android:layout_width="wrap_content"

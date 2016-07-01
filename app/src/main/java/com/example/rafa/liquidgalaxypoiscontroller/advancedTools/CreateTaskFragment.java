@@ -2,9 +2,11 @@ package com.example.rafa.liquidgalaxypoiscontroller.advancedTools;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -31,6 +33,23 @@ public class CreateTaskFragment extends DialogFragment {
     private EditText new_task_description_input;
     private EditText new_task_script_input;
 
+    Handler handler;
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        handler.sendEmptyMessage(0);
+    }
+
     public static CreateTaskFragment newInstance() {
         CreateTaskFragment createTask = new CreateTaskFragment();
         Bundle bundle = new Bundle();
@@ -54,9 +73,9 @@ public class CreateTaskFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_new_task, container, false);
-//        fragmentStackManager = FragmentStackManager.getInstance(getActivity());
+
         getDialog().setTitle(R.string.add_new_task);
-         Button saveTask = (Button) rootView.findViewById(R.id.btn_save_task);
+        Button saveTask = (Button) rootView.findViewById(R.id.btn_add_task);
         Button btnCancel = (Button) rootView.findViewById(R.id.btn_cancel_add_task);
 
 
@@ -79,10 +98,10 @@ public class CreateTaskFragment extends DialogFragment {
                     ContentValues newTask = new ContentValues();
                     newTask.put(POIsContract.LGTaskEntry.COLUMN_LG_TASK_TITLE, new_task_name_input.getText().toString());
                     newTask.put(POIsContract.LGTaskEntry.COLUMN_LG_TASK_DESC, new_task_description_input.getText().toString());
-                    newTask.put(POIsContract.LGTaskEntry.COLUMN_LG_TASK_SCRIPT,new_task_script_input.getText().toString());
+                    newTask.put(POIsContract.LGTaskEntry.COLUMN_LG_TASK_SCRIPT, new_task_script_input.getText().toString());
 
                     Uri insertedUri = POIsContract.LGTaskEntry.createNewTask(getActivity(), newTask);
-                    Toast.makeText(getActivity(),getResources().getString(R.string.task_added_ok), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.task_added_ok), Toast.LENGTH_LONG).show();
                     getDialog().dismiss();
                 }
             }

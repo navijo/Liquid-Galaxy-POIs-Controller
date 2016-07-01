@@ -99,7 +99,7 @@
     <string name="getting_connection">Getting Connection to LG</string>
     <string name="desc_lg_icon">Liquid Galaxy</string>
     <string name="context_menu_edit_task">Edit task</string>
-    <string name="context_menu_launch_task">Launch task in Liquid Galaxy</string>
+    <string name="context_menu_launch_task">Launch Script in Liquid Galaxy</string>
     <string name="context_menu_delete_task">Delete Task</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="yes">Yes</string>

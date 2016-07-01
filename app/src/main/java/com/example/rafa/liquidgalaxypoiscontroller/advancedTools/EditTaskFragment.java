@@ -1,10 +1,12 @@
 package com.example.rafa.liquidgalaxypoiscontroller.advancedTools;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -32,12 +34,32 @@ public class EditTaskFragment extends DialogFragment {
 
     private long taskId;
 
+    Handler handler;
+
+
+
     public static EditTaskFragment newInstance(long taskId) {
         EditTaskFragment createTask = new EditTaskFragment();
         Bundle bundle = new Bundle();
         bundle.putLong("taskId",taskId);
+
         createTask.setArguments(bundle);
         return createTask;
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        handler.sendEmptyMessage(0);
     }
 
     @Override
