@@ -30,7 +30,7 @@ import java.util.UUID;
 /**
  * Static helper methods and constants to decode the ParcelUuid of remote devices.
  *
- * @hide
+ *
  */
 public final class BluetoothUuid {
     /*

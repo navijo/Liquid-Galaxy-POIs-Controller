@@ -6,7 +6,6 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -27,22 +26,9 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
 
     PendingIntent intent;
 
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LGPCAdminActivity.1 */
-    class C02741 extends SimpleOnPageChangeListener {
-        final /* synthetic */ ActionBar val$actionBar;
-
-        C02741(ActionBar actionBar) {
-            this.val$actionBar = actionBar;
-        }
-
-        public void onPageSelected(int position) {
-            this.val$actionBar.setSelectedNavigationItem(position);
-        }
-    }
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView((int) R.layout.activity_lgpcadmin);
+        setContentView(R.layout.activity_lgpcadmin);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         this.mSectionsPagerAdapter = new AdminCollectionPagerAdapter(getSupportFragmentManager());
@@ -98,7 +84,6 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         System.exit(2);
     }
 
-
     public void onTabSelected(Tab tab, FragmentTransaction fragmentTransaction) {
         this.mViewPager.setCurrentItem(tab.getPosition());
         Log.d(String.valueOf(tab.getPosition()), "hello");
@@ -108,5 +93,18 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
     }
 
     public void onTabReselected(Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LGPCAdminActivity.1 */
+    class C02741 extends SimpleOnPageChangeListener {
+        final /* synthetic */ ActionBar val$actionBar;
+
+        C02741(ActionBar actionBar) {
+            this.val$actionBar = actionBar;
+        }
+
+        public void onPageSelected(int position) {
+            this.val$actionBar.setSelectedNavigationItem(position);
+        }
     }
 }

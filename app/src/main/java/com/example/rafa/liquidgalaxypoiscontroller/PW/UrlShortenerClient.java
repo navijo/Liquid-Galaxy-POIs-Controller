@@ -36,11 +36,10 @@ class UrlShortenerClient {
   private static final String RESOLVE_SCAN_PATH = "resolve-scan";
   private static final String SHORTEN_URL_PATH = "shorten-url";
   private static final int UNDEFINED_SCORE = -1;
+  private static UrlShortenerClient mInstance;
   private RequestQueue mRequestQueue;
   private Context mContext;
   private String mEndpointUrl;
-
-  private static UrlShortenerClient mInstance;
 
   private UrlShortenerClient(Context context) {
     mContext = context.getApplicationContext();
@@ -53,11 +52,6 @@ class UrlShortenerClient {
         mInstance = new UrlShortenerClient(context);
     }
     return mInstance;
-  }
-
-  public interface ShortenUrlCallback {
-    public void onUrlShortened(String shortUrl);
-    public void onError(String longUrl);
   }
 
   private String constructUrlStr(final String path) {
@@ -115,5 +109,11 @@ class UrlShortenerClient {
 
   public void setEndpoint(String endpointUrl) {
     mEndpointUrl = endpointUrl;
+  }
+
+  public interface ShortenUrlCallback {
+    void onUrlShortened(String shortUrl);
+
+    void onError(String longUrl);
   }
 }

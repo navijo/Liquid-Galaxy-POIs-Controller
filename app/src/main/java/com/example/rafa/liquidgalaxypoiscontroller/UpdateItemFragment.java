@@ -6,9 +6,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -17,8 +21,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,20 +41,24 @@ import java.util.Map;
 wants to update one item already created. The pages are structurally equals with the fragment mentioned before,
 however there is a differences: all fields are filled by the values of the item to update.
 */
-public class UpdateItemFragment extends android.support.v4.app.Fragment {
+public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
 
-    private static View rootView;
-    private String updateType, newShownName;
-    private static String itemSelectedID;
-    private Cursor queryCursor;
-    private static ViewHolderTour viewHolderTour;
-    private ArrayAdapter<String> adapter;
-    private static Map<String,String> spinnerIDsAndShownNames, categoriesOfPOIsSpinner;
-    private static List<String> tourPOIsNames, tourPOIsIDs, tourExistingPOIsNames, tourExistingPOIsIDs;
-    private static HashMap<String, String> namesAndIDs = new HashMap<String, String>();
     private static final String POI_IDselection = POIsContract.POIEntry._ID + " =?";
     private static final String TOUR_IDselection = POIsContract.TourEntry._ID + " =?";
     private static final String Category_IDselection = POIsContract.CategoryEntry._ID + " =?";
+    private static View rootView;
+    private static String itemSelectedID;
+    private static ViewHolderTour viewHolderTour;
+    private static Map<String, String> spinnerIDsAndShownNames, categoriesOfPOIsSpinner;
+    private static List<String> tourPOIsNames, tourPOIsIDs, tourExistingPOIsNames, tourExistingPOIsIDs;
+    private static HashMap<String, String> namesAndIDs = new HashMap<String, String>();
+    double latitude;
+    double longitude;
+    String poiName;
+    GoogleMap map;
+    private String updateType, newShownName;
+    private Cursor queryCursor;
+    private ArrayAdapter<String> adapter;
 
     public UpdateItemFragment() {
         tourPOIsIDs = new ArrayList<String>();
@@ -51,139 +67,141 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         tourExistingPOIsIDs = new ArrayList<String>();
     }
 
+    public static void deleteButtonTreatment(View view, final String name) {
+        final ImageView delete = (ImageView) view.findViewById(R.id.delete);
+        screenSizeTreatment(delete);
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = tourPOIsNames.indexOf(name);
+                tourExistingPOIsNames.remove(name);
+                tourPOIsNames.remove(name);
+                String id = namesAndIDs.get(name);
+                tourExistingPOIsIDs.remove(id);
+                tourPOIsIDs.remove(id);
+                namesAndIDs.remove(name);
+                FragmentActivity activity = (FragmentActivity) rootView.getContext();
+                POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(activity, itemSelectedID, id);
+                TourPOIsAdapter.deleteDurationByPosition(position);
+                TourPOIsAdapter.setType("updating");
+                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
+                viewHolderTour.addedPois.setAdapter(adapter);
+            }
+        });
+    }
+
+    private static void screenSizeTreatment(ImageView delete) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        FragmentActivity act = (FragmentActivity) rootView.getContext();
+        act.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+
+
+        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+
+        float smallestWidth = Math.min(widthDp, heightDp);
+
+        if (smallestWidth >= 1000) {
+            delete.setImageResource(R.drawable.ic_remove_circle_black_36dp);
+        }
+    }
+
+    //when, from POIsFragment, we are updating a TOUR and we want to ADD another POI
+    public static void setPOItoTourPOIsList(String poiSelected, String completeName) {
+        if (!tourPOIsIDs.contains(poiSelected)) {
+            tourPOIsIDs.add(poiSelected);
+            tourPOIsNames.add(completeName);
+            namesAndIDs.put(completeName, poiSelected);
+
+            TourPOIsAdapter.setType("updating");
+            TourPOIsAdapter.addToDurationList(); //the new POI will initially have a duration of 'general duration' and this method introduces that duration to the list of durations.
+
+            FragmentActivity activity = (FragmentActivity) rootView.getContext();
+            TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
+            viewHolderTour.addedPois.setAdapter(adapter);
+        } else {
+            Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        // Add a marker
+        LatLng latlong = new LatLng(latitude, longitude);
+        map.addMarker(new MarkerOptions().position(latlong).title(poiName).draggable(true));
+        map.setBuildingsEnabled(true);
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong, 17));
+
+        map.setOnMarkerDragListener(this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle extras = getActivity().getIntent().getExtras();
         rootView = null;
-
-        if(extras!=null){
+        setHasOptionsMenu(true);
+        if (extras != null) {
             this.updateType = extras.getString("UPDATE_TYPE");
-            this.itemSelectedID = extras.getString("ITEM_ID");
+            itemSelectedID = extras.getString("ITEM_ID");
         }
 
-        if(updateType.equals("POI")){
-
+        if (updateType.equals("POI")) {
+            getActivity().setTitle(getResources().getString(R.string.update_poi));
             ViewHolderPoi viewHolder = setPOILayoutSettings(inflater, container);
             updatePOI(viewHolder);
-        }
-        else if(updateType.equals("TOUR")){
 
+            SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            fragment.getMapAsync(this);
+
+            latitude = Double.parseDouble(viewHolder.latitudeET.getText().toString());
+            longitude = Double.parseDouble(viewHolder.longitudeET.getText().toString());
+            poiName = viewHolder.nameET.getText().toString();
+
+
+        } else if (updateType.equals("TOUR")) {
+            getActivity().setTitle(getResources().getString(R.string.update_tour));
             viewHolderTour = setTOURLayoutSettings(inflater, container);
             updateTOUR(viewHolderTour);
-        }
-        else {//CATEGORY
+        } else {//CATEGORY
+            getActivity().setTitle(getResources().getString(R.string.update_category));
             ViewHolderCategory viewHolder = setCategoryLayoutSettings(inflater, container);
             updateCategory(viewHolder);
         }
 
+
         return rootView;
     }
 
-    public static class ViewHolderPoi {
-
-        public int ID = 0;
-        public int NAME = 1;
-        public int VISITED_PLACE_NAME = 2;
-        public int LONGITUDE = 3;
-        public int LATITUDE = 4;
-        public int ALTITUDE = 5;
-        public int HEADING = 6;
-        public int TILT = 7;
-        public int RANGE = 8;
-        public int ALTITUDE_MODE = 9;
-        public int HIDE = 10;
-        public int CATEGORY_ID = 11;
-
-        public EditText nameET;
-        public EditText visitedPlaceET;
-        public EditText longitudeET;
-        public EditText latitudeET;
-        public EditText altitudeET;
-        public EditText headingET;
-        public EditText tiltET;
-        public EditText rangeET;
-        public EditText altitudeModeET;
-        public EditText hide;
-        public Spinner categoryID;
-        public FloatingActionButton createPOI;
-        public FloatingActionButton updatePOI;
-        public FloatingActionButton cancel;
-
-        public ViewHolderPoi(View rootView) {
-
-            nameET = (EditText) rootView.findViewById(R.id.name);
-            visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
-            longitudeET = (EditText) rootView.findViewById(R.id.longitude);
-            latitudeET = (EditText) rootView.findViewById(R.id.latitude);
-            altitudeET = (EditText) rootView.findViewById(R.id.altitude);
-            headingET = (EditText) rootView.findViewById(R.id.heading);
-            tiltET = (EditText) rootView.findViewById(R.id.tilt);
-            rangeET = (EditText) rootView.findViewById(R.id.range);
-            altitudeModeET = (EditText) rootView.findViewById(R.id.altitudeMode);
-            hide = (EditText) rootView.findViewById(R.id.poi_hide);
-            categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
-            createPOI = (FloatingActionButton) rootView.findViewById(R.id.create_poi);
-            updatePOI = (FloatingActionButton) rootView.findViewById(R.id.update_poi);
-            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
-        }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem itemSettings = menu.findItem(R.id.action_settings);
+        itemSettings.setVisible(false);
+        super.onCreateOptionsMenu(menu, inflater);
     }
-    public static class ViewHolderTour {
 
-        public int NAME = 1;
-        public int CATEGORY = 2;
-        public int HIDE = 3;
-        public int INTERVAL = 4;
+    @Override
+    public void onMarkerDragStart(Marker marker) {
 
-        public EditText tourName;
-        public EditText hide;
-        public Spinner categoryID;
-        public android.support.design.widget.FloatingActionButton createTOUR;
-        public android.support.design.widget.FloatingActionButton updateTOUR;
-        public ListView addedPois;
-        public ImageView up;
-        public ImageView down;
-        public FloatingActionButton cancel;
-        public EditText global_interval;
-
-        public ViewHolderTour(View rootView) {
-
-            tourName = (EditText) rootView.findViewById(R.id.tour_name);
-            hide = (EditText) rootView.findViewById(R.id.tour_hide);
-            categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
-            createTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.create_tour);
-            updateTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.update_tour);
-            addedPois = (ListView) rootView.findViewById(R.id.tour_pois_listview);
-            up = (ImageView) rootView.findViewById(R.id.move_up);
-            down = (ImageView) rootView.findViewById(R.id.move_down);
-            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
-            global_interval = (EditText) rootView.findViewById(R.id.pois_interval);
-        }
     }
-    public static class ViewHolderCategory {
 
-        private int ID = 0;
-        private int NAME = 1;
-        private int FATHER_ID = 2;
-        private int SHOWN_NAME = 3;
-        private int HIDE = 4;
+    @Override
+    public void onMarkerDrag(Marker marker) {
+        ((EditText) rootView.findViewById(R.id.longitude)).setText(String.valueOf(marker.getPosition().longitude));
+        ((EditText) rootView.findViewById(R.id.latitude)).setText(String.valueOf(marker.getPosition().latitude));
 
-        public EditText categoryName;
-        public EditText hide;
-        public Spinner fatherID;
-        public FloatingActionButton createCategory;
-        public FloatingActionButton updateCategory;
-        public FloatingActionButton cancel;
+    }
 
-        public ViewHolderCategory(View rootView) {
-
-            categoryName = (EditText) rootView.findViewById(R.id.category_name);
-            hide = (EditText) rootView.findViewById(R.id.category_hide);
-            fatherID = (Spinner) rootView.findViewById(R.id.father_spinner);
-            createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
-            updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
-            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
-
-        }
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        ((EditText) rootView.findViewById(R.id.longitude)).setText(String.valueOf(marker.getPosition().longitude));
+        ((EditText) rootView.findViewById(R.id.latitude)).setText(String.valueOf(marker.getPosition().latitude));
     }
 
     /*POI TREATMENT*/
@@ -193,6 +211,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         setDataToPOIsLayout(query, viewHolder);
         updatePOIModifications(viewHolder);
     }
+
     private ViewHolderPoi setPOILayoutSettings(LayoutInflater inflater, ViewGroup container) {
         rootView = inflater.inflate(R.layout.fragment_create_or_update_poi, container, false);
         final ViewHolderPoi viewHolder = new ViewHolderPoi(rootView);
@@ -202,7 +221,8 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
         return viewHolder;
     }
-    private void fillPOIsCategoriesSpinner(Spinner spinner){
+
+    private void fillPOIsCategoriesSpinner(Spinner spinner) {
         List<String> list = new ArrayList<String>();
         list.add("NO ROUTE");
         spinnerIDsAndShownNames = new HashMap<String, String>();
@@ -210,7 +230,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
         queryCursor = POIsContract.CategoryEntry.getIDsAndShownNamesOfAllCategories(getActivity());
 
-        while(queryCursor.moveToNext()){
+        while (queryCursor.moveToNext()) {
             categoriesOfPOIsSpinner.put(String.valueOf(queryCursor.getInt(0)), queryCursor.getString(1));
             spinnerIDsAndShownNames.put(queryCursor.getString(1), String.valueOf(queryCursor.getInt(0)));
             list.add(queryCursor.getString(1));
@@ -220,8 +240,9 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
-    private void setDataToPOIsLayout(Cursor query, ViewHolderPoi viewHolder){
-        if(query.moveToFirst()){
+
+    private void setDataToPOIsLayout(Cursor query, ViewHolderPoi viewHolder) {
+        if (query.moveToFirst()) {
             viewHolder.nameET.setText(query.getString(viewHolder.NAME));
             viewHolder.visitedPlaceET.setText(query.getString(viewHolder.VISITED_PLACE_NAME));
             viewHolder.longitudeET.setText(String.valueOf(query.getFloat(viewHolder.LONGITUDE)));
@@ -230,16 +251,22 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             viewHolder.headingET.setText(String.valueOf(query.getFloat(viewHolder.HEADING)));
             viewHolder.tiltET.setText(String.valueOf(query.getFloat(viewHolder.TILT)));
             viewHolder.rangeET.setText(String.valueOf(query.getFloat(viewHolder.RANGE)));
-            viewHolder.altitudeModeET.setText(query.getString(viewHolder.ALTITUDE_MODE));
+
+
+            viewHolder.spinnerAltitudeMode.setSelection(((ArrayAdapter) viewHolder.spinnerAltitudeMode.getAdapter()).getPosition(query.getString(viewHolder.ALTITUDE_MODE)));
+
+
+            //viewHolder.altitudeModeET.setText(query.getString(viewHolder.ALTITUDE_MODE));
             viewHolder.categoryID.setSelection(adapter.getPosition(getShownNameByCategoryID(query, viewHolder, null, "POI")));
-            if(query.getString(viewHolder.HIDE).equals("0")) {
-                viewHolder.hide.setText("N");
-            }else{
-                viewHolder.hide.setText("Y");
+            if (query.getString(viewHolder.HIDE).equals("0")) {
+                viewHolder.toggleButtonHide.setChecked(false);
+            } else {
+                viewHolder.toggleButtonHide.setChecked(true);
             }
         }
     }
-    private void updatePOIModifications(final ViewHolderPoi viewHolder){
+
+    private void updatePOIModifications(final ViewHolderPoi viewHolder) {
 
         viewHolder.updatePOI.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,8 +286,10 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 heading = Float.parseFloat(viewHolder.headingET.getText().toString());
                 tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
                 range = Float.parseFloat(viewHolder.rangeET.getText().toString());
-                altitudeMode = viewHolder.altitudeModeET.getText().toString();
-                hide = getHideValueFromInputForm(viewHolder.hide);
+                //altitudeMode = viewHolder.altitudeModeET.getText().toString();
+                altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
+
+                hide = getHideValueFromInputForm(viewHolder.toggleButtonHide);
 
                 String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
                 categoryID = getFatherIDValueFromInputForm(shownName);
@@ -291,10 +320,11 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             }
         });
     }
-    private String getShownNameByCategoryID(Cursor query, ViewHolderPoi viewHolderPoi, ViewHolderTour viewHolderTour, String type){
-        if(type.equals("POI")) {
+
+    private String getShownNameByCategoryID(Cursor query, ViewHolderPoi viewHolderPoi, ViewHolderTour viewHolderTour, String type) {
+        if (type.equals("POI")) {
             return categoriesOfPOIsSpinner.get(String.valueOf(query.getInt(viewHolderPoi.CATEGORY_ID)));
-        }else{
+        } else {
             return categoriesOfPOIsSpinner.get(String.valueOf(query.getInt(viewHolderTour.CATEGORY)));
         }
     }
@@ -306,6 +336,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         setDataToLayout(query, viewHolder);
         updateCategoryModifications(viewHolder, oldItemShownName);
     }
+
     private ViewHolderCategory setCategoryLayoutSettings(LayoutInflater inflater, ViewGroup container) {
         rootView = inflater.inflate(R.layout.fragment_create_or_update_category, container, false);
         final ViewHolderCategory viewHolder = new ViewHolderCategory(rootView);
@@ -315,7 +346,8 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
         return viewHolder;
     }
-    private String fillCategoriesSpinner(Cursor query, ViewHolderCategory viewHolder){
+
+    private String fillCategoriesSpinner(Cursor query, ViewHolderCategory viewHolder) {
 
         query.moveToFirst();
         String itemShownName = query.getString(viewHolder.SHOWN_NAME);
@@ -330,11 +362,11 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         queryCursor = getActivity().getContentResolver().query(POIsContract.CategoryEntry.CONTENT_URI,
                 new String[]{POIsContract.CategoryEntry._ID, POIsContract.CategoryEntry.COLUMN_SHOWN_NAME}, null, null, null);
 
-        while(queryCursor.moveToNext()){
+        while (queryCursor.moveToNext()) {
             id = queryCursor.getInt(0);
             shownName = queryCursor.getString(1);
 
-            if(!shownName.contains(itemShownName)) {
+            if (!shownName.contains(itemShownName)) {
                 spinnerIDsAndShownNames.put(shownName, String.valueOf(id));
                 list.add(shownName);
             }
@@ -346,7 +378,8 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
         return itemShownName;
     }
-    private void updateCategoryModifications(final UpdateItemFragment.ViewHolderCategory viewHolder, final String oldItemShownName){
+
+    private void updateCategoryModifications(final UpdateItemFragment.ViewHolderCategory viewHolder, final String oldItemShownName) {
 
         viewHolder.updateCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -359,7 +392,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
                 ContentValues contentValues = new ContentValues();
                 final String categoryName = viewHolder.categoryName.getText().toString();
-                final int hideValue = getHideValueFromInputForm(viewHolder.hide);
+                final int hideValue = getHideValueFromInputForm(viewHolder.toggleButtonHide);
                 String shownNameSelected = getShownNameValueFromInputForm(viewHolder.fatherID);
                 final int fatherID = getFatherIDValueFromInputForm(shownNameSelected);
                 final String correctShownName = shownNameSelected + viewHolder.categoryName.getText().toString() + "/";
@@ -371,14 +404,15 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 contentValues.put(POIsContract.CategoryEntry.COLUMN_HIDE, hideValue);
 
                 int updatedRows = POIsContract.CategoryEntry.updateByID(getActivity(), contentValues, itemSelectedID);
-                if(updatedRows <= 0) {
+                if (updatedRows <= 0) {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                 }
                 updateSubCategoriesShownName(viewHolder, oldItemShownName);
             }
         });
     }
-    private void updateSubCategoriesShownName(ViewHolderCategory viewHolderCategory, String oldItemShownName){
+
+    private void updateSubCategoriesShownName(ViewHolderCategory viewHolderCategory, String oldItemShownName) {
 
         String whereClause = POIsContract.CategoryEntry.COLUMN_SHOWN_NAME + " LIKE '" + oldItemShownName + "%'";
 
@@ -389,11 +423,11 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         ContentValues updatedShownNameValues;
         String currentShownName, finalShownName, itemTreatedID;
         int updatedRows = 0;
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
 
             itemTreatedID = String.valueOf(cursor.getInt(0));
             currentShownName = cursor.getString(1);
-            if(!currentShownName.equals(oldItemShownName)) {
+            if (!currentShownName.equals(oldItemShownName)) {
                 //remove the bad shownName
                 String currentWithoutOldPartition = currentShownName.substring(oldItemShownName.length(), currentShownName.length());
                 //write the good one
@@ -408,15 +442,16 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
         startActivity(intent);
     }
-    private void setDataToLayout(Cursor query, UpdateItemFragment.ViewHolderCategory viewHolder){
+
+    private void setDataToLayout(Cursor query, UpdateItemFragment.ViewHolderCategory viewHolder) {
         String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), query.getInt(viewHolder.FATHER_ID));
-        if(query.moveToFirst()) {
+        if (query.moveToFirst()) {
             viewHolder.categoryName.setText(query.getString(viewHolder.NAME));
             viewHolder.fatherID.setSelection(adapter.getPosition(fatherShownName));
-            if(query.getString(viewHolder.HIDE).equals("0")) {
-                viewHolder.hide.setText("N");
-            }else{
-                viewHolder.hide.setText("Y");
+            if (query.getString(viewHolder.HIDE).equals("0")) {
+                viewHolder.toggleButtonHide.setChecked(false);
+            } else {
+                viewHolder.toggleButtonHide.setChecked(true);
             }
         }
     }
@@ -434,67 +469,27 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             }
         });
     }
-    public static void deleteButtonTreatment(View view, final String name){
-        final ImageView delete = (ImageView) view.findViewById(R.id.delete);
-        screenSizeTreatment(delete);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = tourPOIsNames.indexOf(name);
-                tourExistingPOIsNames.remove(name);
-                tourPOIsNames.remove(name);
-                String id = namesAndIDs.get(name);
-                tourExistingPOIsIDs.remove(id);
-                tourPOIsIDs.remove(id);
-                namesAndIDs.remove(name);
-                FragmentActivity activity = (FragmentActivity) rootView.getContext();
-                POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(activity, itemSelectedID, id);
-                TourPOIsAdapter.deleteDurationByPosition(position);
-                TourPOIsAdapter.setType("updating");
-                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
-                viewHolderTour.addedPois.setAdapter(adapter);
-            }
-        });
-    }
-    private static void screenSizeTreatment(ImageView delete) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        FragmentActivity act = (FragmentActivity) rootView.getContext();
-        act.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        int widthPixels = metrics.widthPixels;
-        int heightPixels = metrics.heightPixels;
-        float scaleFactor = metrics.density;
-
-
-        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
-        float widthDp = widthPixels / scaleFactor;
-        float heightDp = heightPixels / scaleFactor;
-
-        float smallestWidth = Math.min(widthDp, heightDp);
-
-        if (smallestWidth >= 1000) {
-            delete.setImageResource(R.drawable.ic_remove_circle_black_36dp);
-        }
-    }
     private void updateTourModifications() {
         ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
         int updatedRows = POIsContract.TourEntry.updateByID(getActivity(), contentValues, itemSelectedID);
     }
+
     private void updateTourPOIsModifications() {
         ContentValues contentValues = new ContentValues();
         int i = 1;
         List<Integer> durationList = TourPOIsAdapter.getDurationList();
-        for(String poiName : tourPOIsNames){
+        for (String poiName : tourPOIsNames) {
             contentValues.clear();
             String poiID = namesAndIDs.get(poiName);
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, Integer.parseInt(poiID));
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, itemSelectedID);
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, i);
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, durationList.get(i-1));
-            if(tourExistingPOIsIDs.contains(poiID)) {
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, durationList.get(i - 1));
+            if (tourExistingPOIsIDs.contains(poiID)) {
                 int updatedRows = POIsContract.TourPOIsEntry.updateByTourIdAndPoiID(getActivity(), contentValues, itemSelectedID, poiID);
-            }else{
+            } else {
                 Uri insertedUri = POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
             }
             i++;
@@ -502,14 +497,15 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
         startActivity(intent);
     }
+
     private void setDataToTourLayout(Cursor query, ViewHolderTour viewHolder) {
-        if(query.moveToFirst()){
+        if (query.moveToFirst()) {
             viewHolder.tourName.setText(query.getString(viewHolder.NAME));
             viewHolder.categoryID.setSelection(adapter.getPosition(getShownNameByCategoryID(query, null, viewHolder, "TOUR")));
-            if(query.getString(viewHolder.HIDE).equals("0")) {
-                viewHolder.hide.setText("N");
-            }else{
-                viewHolder.hide.setText("Y");
+            if (query.getString(viewHolder.HIDE).equals("0")) {
+                viewHolder.toggleButtonHide.setChecked(false);
+            } else {
+                viewHolder.toggleButtonHide.setChecked(true);
             }
             int global_interval = query.getInt(viewHolder.INTERVAL);
             viewHolder.global_interval.setText(String.valueOf(global_interval));
@@ -517,7 +513,8 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
             setDataToTourPOIsLayout(global_interval);
         }
     }
-    private void setListOfPOIs(){
+
+    private void setListOfPOIs() {
         POISFragment fragment = new POISFragment();
         Bundle args = new Bundle();
         args.putString("createORupdate", "update");
@@ -525,12 +522,13 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
         fragment.setArguments(args);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_tour_pois, fragment).commit();
     }
+
     private void setDataToTourPOIsLayout(int globalInterval) {
         FragmentActivity fragmentActivity = getActivity();
         Cursor cursor = POIsContract.TourPOIsEntry.getPOIsByTourID(fragmentActivity, itemSelectedID);
         String name, id;
         List<Integer> durationList = new ArrayList<Integer>();
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             name = cursor.getString(1);
             id = String.valueOf(cursor.getInt(0));
             durationList.add(cursor.getInt(2));
@@ -555,6 +553,7 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(fragmentActivity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
 //        viewHolder.addedPois.setAdapter(adapter);
     }
+
     private ViewHolderTour setTOURLayoutSettings(LayoutInflater inflater, ViewGroup container) {
         rootView = inflater.inflate(R.layout.fragment_create_or_update_tour, container, false);
         final ViewHolderTour viewHolder = new ViewHolderTour(rootView);
@@ -564,29 +563,13 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
 
         return viewHolder;
     }
-    //when, from POIsFragment, we are updating a TOUR and we want to ADD another POI
-    public static void setPOItoTourPOIsList(String poiSelected, String completeName) {
-        if(!tourPOIsIDs.contains(poiSelected)){
-            tourPOIsIDs.add(poiSelected);
-            tourPOIsNames.add(completeName);
-            namesAndIDs.put(completeName, poiSelected);
 
-            TourPOIsAdapter.setType("updating");
-            TourPOIsAdapter.addToDurationList(); //the new POI will initially have a duration of 'general duration' and this method introduces that duration to the list of durations.
-
-            FragmentActivity activity = (FragmentActivity) rootView.getContext();
-            TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
-            viewHolderTour.addedPois.setAdapter(adapter);
-        }else{
-            Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
-        }
-    }
-    private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder){
+    private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder) {
 
         String name = "";
         int hide = 0, categoryID = 0;
         name = viewHolder.tourName.getText().toString();
-        hide = getHideValueFromInputForm(viewHolder.hide);
+        hide = getHideValueFromInputForm(viewHolder.toggleButtonHide);
         String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
         categoryID = getFatherIDValueFromInputForm(shownName);
 
@@ -600,33 +583,37 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
     }
 
     /*OTHER UTILITIES*/
-    private int getHideValueFromInputForm(EditText editText){
+    private int getHideValueFromInputForm(ToggleButton editText) {
         final String hide = editText.getText().toString();
         int hideValue = 0;
-        if(hide.equals("Y") || hide.equals("y")) {
+        if (hide.equals("Y") || hide.equals("y")) {
             hideValue = 1;
         }
         return hideValue;
     }
-    private String getShownNameValueFromInputForm(Spinner spinner){
-        if(spinner.getSelectedItem() == null || (spinner.getSelectedItem().toString()).equals("NO ROUTE")){
+
+    private String getShownNameValueFromInputForm(Spinner spinner) {
+        if (spinner.getSelectedItem() == null || (spinner.getSelectedItem().toString()).equals("NO ROUTE")) {
             return "";
-        }else{
+        } else {
             return spinner.getSelectedItem().toString();
         }
     }
-    private int getFatherIDValueFromInputForm(String shownNameSelected){
-        if(shownNameSelected.equals("")){
+
+    private int getFatherIDValueFromInputForm(String shownNameSelected) {
+        if (shownNameSelected.equals("")) {
             return 0;
-        }else {
+        } else {
             return Integer.parseInt(spinnerIDsAndShownNames.get(shownNameSelected));
         }
     }
-    private Cursor getAllSelectedItemData(Uri uri, String selection){
+
+    private Cursor getAllSelectedItemData(Uri uri, String selection) {
         return getActivity().getContentResolver().query(uri,
                 null, selection, new String[]{itemSelectedID}, null);
     }
-    private void setCancelComeBackBehaviour(FloatingActionButton cancel){
+
+    private void setCancelComeBackBehaviour(FloatingActionButton cancel) {
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -636,6 +623,116 @@ public class UpdateItemFragment extends android.support.v4.app.Fragment {
                 startActivity(intent);
             }
         });
+    }
+
+    public static class ViewHolderPoi {
+
+        public int ID = 0;
+        public int NAME = 1;
+        public int VISITED_PLACE_NAME = 2;
+        public int LONGITUDE = 3;
+        public int LATITUDE = 4;
+        public int ALTITUDE = 5;
+        public int HEADING = 6;
+        public int TILT = 7;
+        public int RANGE = 8;
+        public int ALTITUDE_MODE = 9;
+        public int HIDE = 10;
+        public int CATEGORY_ID = 11;
+
+        public EditText nameET;
+        public EditText visitedPlaceET;
+        public EditText longitudeET;
+        public EditText latitudeET;
+        public EditText altitudeET;
+        public EditText headingET;
+        public EditText tiltET;
+        public EditText rangeET;
+        public Spinner categoryID;
+        public FloatingActionButton createPOI;
+        public FloatingActionButton updatePOI;
+        public FloatingActionButton cancel;
+        public Spinner spinnerAltitudeMode;
+        // public EditText altitudeModeET;
+        private ToggleButton toggleButtonHide;
+
+        public ViewHolderPoi(View rootView) {
+
+            nameET = (EditText) rootView.findViewById(R.id.name);
+            visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
+            longitudeET = (EditText) rootView.findViewById(R.id.longitude);
+            latitudeET = (EditText) rootView.findViewById(R.id.latitude);
+            altitudeET = (EditText) rootView.findViewById(R.id.altitude);
+            headingET = (EditText) rootView.findViewById(R.id.heading);
+            tiltET = (EditText) rootView.findViewById(R.id.tilt);
+            rangeET = (EditText) rootView.findViewById(R.id.range);
+            //altitudeModeET = (EditText) rootView.findViewById(R.id.altitudeMode);
+            spinnerAltitudeMode = (Spinner) rootView.findViewById(R.id.spinnerAltitude);
+            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
+            createPOI = (FloatingActionButton) rootView.findViewById(R.id.create_poi);
+            updatePOI = (FloatingActionButton) rootView.findViewById(R.id.update_poi);
+            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
+        }
+    }
+
+    public static class ViewHolderTour {
+
+        public int NAME = 1;
+        public int CATEGORY = 2;
+        public int HIDE = 3;
+        public int INTERVAL = 4;
+
+        public EditText tourName;
+        public Spinner categoryID;
+        public android.support.design.widget.FloatingActionButton createTOUR;
+        public android.support.design.widget.FloatingActionButton updateTOUR;
+        public ListView addedPois;
+        public ImageView up;
+        public ImageView down;
+        public FloatingActionButton cancel;
+        public EditText global_interval;
+        private ToggleButton toggleButtonHide;
+
+        public ViewHolderTour(View rootView) {
+
+            tourName = (EditText) rootView.findViewById(R.id.tour_name);
+            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
+            createTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.create_tour);
+            updateTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.update_tour);
+            addedPois = (ListView) rootView.findViewById(R.id.tour_pois_listview);
+            up = (ImageView) rootView.findViewById(R.id.move_up);
+            down = (ImageView) rootView.findViewById(R.id.move_down);
+            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
+            global_interval = (EditText) rootView.findViewById(R.id.pois_interval);
+        }
+    }
+
+    public static class ViewHolderCategory {
+
+        public EditText categoryName;
+        public Spinner fatherID;
+        public FloatingActionButton createCategory;
+        public FloatingActionButton updateCategory;
+        public FloatingActionButton cancel;
+        private int ID = 0;
+        private int NAME = 1;
+        private int FATHER_ID = 2;
+        private int SHOWN_NAME = 3;
+        private int HIDE = 4;
+        private ToggleButton toggleButtonHide;
+
+        public ViewHolderCategory(View rootView) {
+
+            categoryName = (EditText) rootView.findViewById(R.id.category_name);
+            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            fatherID = (Spinner) rootView.findViewById(R.id.father_spinner);
+            createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
+            updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
+            cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
+
+        }
     }
 
 

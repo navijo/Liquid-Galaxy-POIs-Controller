@@ -45,13 +45,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:gravity="right"
+            android:gravity="end"
             android:paddingTop="10dp">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/taskToolbar"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_gravity="center_vertical"
                 android:background="@android:color/white"
                 app:popupTheme="@style/Theme.AppCompat.Light" />
         </LinearLayout>

@@ -49,31 +49,58 @@ import java.util.Properties;
 public class POISFragment extends Fragment {
 
     public static LiquidGalaxyTourView tour;
-    private CategoriesAdapter adapter;
-    private POIsAdapter adapterPOI;
-    private ListView poisListView, categoriesListView;
-    private View poisView, dialogView;
-    private Dialog dialog;
+    public static int routeID = 0;
+    private static FragmentActivity currentActivity;
+    private static FloatingActionButton stopButton;
+    private static boolean tourIsWorking = false;
     private final String POI_IDselection = POIsContract.POIEntry._ID + " = ?";
     private final String TOUR_IDselection = POIsContract.TourEntry._ID + " = ?";
     private final String Category_IDselection = POIsContract.CategoryEntry._ID + " = ?";
     private final Uri POI_URI = POIsContract.POIEntry.CONTENT_URI;
     private final Uri TOUR_URI = POIsContract.TourEntry.CONTENT_URI;
     private final Uri Category_URI = POIsContract.CategoryEntry.CONTENT_URI;
-    private static FragmentActivity currentActivity;
+    private CategoriesAdapter adapter;
+    private POIsAdapter adapterPOI;
+    private ListView poisListView, categoriesListView;
+    private View poisView, dialogView;
+    private Dialog dialog;
     private String EDITABLE_TAG, notify, createORupdate = "";
     private ImageView backIcon, backStartIcon;
     private List<String> backIDs = new ArrayList<String>(){{
         add("0");
     }};
     private TextView seeingOptions, poisListViewTittle, route, categories_tittle;
-    public static int routeID = 0;
     private LinearLayout additionLayout, poisfragment;
     private FloatingActionButton createPOI, createPOIhere, createTour, createCategory, createTourhere,createCategoryhere,cancel,edit,delete;
-    private static FloatingActionButton stopButton;
-    private static boolean tourIsWorking = false;
 
     public POISFragment() {
+    }
+
+    public static void resetTourSettings() {
+
+        tour.cancel(true);
+        stopButton.setVisibility(View.GONE);
+        stopButton.setClickable(false);
+        tourIsWorking = false;
+
+        showStopAlert();
+    }
+
+    private static void showStopAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+        builder.setMessage("The tour running on LG has been stopped.")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //do things
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public static boolean getTourState() {
+        return tourIsWorking;
     }
 
     @Override
@@ -126,6 +153,7 @@ public class POISFragment extends Fragment {
 
         screenSizeTreatment();
     }
+
     /* Depending on the screen size, it will set different font size.*/
     private void screenSizeTreatment() {
         DisplayMetrics metrics = new DisplayMetrics();
@@ -195,6 +223,7 @@ public class POISFragment extends Fragment {
         showAllCategories();
         changeToAllCategoriesOrClassifiedCategoriesTextViewBehaviour();
     }
+
     private void changeToAllCategoriesOrClassifiedCategoriesTextViewBehaviour(){
         seeingOptions.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,18 +239,21 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void categoryInitialVisibility(){
         additionLayout.setVisibility(View.VISIBLE);
         createCategory.setVisibility(View.VISIBLE);
         createCategoryhere.setVisibility(View.GONE);
         poisListView.setVisibility(View.GONE);
     }
+
     private void allCategoriesElementsVisibility(){
         seeingOptions.setText("See elements by category");
         backIDs.clear();
         backIDs.add("0");
         createCategoryhere.setVisibility(View.GONE);
     }
+
     private void categoriesByCategoriesElementsVisibility(){
         seeingOptions.setText("See all elements");
         createCategoryhere.setVisibility(View.VISIBLE);
@@ -240,6 +272,7 @@ public class POISFragment extends Fragment {
 
         return routeID;
     }
+
     private Cursor getCategoriesCursor(){
         Cursor queryCursor;
         if(EDITABLE_TAG.startsWith("USER")){
@@ -286,6 +319,7 @@ public class POISFragment extends Fragment {
             showToursByCategory(routeID);
         }
     }
+
     private void categoriesItemClickedBehaviour(){
         //When user clicks on one category
         categoriesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -304,6 +338,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void categoriesItemLongClickedBehaviour(){
         //When user long clicks on one category
         if(!notify.equals("POI") && !notify.equals("TOUR")) {
@@ -331,6 +366,7 @@ public class POISFragment extends Fragment {
         buttonsAndCategoriesListVisibility();
         allCategoriesListItemClickedBehaviour();
     }
+
     private void buttonsAndCategoriesListVisibility(){
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
@@ -341,6 +377,7 @@ public class POISFragment extends Fragment {
         categoriesListView.setAdapter(adapter);
         route.setText("/");
     }
+
     private void allCategoriesListItemClickedBehaviour() {
         categoriesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -369,6 +406,7 @@ public class POISFragment extends Fragment {
             return null;
         }
     }
+
     //This method decides to show or not the Back and Back Home button, depending where the user is navigating.
     private void buttonsVisibility(){
         if (!backIDs.get(0).equals("0")) {
@@ -385,6 +423,7 @@ public class POISFragment extends Fragment {
             }
         }
     }
+
     /*The following two methods decides the behaviour of Back and Back Home buttons when they are clicked.*/
     private void setBackButtonTreatment(){
         backIcon.setOnClickListener(new View.OnClickListener() {
@@ -395,6 +434,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void setBackToStartButtonTreatment(){
         backStartIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,12 +445,14 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     //The following three methods are few complex because are called when some category is deleted by the user.
     //These algorythms gets the subCategories and subPOIs of the just deleted category and locate them above category.
     private void updateSonsFatherIDAndShownName(String itemSelectedID, String itemSelectedFatherID){
         final String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), Integer.parseInt(itemSelectedFatherID));
         searchAndEditCategoriesSons(itemSelectedID, itemSelectedFatherID, fatherShownName);
     }
+
     private void searchAndEditCategoriesSons(String itemSelectedID, String fatherOfItemSelectedID, String shownNameFather){
         //we get the ID and Name of the pois whose father ID is itemSelectedID parameter.
         //On the first loop, it will be the ID from the sons of the poi we want to delete
@@ -437,6 +479,7 @@ public class POISFragment extends Fragment {
             }
         }
     }
+
     private void searchAndEditShownNameOfCategoriesSons(int fatherID, String shownName){
         Cursor sonsIDCursor = POIsContract.CategoryEntry.getIDAndNameByFatherID(getActivity(), String.valueOf(fatherID));
         final int COLUMN_ID = 0, COLUMN_NAME = 1;
@@ -453,6 +496,7 @@ public class POISFragment extends Fragment {
             }
         }
     }
+
     //This method is called when one category is deleted, so it have to update the POI field called Category ID.
     private String updatePoiSonsCategoryID(String itemSelectedID){
         String fatherID = POIsContract.CategoryEntry.getFatherIdByID(getActivity(), itemSelectedID);
@@ -461,9 +505,6 @@ public class POISFragment extends Fragment {
         return fatherID;
     }
 
-
-
-
     /*------------POIS TREATMENT------------*/
     private void showPOIs(){
 
@@ -471,6 +512,7 @@ public class POISFragment extends Fragment {
         notify = "POI";//with this field, the following method will know what kind of elements (POIs or Tours) have to show.
         showCategoriesByLevel();//Shows the categories classified because when one category is clicked, the list of POIs of its category is shown
     }
+
     private void POIsButtonsVisibility(){
         if(EDITABLE_TAG.startsWith("ADMIN")) {
             //This 'if' statement is accessed when admin user creates a Tour.
@@ -510,6 +552,7 @@ public class POISFragment extends Fragment {
 
         return queryCursor.getCount();
     }
+
     private Cursor getPOIsAndShowThem(int categoryID){
         Cursor queryCursor;
         //The same behaviour than in categories treatment
@@ -528,6 +571,7 @@ public class POISFragment extends Fragment {
 
         return queryCursor;
     }
+
     private void poisListItemClickedBehaviour(final int categoryID) {
         poisListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -543,6 +587,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void clickedByAdminBehaviour(int itemSelectedID, Cursor cursor, int categoryID){
         if (EDITABLE_TAG.endsWith("/TOUR_POIS")) {
             String completeName = cursor.getString(1);
@@ -561,6 +606,7 @@ public class POISFragment extends Fragment {
             deleteButtonTreatment(itemSelectedID, POI_URI, POI_IDselection, "POI", getWhereClauseCategory("CATEGORY LEVEL"), whereClauseForRefreshing, delete, dialog);
         }
     }
+
     private void clickedByBasicUserBehaviour(int itemSelectedID){
         try {
             HashMap<String, String> poi = getPOIData(itemSelectedID);//we get the POI data to be shown on LG
@@ -595,6 +641,7 @@ public class POISFragment extends Fragment {
         }
         return poi;
     }
+
     private String buildCommand(HashMap<String, String> poi){
         return "echo 'flytoview=<LookAt><longitude>" + poi.get("longitude") +
                 "</longitude><latitude>" + poi.get("latitude") +
@@ -606,10 +653,6 @@ public class POISFragment extends Fragment {
                 "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
     }
 
-
-
-
-
     /*------------TOURS TREATMENT------------*/
     private void showTOURs(){
 
@@ -617,6 +660,7 @@ public class POISFragment extends Fragment {
         showAllTours();
         changeToAllToursOrClassifiedToursTextViewBehaviour();
     }
+
     private void initialTourButtonsVisibility(){
         if(EDITABLE_TAG.startsWith("ADMIN")) {
             additionLayout.setVisibility(View.VISIBLE);
@@ -630,6 +674,7 @@ public class POISFragment extends Fragment {
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
     }
+
     private void changeToAllToursOrClassifiedToursTextViewBehaviour(){
         seeingOptions.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -645,6 +690,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void allToursButtonsVisibility(){
         seeingOptions.setText("See elements by category");
         backIDs.clear();
@@ -656,6 +702,7 @@ public class POISFragment extends Fragment {
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
     }
+
     private void toursByCategoriesVisibility(){
         poisListViewTittle.setText("Tours");
         seeingOptions.setVisibility(View.VISIBLE);
@@ -674,6 +721,7 @@ public class POISFragment extends Fragment {
         poisListItemClickedBehaviour();
 
     }
+
     private void seeAllToursOnScreen(){
         final Cursor queryCursor;
         if(EDITABLE_TAG.startsWith("USER")) {
@@ -690,6 +738,7 @@ public class POISFragment extends Fragment {
         categoriesListView.setVisibility(View.GONE);
         poisListView.setAdapter(adapterPOI);
     }
+
     private void poisListItemClickedBehaviour(){
         poisListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -731,6 +780,7 @@ public class POISFragment extends Fragment {
 
         return queryCursor.getCount();
     }
+
     private Cursor seeToursByCategoryOnScreen(int categoryID){
         final Cursor queryCursor;
         if (EDITABLE_TAG.startsWith("USER")) {
@@ -749,6 +799,7 @@ public class POISFragment extends Fragment {
 
         return queryCursor;
     }
+
     private void tourItemClickedBehaviour(final int categoryID){
         poisListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -789,10 +840,12 @@ public class POISFragment extends Fragment {
 
         return dialog;
     }
+
     //When user deletes one POI of the tour.
     private int deletePOIsOfTours(String itemSelectedID){
         return POIsContract.TourPOIsEntry.deleteByPoiID(getActivity(), itemSelectedID);
     }
+
     //When one POI is added inside one Tour when this is being created.
     private void addTourPOIsButtonTreatment(final int itemSelectedID, final String completeName, FloatingActionButton add){
 
@@ -813,6 +866,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     //The following six methods are called when user stops the view of one Tour on the LG screens.
     private void stopButtonBehaviour(final LiquidGalaxyTourView tour) {
         stopButton.setOnClickListener(new View.OnClickListener() {
@@ -822,30 +876,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
-    public static void resetTourSettings() {
 
-        tour.cancel(true);
-        stopButton.setVisibility(View.GONE);
-        stopButton.setClickable(false);
-        tourIsWorking = false;
-
-        showStopAlert();
-    }
-    private static void showStopAlert(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-        builder.setMessage("The tour running on LG has been stopped.")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //do things
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-    public static boolean getTourState(){
-        return tourIsWorking;
-    }
     private void invalidateOtherClickableElements() {
         tourIsWorking = true;
     }
@@ -1071,7 +1102,11 @@ public class POISFragment extends Fragment {
                 return setConnectionWithLiquidGalaxy(command);
             } catch (JSchException e) {
                 cancel(true);
-                Toast.makeText(getActivity(), "Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip", Toast.LENGTH_LONG).show();
+                if (dialog != null) {
+                    dialog.hide();
+                    dialog.dismiss();
+                }
+                Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 return null;
             }
         }

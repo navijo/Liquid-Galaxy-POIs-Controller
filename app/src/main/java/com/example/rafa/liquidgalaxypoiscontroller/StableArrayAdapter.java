@@ -2,6 +2,7 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class StableArrayAdapter extends ArrayAdapter<String> {
         if (position < 0 || position >= this.mIdMap.size()) {
             return -1;
         }
-        return (long) ((Integer) this.mIdMap.get((String) getItem(position))).intValue();
+        return (long) this.mIdMap.get(getItem(position)).intValue();
     }
 
     public boolean hasStableIds() {

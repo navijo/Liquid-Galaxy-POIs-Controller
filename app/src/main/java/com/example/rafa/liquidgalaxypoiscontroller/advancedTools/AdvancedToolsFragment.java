@@ -2,8 +2,11 @@ package com.example.rafa.liquidgalaxypoiscontroller.advancedTools;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -117,15 +120,20 @@ public class AdvancedToolsFragment extends Fragment {
     }
 
     private LGTask getTaskData(int taskId) {
-        Cursor taskCursor = LGTaskEntry.getTaskById(this.getActivity(), String.valueOf(taskId));
+        Cursor taskCursor = LGTaskEntry.getTaskById(String.valueOf(taskId));
         LGTask lgTask = new LGTask();
         if (taskCursor.moveToNext()) {
-            lgTask.setId(taskCursor.getLong(taskCursor.getColumnIndex(LGTaskEntry.COLUMN_LG_TASK_ID)));
-            lgTask.setTitle(taskCursor.getString(taskCursor.getColumnIndex(LGTaskEntry.COLUMN_LG_TASK_TITLE)));
-            lgTask.setDescription(taskCursor.getString(taskCursor.getColumnIndex(LGTaskEntry.COLUMN_LG_TASK_DESC)));
-            lgTask.setScript(taskCursor.getString(taskCursor.getColumnIndex(LGTaskEntry.COLUMN_LG_TASK_SCRIPT)));
+            lgTask.setId(taskCursor.getLong(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_ID)));
+            lgTask.setTitle(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_TITLE)));
+            lgTask.setDescription(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_DESC)));
+            lgTask.setScript(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_SCRIPT)));
+            lgTask.setImage(taskCursor.getBlob(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_IMAGE)));
+            lgTask.setShutdownScript(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_SHUTDOWNSCRIPT)));
+            lgTask.setIp(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_IP)));
+            lgTask.setUser(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_USER)));
+            lgTask.setPassword(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_PASSWORD)));
+            lgTask.setBrowserUrl(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_BROWSER_URL)));
         }
-
         return lgTask;
     }
 
@@ -139,15 +147,6 @@ public class AdvancedToolsFragment extends Fragment {
     public void onStart() {
         super.onStart();
         populateUI();
-    }
-
-    //This private class handles when the dialog dismiss and refresh the ui with the changes
-    private class DialogFragmentDismissHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            populateUI();
-        }
     }
 
     void showCreateDialog() {
@@ -168,12 +167,25 @@ public class AdvancedToolsFragment extends Fragment {
 
             public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<LGTask> parallaxRecyclerAdapter, int i) {
                 LGTask lgTask = parallaxRecyclerAdapter.getData().get(i);
+//                LGTask lgTask = getTaskData(Integer.parseInt(String.valueOf(lgTaskParallax.getId())));
+
+
                 LGTaskHolder taskHolder = (LGTaskHolder) viewHolder;
                 taskHolder.id = lgTask.getId();
                 taskHolder.taskTitle.setText(lgTask.getTitle());
                 taskHolder.taskDescription.setText(lgTask.getDescription());
                 taskHolder.script = lgTask.getScript();
+                if (lgTask.getImage() != null) {
+                    taskHolder.filePhoto.setImageBitmap(BitmapFactory.decodeByteArray(lgTask.getImage(), 0, lgTask.getImage().length));
+                }
+
+                taskHolder.shutdownScript = lgTask.getShutdownScript();
+                taskHolder.browserUrl = lgTask.getBrowserUrl();
+                taskHolder.ip = lgTask.getIp();
+                taskHolder.user = lgTask.getUser();
+                taskHolder.password = lgTask.getPassword();
             }
+
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
@@ -201,12 +213,20 @@ public class AdvancedToolsFragment extends Fragment {
             @Override
             public void onClick(View view, int i) {
                 LGTask task = tasks.get(i);
-                SendCommandTask sendCommandTask = new SendCommandTask(task.getScript());
+                SendCommandTask sendCommandTask = new SendCommandTask(task.getScript(), task.getIp(), task.getUser(), task.getPassword(), task.getBrowserUrl(), false);
                 sendCommandTask.execute();
             }
         });
     }
 
+    //This private class handles when the dialog dismiss and refresh the ui with the changes
+    private class DialogFragmentDismissHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            populateUI();
+        }
+    }
 
     private class LGTaskHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView taskTitle;
@@ -215,6 +235,12 @@ public class AdvancedToolsFragment extends Fragment {
 
         long id;
         String script;
+        String shutdownScript;
+        String browserUrl;
+
+        String ip;
+        String user;
+        String password;
 
         public LGTaskHolder(View itemView) {
             super(itemView);
@@ -235,8 +261,13 @@ public class AdvancedToolsFragment extends Fragment {
                             showEditDialog(id);
                             break;
                         case R.id.launchTask:
-                            SendCommandTask sendCommandTask = new SendCommandTask(script);
+                            SendCommandTask sendCommandTask = new SendCommandTask(script, ip, user, password, browserUrl, false);
                             sendCommandTask.execute();
+                            break;
+                        case R.id.stopTask:
+                            SendCommandTask sendStopCommandTask = new SendCommandTask(shutdownScript, ip, user, password, browserUrl, true);
+                            sendStopCommandTask.execute();
+
                             break;
 
                         case R.id.deleteTask:
@@ -273,10 +304,21 @@ public class AdvancedToolsFragment extends Fragment {
     private class SendCommandTask extends AsyncTask<Void, Void, Boolean> {
 
         String command;
+        String ip;
+        String user;
+        String password;
+        String browserUrl;
+        boolean isStop;
+
         private ProgressDialog dialog;
 
-        public SendCommandTask(String command) {
+        public SendCommandTask(String command, String ip, String user, String password, String browserUrl, boolean isStop) {
             this.command = command;
+            this.ip = ip;
+            this.user = user;
+            this.password = password;
+            this.browserUrl = browserUrl;
+            this.isStop = isStop;
         }
 
         @Override
@@ -303,14 +345,14 @@ public class AdvancedToolsFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                return sendCommandToLG(command);
+                return sendCommandToLG(command, ip, user, password);
             } catch (JSchException e) {
                 cancel(true);
                 if (dialog != null) {
                     dialog.hide();
                     dialog.dismiss();
                 }
-                Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
+
                 return null;
             } catch (IOException e) {
                 cancel(true);
@@ -334,19 +376,34 @@ public class AdvancedToolsFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean success) {
             super.onPostExecute(success);
+            if (success && !this.isStop) {
+
+                if (!browserUrl.startsWith("http://") && !browserUrl.startsWith("https://"))
+                    browserUrl = "http://" + browserUrl;
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUrl));
+                startActivity(browserIntent);
+
+            }
             if (dialog != null) {
                 dialog.hide();
                 dialog.dismiss();
             }
         }
 
-        private Boolean sendCommandToLG(String command) throws Exception {
+        @Override
+        protected void onCancelled(Boolean aBoolean) {
+            super.onCancelled(aBoolean);
+            Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
+        }
+
+        private Boolean sendCommandToLG(String command, String pIp, String pUser, String pPassword) throws Exception {
 
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String user = prefs.getString("User", "lg");
-            String password = prefs.getString("Password", "lqgalaxy");
-            String hostname = prefs.getString("HostName", "172.26.17.21");
+            String user = (pUser != null && !pUser.equals("")) ? pUser : prefs.getString("User", "lg");
+            String password = (pPassword != null && !pPassword.equals("")) ? pPassword : prefs.getString("Password", "lqgalaxy");
+            String hostname = (pIp != null && !pIp.equals("")) ? pIp : prefs.getString("HostName", "172.26.17.21");
             int port = Integer.parseInt(prefs.getString("Port", "22"));
 
             JSch jsch = new JSch();

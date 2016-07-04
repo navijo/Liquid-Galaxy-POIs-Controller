@@ -52,7 +52,7 @@
     <string name="icons_tittle"><u>Icons meaning</u></string>
     <string name="add">It has two functionalities: the first and most used works in order to add a new item (POI, Tour or Category) inside the data base; the other is used to add an existing POI inside a Tour when the administration user is creating or updating it.</string>
     <string name="edit">Its functioctionality is to edit one existing item, being a POI, Tour or Category.</string>
-    <string name="cancelButton">Cancels any operation which could consists in creating, updating, adding...</string>
+    <string name="cancelButton">Cancels any operation which could consists in creating, updating, adding…</string>
     <string name="delete">Removes an existing item, being a POI, Tour or Category.</string>
     <string name="confirm">Confirms one action as creating or updating one item.</string>
     <string name="stop">Stops the Tours view on one Liquid Galaxy system.</string>
@@ -94,7 +94,7 @@
     <string name="something_wrong">Ops! Something went wrong</string>
     <string name="connection_failure">Error connecting with Liquid Galaxy system. Try changing username, password, port or the host ip</string>
     <string name="please_enter_search">Please, first type some place to search.</string>
-    <string name="searching">Searching...</string>
+    <string name="searching">Searching…</string>
     <string name="sending_command">Sending Command to LG</string>
     <string name="getting_connection">Getting Connection to LG</string>
     <string name="desc_lg_icon">Liquid Galaxy</string>
@@ -115,5 +115,55 @@
     <string name="edit_task">Edit Task</string>
     <string name="task_updated_ok">The task was successfully updated</string>
 
+    <string name="name">Name</string>
+
+    <string name="altitude_prompt">Elevation Type</string>
+    <string name="place_visit">Place to visit</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
+    <string name="altitude">Altitude</string>
+    <string name="heading">Heading</string>
+    <string name="tilt">Tilt</string>
+    <string name="range">Range</string>
+    <string name="global_interval_tour_text">Global interval (in seconds) for each POI</string>
+    <string name="error_galaxy">Error connecting with Liquid Galaxy. Please, try changing settings.</string>
+    <string name="error_reading_pois"><![CDATA[Error reading POIs. Remember POI name must be between two \'@\' and other features between \'<featureName>\' fields.]]></string>
+    <string name="select_task_logo">Select a Logo for this task</string>
+    <string name="task_logo">Task Logo</string>
+    <string name="update_task_logo">Change Task Logo</string>
+    <string name="delete_task_logo">Remove Task Logo</string>
+    <string name="logOut">Log Out</string>
+    <string name="help">Help</string>
+    <string name="administration_tools">Administration Tools</string>
+    <string name="category">CATEGORY</string>
+    <string name="poi">POI</string>
+    <string name="add_poi">Add Poi</string>
+    <string name="add_poi_tour">Add POI to Tour</string>
+    <string name="please_enter_password">Please, enter the password:</string>
+    <string name="search_some_place">Search some place on Liquid Galaxy…</string>
+    <string name="seconds">(s)</string>
+    <string name="import_pois">Import POIs</string>
+    <string name="password">Password</string>
+    <string name="categories">Categories:</string>
+    <string name="slash">/</string>
+    <string name="relaunch_lg">Relaunch LG</string>
+    <string name="reboot_lg">Reboot LG</string>
+    <string name="shutdown_lg">Shut Down LG</string>
+    <string name="pois">POIs</string>
+    <string name="stop_tour">STOP</string>
+    <string name="new_task_shutdown_script">Shutdown Script</string>
+    <string name="new_task_ip">IP where launch the task</string>
+    <string name="new_task_user">SSH UserName</string>
+    <string name="new_task_password">SSH Password</string>
+    <string name="new_task_browser_URL">Open Browser URL</string>
+    <string name="context_menu_stop_task">Stop Task</string>
+    <string-array name="altitudeMode">
+        <item>absolute</item>
+        <item>clampToGround</item>
+        <item>clampToSeaFloor</item>
+        <item>relativeToGround</item>
+        <item>relativeToSeaFloor</item>
+
+    </string-array>
 
 </resources>

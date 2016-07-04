@@ -28,8 +28,77 @@ public class TourPOIsAdapter extends BaseAdapter {
     private boolean MOVE_TAG = false;
 
     public TourPOIsAdapter(FragmentActivity activity, List<String> tourPOIsNames) {
-        this.activity = activity;
-        this.pois = tourPOIsNames;
+        TourPOIsAdapter.activity = activity;
+        pois = tourPOIsNames;
+    }
+
+    public static void setPOIsDuration(List<Integer> durationList) {
+        poisDuration.clear();
+        poisDuration.addAll(durationList);
+    }
+
+    public static void setType(String t) {
+        type = t;
+    }
+
+    public static int getGlobalInterval() {
+        return global_interval;
+    }
+
+    public static void setGlobalInterval(int globalInterval) {
+        global_interval = globalInterval;
+    }
+
+    public static void addToDurationList() {
+        poisDuration.add(global_interval);
+    }
+
+    public static List<Integer> getDurationList() {
+        return poisDuration;
+    }
+
+    private static void screenSizeTreatment(View view, TextView poi) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+
+
+        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+
+        float smallestWidth = Math.min(widthDp, heightDp);
+
+        if (smallestWidth >= 1000) {
+            ImageView down = (ImageView) view.findViewById(R.id.move_down);
+            ImageView up = (ImageView) view.findViewById(R.id.move_up);
+
+            down.setImageResource(R.drawable.ic_keyboard_arrow_down_black_36dp);
+            up.setImageResource(R.drawable.ic_keyboard_arrow_up_black_36dp);
+            poi.setTextSize(24);
+        } else if (smallestWidth > 720 && smallestWidth < 1000) {
+            poi.setTextSize(22);
+        } else if (smallestWidth <= 720 && smallestWidth >= 600) {
+            poi.setTextSize(20);
+        } else if (smallestWidth < 600 && smallestWidth >= 500) {
+            poi.setTextSize(16);
+        }
+    }
+
+    private static boolean isNumeric(String str) {
+        try {
+            int d = Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    public static void deleteDurationByPosition(int durationIndex) {
+        poisDuration.remove(durationIndex);
     }
 
     /**
@@ -143,6 +212,7 @@ public class TourPOIsAdapter extends BaseAdapter {
             seconds.setText(String.valueOf(poi_interval));
         }
     }
+
     private void setDeleteItemButtonBehaviour(View view, String name) {
         if(type.equals("creating")) {
             CreateItemFragment.deleteButtonTreatment(view, name);
@@ -150,25 +220,7 @@ public class TourPOIsAdapter extends BaseAdapter {
             UpdateItemFragment.deleteButtonTreatment(view, name);
         }
     }
-    public static void setPOIsDuration(List<Integer> durationList) {
-        poisDuration.clear();
-        poisDuration.addAll(durationList);
-    }
-    public static void setType(String t){
-        type = t;
-    }
-    public static void setGlobalInterval(int globalInterval) {
-        global_interval = globalInterval;
-    }
-    public static int getGlobalInterval(){
-        return global_interval;
-    }
-    public static void addToDurationList() {
-        poisDuration.add(global_interval);
-    }
-    public static List<Integer> getDurationList() {
-        return poisDuration;
-    }
+
     private void setArrowsBehaviour(View view, final int position, TextView poi) {
 
         screenSizeTreatment(view, poi);
@@ -186,36 +238,7 @@ public class TourPOIsAdapter extends BaseAdapter {
             }
         });
     }
-    private static void screenSizeTreatment(View view, TextView poi) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        int widthPixels = metrics.widthPixels;
-        int heightPixels = metrics.heightPixels;
-        float scaleFactor = metrics.density;
-
-
-        //The size of the diagonal in inches is equal to the square root of the height in inches squared plus the width in inches squared.
-        float widthDp = widthPixels / scaleFactor;
-        float heightDp = heightPixels / scaleFactor;
-
-        float smallestWidth = Math.min(widthDp, heightDp);
-
-        if (smallestWidth >= 1000) {
-            ImageView down = (ImageView) view.findViewById(R.id.move_down);
-            ImageView up = (ImageView) view.findViewById(R.id.move_up);
-
-            down.setImageResource(R.drawable.ic_keyboard_arrow_down_black_36dp);
-            up.setImageResource(R.drawable.ic_keyboard_arrow_up_black_36dp);
-            poi.setTextSize(24);
-        }else if(smallestWidth >720 && smallestWidth<1000){
-            poi.setTextSize(22);
-        } else if(smallestWidth <= 720 && smallestWidth >= 600 ){
-            poi.setTextSize(20);
-        } else if(smallestWidth < 600 && smallestWidth >= 500 ){
-            poi.setTextSize(16);
-        }
-    }
     private void moveUp(int position){
         String toMoveUp = "";
         String toMoveDown = "";
@@ -242,6 +265,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         }
 
     }
+
     private void moveDown(int position){
         try {
             String toMoveDown = (String) getItem(position);
@@ -265,19 +289,5 @@ public class TourPOIsAdapter extends BaseAdapter {
             Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
         }
 
-    }
-    private static boolean isNumeric(String str){
-        try
-        {
-            int d = Integer.parseInt(str);
-        }
-        catch(NumberFormatException nfe)
-        {
-            return false;
-        }
-        return true;
-    }
-    public static void deleteDurationByPosition(int durationIndex) {
-        poisDuration.remove(durationIndex);
     }
 }

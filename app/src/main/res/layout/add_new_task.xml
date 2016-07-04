@@ -10,11 +10,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
+            android:background="@color/cardview_light_background"
             android:orientation="vertical"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingTop="10dp"
-            android:background="@color/cardview_light_background">
+            android:paddingTop="10dp">
 
 
             <android.support.design.widget.TextInputLayout
@@ -53,28 +53,118 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/new_task_script"
-                    android:lines="10"
-                    android:inputType="textMultiLine|textNoSuggestions"/>
+                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:lines="10" />
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/new_task_shutdown_script"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <EditText
+                    android:id="@+id/new_task_shutdown_script_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_task_shutdown_script"
+                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:lines="10" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/new_task_ip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/new_task_ip_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789."
+                    android:hint="@string/new_task_ip"
+                    android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/new_task_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/new_task_user_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_task_user"
+                    android:inputType="text|textNoSuggestions" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/new_task_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/new_task_password_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_task_password"
+                    android:inputType="textVisiblePassword|textNoSuggestions" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/new_task_url_openBrowser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/new_task_url_openBrowser_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_task_browser_URL"
+                    android:inputType="textUri|textNoSuggestions" />
+            </android.support.design.widget.TextInputLayout>
+
+            <!--logo Upload-->
+            <ImageView
+                android:id="@android:id/icon"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
             <Button
-                android:id="@+id/btn_add_task"
+                android:id="@+id/pickPhoto"
                 android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_task_logo" />
+            <!--End logo Upload-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                android:id="@+id/btn_add_task"
+                    android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                    android:layout_weight="1"
                 android:background="@color/green"
                 android:text="@string/save_new_task"
                 android:textColor="@android:color/white" />
+
             <Button
                 android:id="@+id/btn_cancel_add_task"
-                android:layout_width="fill_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_weight="1"
                 android:background="@color/red"
                 android:text="@string/cancel"
                 android:textColor="@android:color/white" />
+            </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

@@ -9,12 +9,14 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.POIEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourPOIsEntry;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,20 +25,12 @@ import java.util.Properties;
 
 public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     private static final String TAG;
-    private FragmentActivity poisFragmentAct;
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LiquidGalaxyTourView.1 */
-    class TourDialog implements OnClickListener {
-        TourDialog() {
-        }
-
-        public void onClick(DialogInterface arg0, int arg1) {
-        }
-    }
 
     static {
         TAG = LiquidGalaxyTourView.class.getSimpleName();
     }
+
+    private FragmentActivity poisFragmentAct;
 
     protected String doInBackground(String... params) {
         List<HashMap<String, String>> pois = new ArrayList();
@@ -97,7 +91,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     }
 
     private String buildCommand(HashMap<String, String> poi) {
-        return "echo 'flytoview=<LookAt><longitude>" + ((String) poi.get("longitude")) + "</longitude><latitude>" + ((String) poi.get("latitude")) + "</latitude><altitude>" + ((String) poi.get("altitude")) + "</altitude><heading>" + ((String) poi.get("heading")) + "</heading><tilt>" + ((String) poi.get("tilt")) + "</tilt><range>" + ((String) poi.get("range")) + "</range><gx:altitudeMode>" + ((String) poi.get("altitudeMode")) + "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+        return "echo 'flytoview=<LookAt><longitude>" + poi.get("longitude") + "</longitude><latitude>" + poi.get("latitude") + "</latitude><altitude>" + poi.get("altitude") + "</altitude><heading>" + poi.get("heading") + "</heading><tilt>" + poi.get("tilt") + "</tilt><range>" + poi.get("range") + "</range><gx:altitudeMode>" + poi.get("altitudeMode") + "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
     }
 
     private void sendTourPOIs(List<HashMap<String, String>> pois, List<Integer> poisDuration) {
@@ -108,7 +102,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     private void sendOtherTourPOIs(List<HashMap<String, String>> pois, List<Integer> poisDuration) {
         int i = 1;
         while (!isCancelled()) {
-            sendTourPOI(Integer.valueOf(((Integer) poisDuration.get(i)).intValue()), buildCommand((HashMap) pois.get(i)));
+            sendTourPOI(Integer.valueOf(poisDuration.get(i).intValue()), buildCommand((HashMap) pois.get(i)));
             i++;
             if (i == pois.size()) {
                 i = 0;
@@ -158,5 +152,14 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
         channelssh.connect();
         channelssh.disconnect();
         return baos.toString();
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LiquidGalaxyTourView.1 */
+    class TourDialog implements OnClickListener {
+        TourDialog() {
+        }
+
+        public void onClick(DialogInterface arg0, int arg1) {
+        }
     }
 }

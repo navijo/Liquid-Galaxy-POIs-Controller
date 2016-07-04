@@ -13,15 +13,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.rafa.liquidgalaxypoiscontroller.PW.NearbyBeaconsFragment;
-import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -32,7 +29,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -76,7 +72,7 @@ public class LGTools extends Fragment {
                     String sentence = "/home/lg/bin/lg-sudo 'shutdown -h 0' > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "shut down");
                 }catch (Exception e){
-                    Toast.makeText(getActivity(),"Error with Liquid Galaxy.",Toast.LENGTH_LONG);
+                    Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -92,7 +88,7 @@ public class LGTools extends Fragment {
                     String sentence = "/home/lg/bin/lg-sudo reboot > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "reboot");
                 }catch (Exception e){
-                    Toast.makeText(getActivity(),"Error with Liquid Galaxy.",Toast.LENGTH_LONG);
+                    Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -108,7 +104,7 @@ public class LGTools extends Fragment {
                     String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "relaunch");
                 }catch (Exception e){
-                    Toast.makeText(getActivity(),"Error with Liquid Galaxy.",Toast.LENGTH_LONG);
+                    Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -123,20 +119,20 @@ public class LGTools extends Fragment {
         alertbox.setMessage("Are you sure to " + action + " Liquid Galaxy?");
 
         // set a positive/yes button and create a listener
-        alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alertbox.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
 
             // When button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
                 try {
                     setConnectionWithLiquidGalaxy(sentence);
                 } catch (JSchException e) {
-                    Toast.makeText(getActivity(),"Error connecting with Liquid Galaxy. Please, try changing settings.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
         });
 
         // set a negative/no button and create a listener
-        alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alertbox.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             // When button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
             }
@@ -181,7 +177,6 @@ public class LGTools extends Fragment {
             @Override
             public void onClick(View v) {
 
-                //FIXME: Add the option to import them from PW Beacon
 
                 final AlertDialog chooseDialog = new AlertDialog.Builder(getActivity()).create();
                 chooseDialog.setTitle(getResources().getString(R.string.import_pois_dialog_title));
@@ -210,9 +205,7 @@ public class LGTools extends Fragment {
         });
     }
 
-    //TODO: Give me code!
     private void openBluetoothImport() {
-        //getFragmentManager().beginTransaction().add(this.getId(),NearbyBeaconsFragment.newInstance()).commit();
         ((LGPCAdminActivity) getActivity()).mViewPager.setCurrentItem(4);
     }
 
@@ -248,14 +241,10 @@ public class LGTools extends Fragment {
         List<ContentValues> poisList = new ArrayList<ContentValues>();
         File file = new File(filePath);
         if(file.exists()) {
-            FileInputStream inputStream = null;
-            try {
-                inputStream = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            try {
 
+            try {
+                FileInputStream inputStream = null;
+                inputStream = new FileInputStream(file);
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
                 String line = "";
 
@@ -311,7 +300,7 @@ public class LGTools extends Fragment {
             poisList.add(poi);
         }catch (Exception e){
             e.printStackTrace();
-            Toast.makeText(getActivity(),"Error reading POIs. Remember POI name must be between two '@' and other features between '<featureName>' fields.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.error_reading_pois), Toast.LENGTH_LONG).show();
         }
     }
     private String getFileName(){

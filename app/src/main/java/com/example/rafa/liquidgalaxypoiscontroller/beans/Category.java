@@ -75,10 +75,7 @@ public class Category {
         if (!this.name.equals(category.name)) {
             return false;
         }
-        if (this.shownName.equals(category.shownName)) {
-            return true;
-        }
-        return false;
+        return this.shownName.equals(category.shownName);
     }
 
     public int hashCode() {

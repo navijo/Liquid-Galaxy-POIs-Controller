@@ -28,7 +28,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -38,7 +37,6 @@ import android.widget.RemoteViews;
 import com.example.rafa.liquidgalaxypoiscontroller.LGPCAdminActivity;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PhysicalWebCollection;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PhysicalWebCollectionException;
-
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PwPair;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PwsResult;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PwsResultCallback;
@@ -122,24 +120,7 @@ public class UrlDeviceDiscoveryService extends Service implements UrlDeviceDisco
       }
     }
   };
-
-  /**
-   * Binder class for getting connections to the service.
-   */
-  public class LocalBinder extends Binder {
-    public UrlDeviceDiscoveryService getServiceInstance() {
-      return UrlDeviceDiscoveryService.this;
-    }
-  }
   private IBinder mBinder = new LocalBinder();
-
-  /**
-   * Callback for subscribers to this service.
-   */
-  public interface UrlDeviceDiscoveryListener {
-    public void onUrlDeviceDiscoveryUpdate();
-  }
-
   public UrlDeviceDiscoveryService() {
   }
 
@@ -500,5 +481,21 @@ public class UrlDeviceDiscoveryService extends Service implements UrlDeviceDisco
 
   public PhysicalWebCollection getPwCollection() {
     return mPwCollection;
+  }
+
+  /**
+   * Callback for subscribers to this service.
+   */
+  public interface UrlDeviceDiscoveryListener {
+    void onUrlDeviceDiscoveryUpdate();
+  }
+
+  /**
+   * Binder class for getting connections to the service.
+   */
+  public class LocalBinder extends Binder {
+    public UrlDeviceDiscoveryService getServiceInstance() {
+      return UrlDeviceDiscoveryService.this;
+    }
   }
 }

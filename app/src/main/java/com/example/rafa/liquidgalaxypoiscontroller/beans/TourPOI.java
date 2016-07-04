@@ -53,10 +53,7 @@ public class TourPOI {
         if (this.poiID != tourPOI.poiID) {
             return false;
         }
-        if (this.tourID != tourPOI.tourID) {
-            return false;
-        }
-        return true;
+        return this.tourID == tourPOI.tourID;
     }
 
     public int hashCode() {

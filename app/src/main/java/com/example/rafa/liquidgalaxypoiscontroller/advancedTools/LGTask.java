@@ -8,16 +8,46 @@ import android.os.Parcelable;
  */
 public class LGTask implements Parcelable {
 
+    public static final Creator CREATOR =
+            new Creator() {
+                public LGTask createFromParcel(Parcel in) {
+                    return new LGTask(in);
+                }
+
+                public LGTask[] newArray(int size) {
+                    return new LGTask[size];
+                }
+            };
     private long id;
     private String title;
     private String description;
     private String script;
+    private byte[] image;
+    private String shutdownScript;
+    private String ip;
+    private String user;
+    private String password;
+    private String browserUrl;
+
+    public LGTask(long id, String title, String description, String script, byte[] image, String shutdownScript, String ip, String user, String password) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.script = script;
+        this.image = image;
+        this.shutdownScript = shutdownScript;
+        this.ip = ip;
+        this.user = user;
+        this.password = password;
+    }
+
 
     public LGTask() {
-        id = 0l;
+        id = 0;
         title = "";
         script  = "";
         description = "";
+        image = null;
     }
 
     public LGTask(long id,String title, String script,String description) {
@@ -25,6 +55,36 @@ public class LGTask implements Parcelable {
         this.title = title;
         this.script = script;
         this.description = description;
+    }
+
+    public LGTask(Parcel in) {
+        id = in.readLong();
+        title = in.readString();
+        description = in.readString();
+        script = in.readString();
+        image = new byte[in.readInt()];
+        in.readByteArray(image);
+        shutdownScript = in.readString();
+        ip = in.readString();
+        user = in.readString();
+        password = in.readString();
+        browserUrl = in.readString();
+    }
+
+    public String getBrowserUrl() {
+        return browserUrl;
+    }
+
+    public void setBrowserUrl(String browserUrl) {
+        this.browserUrl = browserUrl;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     public long getId() {
@@ -59,6 +119,38 @@ public class LGTask implements Parcelable {
         this.description = description;
     }
 
+    public String getShutdownScript() {
+        return shutdownScript;
+    }
+
+    public void setShutdownScript(String shutdownScript) {
+        this.shutdownScript = shutdownScript;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -77,25 +169,6 @@ public class LGTask implements Parcelable {
         return result;
     }
 
-    public static final Creator CREATOR =
-            new Creator() {
-                public LGTask createFromParcel(Parcel in) {
-                    return new LGTask(in);
-                }
-
-                public LGTask[] newArray(int size) {
-                    return new LGTask[size];
-                }
-            };
-
-
-    public LGTask(Parcel in) {
-        id = in.readLong();
-        title = in.readString();
-        description = in.readString();
-        script = in.readString();
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -108,5 +181,12 @@ public class LGTask implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(script);
+        dest.writeInt(image.length);
+        dest.writeByteArray(image);
+        dest.writeString(shutdownScript);
+        dest.writeString(ip);
+        dest.writeString(password);
+        dest.writeString(user);
+        dest.writeString(browserUrl);
     }
 }

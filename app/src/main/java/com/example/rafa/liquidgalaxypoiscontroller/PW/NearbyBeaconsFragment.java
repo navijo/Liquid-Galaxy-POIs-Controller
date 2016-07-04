@@ -36,8 +36,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -60,8 +58,6 @@ import com.example.rafa.liquidgalaxypoiscontroller.PW.model.POI;
 import com.example.rafa.liquidgalaxypoiscontroller.R;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.example.rafa.liquidgalaxypoiscontroller.utils.CustomXmlPullParser;
-
-import org.apache.http.conn.params.ConnManagerParams;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -91,6 +87,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     private static final long FIRST_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final long SECOND_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final long THIRD_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
+    String requestedFileUrl;
+    String queriesString = "";
     private List<String> mGroupIdQueue;
     private PhysicalWebCollection mPwCollection = null;
     private TextView mScanningAnimationTextView;
@@ -101,17 +99,12 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     private boolean mDebugViewEnabled = false;
     private boolean mSecondScanComplete;
 
-
-    String requestedFileUrl;
-    String queriesString = "";
-
     // The display of gathered urls happens as follows
     // 0. Begin scan
     // 1. Sort and show all urls (mFirstScanTimeout)
     // 2. Sort and show all new urls beneath the first set (mSecondScanTimeout)
     // 3. Show each new url at bottom of list as it comes in
     // 4. Stop scanning (mThirdScanTimeout)
-
     // Run when the FIRST_SCAN_MILLIS has elapsed.
     private Runnable mFirstScanTimeout = new Runnable() {
         @Override
@@ -134,16 +127,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             mSecondScanComplete = true;
         }
     };
-
-    // Run when the THIRD_SCAN_MILLIS has elapsed.
-    private Runnable mThirdScanTimeout = new Runnable() {
-        @Override
-        public void run() {
-            Log.d(TAG, "running third scan timeout");
-            mDiscoveryServiceConnection.disconnect();
-        }
-    };
-
     private AdapterView.OnItemLongClickListener mAdapterViewItemLongClickListener =
             new AdapterView.OnItemLongClickListener() {
                 public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
@@ -152,62 +135,15 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                     return true;
                 }
             };
-
-
-    /**
-     * The connection to the service that discovers urls.
-     */
-    private class DiscoveryServiceConnection implements ServiceConnection {
-        private UrlDeviceDiscoveryService mDiscoveryService;
-        private boolean mRequestCachedUrlDevices;
-
-        @Override
-        public synchronized void onServiceConnected(ComponentName className, IBinder service) {
-            // Get the service
-            UrlDeviceDiscoveryService.LocalBinder localBinder =
-                    (UrlDeviceDiscoveryService.LocalBinder) service;
-            mDiscoveryService = localBinder.getServiceInstance();
-
-            // Start the scanning display
-            mDiscoveryService.addCallback(NearbyBeaconsFragment.this);
-            if (!mRequestCachedUrlDevices) {
-                mDiscoveryService.restartScan();
-            }
-            mPwCollection = mDiscoveryService.getPwCollection();
-            startScanningDisplay(mDiscoveryService.getScanStartTime(), mDiscoveryService.hasResults());
-        }
-
-        @Override
-        public synchronized void onServiceDisconnected(ComponentName className) {
-            // onServiceDisconnected gets called when the connection is unintentionally disconnected,
-            // which should never happen for us since this is a local service
-            mDiscoveryService = null;
-        }
-
-        public synchronized void connect(boolean requestCachedUrlDevices) {
-            if (mDiscoveryService != null) {
-                return;
-            }
-
-            mRequestCachedUrlDevices = requestCachedUrlDevices;
-            Intent intent = new Intent(getActivity(), UrlDeviceDiscoveryService.class);
-            getActivity().startService(intent);
-            getActivity().bindService(intent, this, Context.BIND_AUTO_CREATE);
-        }
-
-        public synchronized void disconnect() {
-            if (mDiscoveryService == null) {
-                return;
-            }
-
-            mDiscoveryService.removeCallback(NearbyBeaconsFragment.this);
-            mDiscoveryService = null;
-            getActivity().unbindService(this);
-            stopScanningDisplay();
-        }
-    }
-
     private DiscoveryServiceConnection mDiscoveryServiceConnection = new DiscoveryServiceConnection();
+    // Run when the THIRD_SCAN_MILLIS has elapsed.
+    private Runnable mThirdScanTimeout = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "running third scan timeout");
+            mDiscoveryServiceConnection.disconnect();
+        }
+    };
 
     public static NearbyBeaconsFragment newInstance() {
         return new NearbyBeaconsFragment();
@@ -251,7 +187,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -274,7 +209,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         super.onPause();
         mDiscoveryServiceConnection.disconnect();
     }
-
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -424,6 +358,59 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                     mNearbyDeviceAdapter.notifyDataSetChanged();
                 }
             });
+        }
+    }
+
+    /**
+     * The connection to the service that discovers urls.
+     */
+    private class DiscoveryServiceConnection implements ServiceConnection {
+        private UrlDeviceDiscoveryService mDiscoveryService;
+        private boolean mRequestCachedUrlDevices;
+
+        @Override
+        public synchronized void onServiceConnected(ComponentName className, IBinder service) {
+            // Get the service
+            UrlDeviceDiscoveryService.LocalBinder localBinder =
+                    (UrlDeviceDiscoveryService.LocalBinder) service;
+            mDiscoveryService = localBinder.getServiceInstance();
+
+            // Start the scanning display
+            mDiscoveryService.addCallback(NearbyBeaconsFragment.this);
+            if (!mRequestCachedUrlDevices) {
+                mDiscoveryService.restartScan();
+            }
+            mPwCollection = mDiscoveryService.getPwCollection();
+            startScanningDisplay(mDiscoveryService.getScanStartTime(), mDiscoveryService.hasResults());
+        }
+
+        @Override
+        public synchronized void onServiceDisconnected(ComponentName className) {
+            // onServiceDisconnected gets called when the connection is unintentionally disconnected,
+            // which should never happen for us since this is a local service
+            mDiscoveryService = null;
+        }
+
+        public synchronized void connect(boolean requestCachedUrlDevices) {
+            if (mDiscoveryService != null) {
+                return;
+            }
+
+            mRequestCachedUrlDevices = requestCachedUrlDevices;
+            Intent intent = new Intent(getActivity(), UrlDeviceDiscoveryService.class);
+            getActivity().startService(intent);
+            getActivity().bindService(intent, this, Context.BIND_AUTO_CREATE);
+        }
+
+        public synchronized void disconnect() {
+            if (mDiscoveryService == null) {
+                return;
+            }
+
+            mDiscoveryService.removeCallback(NearbyBeaconsFragment.this);
+            mDiscoveryService = null;
+            getActivity().unbindService(this);
+            stopScanningDisplay();
         }
     }
 

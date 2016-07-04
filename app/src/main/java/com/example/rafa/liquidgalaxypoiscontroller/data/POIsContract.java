@@ -34,6 +34,10 @@ public class POIsContract {
     public static final String PATH_TOUR_POIS = "tourPois";
     public static final String PATH_LG_TASK = "lgTask";
 
+    public static int delete(FragmentActivity fragmentActivity, Uri uri, String whereClause, String[] whereClauseArgs) {
+        return fragmentActivity.getContentResolver().delete(uri, whereClause, whereClauseArgs);
+    }
+
     public static final class POIEntry implements BaseColumns {
 
         //CONTENT_URI = content://com.example.rafa.liquidgalaxypoiscontroller/poi/
@@ -77,7 +81,7 @@ public class POIsContract {
                     null,
                     COLUMN_CATEGORY_ID + " = ?",
                     new String[]{categoryID},
-                    null);
+                    COLUMN_COMPLETE_NAME);
         }
 
         public static Cursor getNotHidenPOIsByCategory(FragmentActivity fragmentActivity, String categoryID) {
@@ -86,7 +90,7 @@ public class POIsContract {
                     null,
                     COLUMN_CATEGORY_ID + " = ? AND " + COLUMN_HIDE + " = 0",
                     new String[]{categoryID},
-                    null);
+                    COLUMN_COMPLETE_NAME);
         }
         public static int updateCategoryIDByCategoryID(FragmentActivity fragmentActivity, String oldID, String newID) {
             ContentValues contentValues = new ContentValues();
@@ -394,10 +398,6 @@ public class POIsContract {
         }
     }
 
-    public static int delete(FragmentActivity fragmentActivity,Uri uri, String whereClause, String[] whereClauseArgs){
-        return fragmentActivity.getContentResolver().delete(uri, whereClause, whereClauseArgs);
-    }
-
     //TAULA LG_TASKS
     public static final class LGTaskEntry implements BaseColumns{
         //CONTENT_URI = content://com.example.rafa.liquidgalaxypoiscontroller/lgTask/
@@ -414,6 +414,12 @@ public class POIsContract {
         public static final String COLUMN_LG_TASK_DESC = "Description";
         public static final String COLUMN_LG_TASK_TITLE= "Title";
         public static final String COLUMN_LG_TASK_SCRIPT = "Script";
+        public static final String COLUMN_LG_TASK_IMAGE = "Image";
+        public static final String COLUMN_LG_TASK_SHUTDOWNSCRIPT = "Shutdown_Script";
+        public static final String COLUMN_LG_TASK_IP = "IP";
+        public static final String COLUMN_LG_TASK_USER = "User";
+        public static final String COLUMN_LG_TASK_PASSWORD = "Password";
+        public static final String COLUMN_LG_BROWSER_URL = "URL";
 
         public static Uri buildTourUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -423,9 +429,10 @@ public class POIsContract {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
         }
 
-        public static Cursor getTaskById(FragmentActivity fragmentActivity, String itemSelectedID) {
+        public static Cursor getTaskById(String itemSelectedID) {
             return POIsProvider.queryByTaskId(itemSelectedID);
         }
+
 
         public static int updateByTaskId(FragmentActivity activity, ContentValues contentValues,String taskId) {
             String Task_IDselection = COLUMN_LG_TASK_ID + " = ?";

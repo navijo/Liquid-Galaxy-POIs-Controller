@@ -140,6 +140,6 @@ public class Ssdp implements Runnable {
    * Callback for Ssdp discoveries.
    */
   public interface SsdpCallback {
-    public void onSsdpMessageReceived(SsdpMessage ssdpMessage);
+    void onSsdpMessageReceived(SsdpMessage ssdpMessage);
   }
 }

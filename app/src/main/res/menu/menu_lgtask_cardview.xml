@@ -4,24 +4,27 @@
 
 
     <item
-        android:id="@+id/editTask"
-        android:title="@string/context_menu_edit_task"
-        android:icon="@drawable/ic_edit_black_24dp"
+        android:id="@+id/launchTask"
+        android:icon="@drawable/ic_play_arrow_black_48dp"
+        android:title="@string/context_menu_launch_task"
         app:showAsAction="ifRoom" />
-
-
 
     <item
-        android:id="@+id/launchTask"
-        android:title="@string/context_menu_launch_task"
-        android:icon="@drawable/ic_play_arrow_black_24dp"
+        android:id="@+id/stopTask"
+        android:icon="@drawable/ic_stop_black_48dp"
+        android:title="@string/context_menu_stop_task"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/editTask"
+        android:icon="@drawable/ic_mode_edit_black_48dp"
+        android:title="@string/context_menu_edit_task"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/deleteTask"
+        android:icon="@drawable/ic_delete_forever_black_48dp"
         android:title="@string/context_menu_delete_task"
-        android:icon="@drawable/ic_delete_white_24dp"
         app:showAsAction="never" />
 
 

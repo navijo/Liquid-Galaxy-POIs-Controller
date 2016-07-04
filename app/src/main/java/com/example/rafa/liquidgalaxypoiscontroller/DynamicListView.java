@@ -22,26 +22,31 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+
 import com.jcraft.jsch.ChannelSftp;
+
 import java.util.ArrayList;
 
 public class DynamicListView extends ListView {
     private static final TypeEvaluator<Rect> sBoundEvaluator;
+
+    static {
+        sBoundEvaluator = new C01715();
+    }
+
     private final int INVALID_ID;
     private final int INVALID_POINTER_ID;
     private final int LINE_THICKNESS;
     private final int MOVE_DURATION;
     private final int SMOOTH_SCROLL_AMOUNT_AT_EDGE;
+    public ArrayList<String> mCheeseList;
     private long mAboveItemId;
     private int mActivePointerId;
     private long mBelowItemId;
     private boolean mCellIsMobile;
-    public ArrayList<String> mCheeseList;
     private int mDownX;
     private int mDownY;
     private BitmapDrawable mHoverCell;
@@ -56,152 +61,6 @@ public class DynamicListView extends ListView {
     private int mScrollState;
     private int mSmoothScrollAmountAtEdge;
     private int mTotalOffset;
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.1 */
-    class C01671 implements OnItemLongClickListener {
-        C01671() {
-        }
-
-        public boolean onItemLongClick(AdapterView<?> adapterView, View arg1, int pos, long id) {
-            DynamicListView.this.mTotalOffset = 0;
-            int position = DynamicListView.this.pointToPosition(DynamicListView.this.mDownX, DynamicListView.this.mDownY);
-            View selectedView = DynamicListView.this.getChildAt(position - DynamicListView.this.getFirstVisiblePosition());
-            DynamicListView.this.mMobileItemId = DynamicListView.this.getAdapter().getItemId(position);
-            DynamicListView.this.mHoverCell = DynamicListView.this.getAndAddHoverView(selectedView);
-            selectedView.setVisibility(View.INVISIBLE);
-            DynamicListView.this.mCellIsMobile = true;
-            DynamicListView.this.updateNeighborViewsForID(DynamicListView.this.mMobileItemId);
-            return true;
-        }
-    }
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.2 */
-    class C01682 implements OnPreDrawListener {
-        final /* synthetic */ int val$deltaY;
-        final /* synthetic */ ViewTreeObserver val$observer;
-        final /* synthetic */ long val$switchItemID;
-        final /* synthetic */ int val$switchViewStartTop;
-
-        C01682(ViewTreeObserver viewTreeObserver, long j, int i, int i2) {
-            this.val$observer = viewTreeObserver;
-            this.val$switchItemID = j;
-            this.val$deltaY = i;
-            this.val$switchViewStartTop = i2;
-        }
-
-        public boolean onPreDraw() {
-            this.val$observer.removeOnPreDrawListener(this);
-            View switchView = DynamicListView.this.getViewForID(this.val$switchItemID);
-            DynamicListView.this.mTotalOffset = DynamicListView.this.mTotalOffset + this.val$deltaY;
-            switchView.setTranslationY((float) (this.val$switchViewStartTop - switchView.getTop()));
-            ObjectAnimator animator = ObjectAnimator.ofFloat(switchView, View.TRANSLATION_Y, new float[]{0.0f});
-            animator.setDuration(150);
-            animator.start();
-            return true;
-        }
-    }
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.3 */
-    class C01693 implements AnimatorUpdateListener {
-        C01693() {
-        }
-
-        public void onAnimationUpdate(ValueAnimator valueAnimator) {
-            DynamicListView.this.invalidate();
-        }
-    }
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.4 */
-    class C01704 extends AnimatorListenerAdapter {
-        final /* synthetic */ View val$mobileView;
-
-        C01704(View view) {
-            this.val$mobileView = view;
-        }
-
-        public void onAnimationStart(Animator animation) {
-            DynamicListView.this.setEnabled(false);
-        }
-
-        public void onAnimationEnd(Animator animation) {
-            DynamicListView.this.mAboveItemId = -1;
-            DynamicListView.this.mMobileItemId = -1;
-            DynamicListView.this.mBelowItemId = -1;
-            this.val$mobileView.setVisibility(View.VISIBLE);
-            DynamicListView.this.mHoverCell = null;
-            DynamicListView.this.setEnabled(true);
-            DynamicListView.this.invalidate();
-        }
-    }
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.5 */
-    static class C01715 implements TypeEvaluator<Rect> {
-        C01715() {
-        }
-
-        public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
-            return new Rect(interpolate(startValue.left, endValue.left, fraction), interpolate(startValue.top, endValue.top, fraction), interpolate(startValue.right, endValue.right, fraction), interpolate(startValue.bottom, endValue.bottom, fraction));
-        }
-
-        public int interpolate(int start, int end, float fraction) {
-            return (int) (((float) start) + (((float) (end - start)) * fraction));
-        }
-    }
-
-    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.6 */
-    class C01726 implements OnScrollListener {
-        private int mCurrentFirstVisibleItem;
-        private int mCurrentScrollState;
-        private int mCurrentVisibleItemCount;
-        private int mPreviousFirstVisibleItem;
-        private int mPreviousVisibleItemCount;
-
-        C01726() {
-            this.mPreviousFirstVisibleItem = -1;
-            this.mPreviousVisibleItemCount = -1;
-        }
-
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            this.mCurrentFirstVisibleItem = firstVisibleItem;
-            this.mCurrentVisibleItemCount = visibleItemCount;
-            this.mPreviousFirstVisibleItem = this.mPreviousFirstVisibleItem == -1 ? this.mCurrentFirstVisibleItem : this.mPreviousFirstVisibleItem;
-            this.mPreviousVisibleItemCount = this.mPreviousVisibleItemCount == -1 ? this.mCurrentVisibleItemCount : this.mPreviousVisibleItemCount;
-            checkAndHandleFirstVisibleCellChange();
-            checkAndHandleLastVisibleCellChange();
-            this.mPreviousFirstVisibleItem = this.mCurrentFirstVisibleItem;
-            this.mPreviousVisibleItemCount = this.mCurrentVisibleItemCount;
-        }
-
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-            this.mCurrentScrollState = scrollState;
-            DynamicListView.this.mScrollState = scrollState;
-            isScrollCompleted();
-        }
-
-        private void isScrollCompleted() {
-            if (this.mCurrentVisibleItemCount > 0 && this.mCurrentScrollState == 0) {
-                if (DynamicListView.this.mCellIsMobile && DynamicListView.this.mIsMobileScrolling) {
-                    DynamicListView.this.handleMobileCellScroll();
-                } else if (DynamicListView.this.mIsWaitingForScrollFinish) {
-                    DynamicListView.this.touchEventsEnded();
-                }
-            }
-        }
-
-        public void checkAndHandleFirstVisibleCellChange() {
-            if (this.mCurrentFirstVisibleItem != this.mPreviousFirstVisibleItem && DynamicListView.this.mCellIsMobile && DynamicListView.this.mMobileItemId != -1) {
-                DynamicListView.this.updateNeighborViewsForID(DynamicListView.this.mMobileItemId);
-                DynamicListView.this.handleCellSwitch();
-            }
-        }
-
-        public void checkAndHandleLastVisibleCellChange() {
-            if (this.mCurrentFirstVisibleItem + this.mCurrentVisibleItemCount != this.mPreviousFirstVisibleItem + this.mPreviousVisibleItemCount && DynamicListView.this.mCellIsMobile && DynamicListView.this.mMobileItemId != -1) {
-                DynamicListView.this.updateNeighborViewsForID(DynamicListView.this.mMobileItemId);
-                DynamicListView.this.handleCellSwitch();
-            }
-        }
-    }
 
     public DynamicListView(Context context) {
         super(context);
@@ -438,7 +297,7 @@ public class DynamicListView extends ListView {
                 return;
             }
             this.mHoverCellCurrentBounds.offsetTo(this.mHoverCellOriginalBounds.left, mobileView.getTop());
-            ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(this.mHoverCell, "bounds", sBoundEvaluator, new Object[]{this.mHoverCellCurrentBounds});
+            ObjectAnimator hoverViewAnimator = ObjectAnimator.ofObject(this.mHoverCell, "bounds", sBoundEvaluator, this.mHoverCellCurrentBounds);
             hoverViewAnimator.addUpdateListener(new C01693());
             hoverViewAnimator.addListener(new C01704(mobileView));
             hoverViewAnimator.start();
@@ -460,10 +319,6 @@ public class DynamicListView extends ListView {
         this.mCellIsMobile = false;
         this.mIsMobileScrolling = false;
         this.mActivePointerId = -1;
-    }
-
-    static {
-        sBoundEvaluator = new C01715();
     }
 
     private void handleMobileCellScroll() {
@@ -490,5 +345,151 @@ public class DynamicListView extends ListView {
 
     public void setCheeseList(ArrayList<String> cheeseList) {
         this.mCheeseList = cheeseList;
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.5 */
+    static class C01715 implements TypeEvaluator<Rect> {
+        C01715() {
+        }
+
+        public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
+            return new Rect(interpolate(startValue.left, endValue.left, fraction), interpolate(startValue.top, endValue.top, fraction), interpolate(startValue.right, endValue.right, fraction), interpolate(startValue.bottom, endValue.bottom, fraction));
+        }
+
+        public int interpolate(int start, int end, float fraction) {
+            return (int) (((float) start) + (((float) (end - start)) * fraction));
+        }
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.1 */
+    class C01671 implements OnItemLongClickListener {
+        C01671() {
+        }
+
+        public boolean onItemLongClick(AdapterView<?> adapterView, View arg1, int pos, long id) {
+            DynamicListView.this.mTotalOffset = 0;
+            int position = DynamicListView.this.pointToPosition(DynamicListView.this.mDownX, DynamicListView.this.mDownY);
+            View selectedView = DynamicListView.this.getChildAt(position - DynamicListView.this.getFirstVisiblePosition());
+            DynamicListView.this.mMobileItemId = DynamicListView.this.getAdapter().getItemId(position);
+            DynamicListView.this.mHoverCell = DynamicListView.this.getAndAddHoverView(selectedView);
+            selectedView.setVisibility(View.INVISIBLE);
+            DynamicListView.this.mCellIsMobile = true;
+            DynamicListView.this.updateNeighborViewsForID(DynamicListView.this.mMobileItemId);
+            return true;
+        }
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.2 */
+    class C01682 implements OnPreDrawListener {
+        final /* synthetic */ int val$deltaY;
+        final /* synthetic */ ViewTreeObserver val$observer;
+        final /* synthetic */ long val$switchItemID;
+        final /* synthetic */ int val$switchViewStartTop;
+
+        C01682(ViewTreeObserver viewTreeObserver, long j, int i, int i2) {
+            this.val$observer = viewTreeObserver;
+            this.val$switchItemID = j;
+            this.val$deltaY = i;
+            this.val$switchViewStartTop = i2;
+        }
+
+        public boolean onPreDraw() {
+            this.val$observer.removeOnPreDrawListener(this);
+            View switchView = DynamicListView.this.getViewForID(this.val$switchItemID);
+            DynamicListView.this.mTotalOffset = DynamicListView.this.mTotalOffset + this.val$deltaY;
+            switchView.setTranslationY((float) (this.val$switchViewStartTop - switchView.getTop()));
+            ObjectAnimator animator = ObjectAnimator.ofFloat(switchView, View.TRANSLATION_Y, 0.0f);
+            animator.setDuration(150);
+            animator.start();
+            return true;
+        }
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.3 */
+    class C01693 implements AnimatorUpdateListener {
+        C01693() {
+        }
+
+        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            DynamicListView.this.invalidate();
+        }
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.4 */
+    class C01704 extends AnimatorListenerAdapter {
+        final /* synthetic */ View val$mobileView;
+
+        C01704(View view) {
+            this.val$mobileView = view;
+        }
+
+        public void onAnimationStart(Animator animation) {
+            DynamicListView.this.setEnabled(false);
+        }
+
+        public void onAnimationEnd(Animator animation) {
+            DynamicListView.this.mAboveItemId = -1;
+            DynamicListView.this.mMobileItemId = -1;
+            DynamicListView.this.mBelowItemId = -1;
+            this.val$mobileView.setVisibility(View.VISIBLE);
+            DynamicListView.this.mHoverCell = null;
+            DynamicListView.this.setEnabled(true);
+            DynamicListView.this.invalidate();
+        }
+    }
+
+    /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.DynamicListView.6 */
+    class C01726 implements OnScrollListener {
+        private int mCurrentFirstVisibleItem;
+        private int mCurrentScrollState;
+        private int mCurrentVisibleItemCount;
+        private int mPreviousFirstVisibleItem;
+        private int mPreviousVisibleItemCount;
+
+        C01726() {
+            this.mPreviousFirstVisibleItem = -1;
+            this.mPreviousVisibleItemCount = -1;
+        }
+
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            this.mCurrentFirstVisibleItem = firstVisibleItem;
+            this.mCurrentVisibleItemCount = visibleItemCount;
+            this.mPreviousFirstVisibleItem = this.mPreviousFirstVisibleItem == -1 ? this.mCurrentFirstVisibleItem : this.mPreviousFirstVisibleItem;
+            this.mPreviousVisibleItemCount = this.mPreviousVisibleItemCount == -1 ? this.mCurrentVisibleItemCount : this.mPreviousVisibleItemCount;
+            checkAndHandleFirstVisibleCellChange();
+            checkAndHandleLastVisibleCellChange();
+            this.mPreviousFirstVisibleItem = this.mCurrentFirstVisibleItem;
+            this.mPreviousVisibleItemCount = this.mCurrentVisibleItemCount;
+        }
+
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            this.mCurrentScrollState = scrollState;
+            DynamicListView.this.mScrollState = scrollState;
+            isScrollCompleted();
+        }
+
+        private void isScrollCompleted() {
+            if (this.mCurrentVisibleItemCount > 0 && this.mCurrentScrollState == 0) {
+                if (DynamicListView.this.mCellIsMobile && DynamicListView.this.mIsMobileScrolling) {
+                    DynamicListView.this.handleMobileCellScroll();
+                } else if (DynamicListView.this.mIsWaitingForScrollFinish) {
+                    DynamicListView.this.touchEventsEnded();
+                }
+            }
+        }
+
+        public void checkAndHandleFirstVisibleCellChange() {
+            if (this.mCurrentFirstVisibleItem != this.mPreviousFirstVisibleItem && DynamicListView.this.mCellIsMobile && DynamicListView.this.mMobileItemId != -1) {
+                DynamicListView.this.updateNeighborViewsForID(DynamicListView.this.mMobileItemId);
+                DynamicListView.this.handleCellSwitch();
+            }
+        }
+
+        public void checkAndHandleLastVisibleCellChange() {
+            if (this.mCurrentFirstVisibleItem + this.mCurrentVisibleItemCount != this.mPreviousFirstVisibleItem + this.mPreviousVisibleItemCount && DynamicListView.this.mCellIsMobile && DynamicListView.this.mMobileItemId != -1) {
+                DynamicListView.this.updateNeighborViewsForID(DynamicListView.this.mMobileItemId);
+                DynamicListView.this.handleCellSwitch();
+            }
+        }
     }
 }
