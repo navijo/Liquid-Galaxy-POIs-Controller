@@ -55,6 +55,13 @@
                     android:hint="@string/new_task_script"
                     android:inputType="textMultiLine|textNoSuggestions"
                     android:lines="10" />
+
+                <Button
+                    android:id="@+id/uploadExecutionScript"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/uploadExecutionFileScript" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -69,6 +76,13 @@
                     android:hint="@string/new_task_shutdown_script"
                     android:inputType="textMultiLine|textNoSuggestions"
                     android:lines="10" />
+
+                <Button
+                    android:id="@+id/uploadShutDownScript"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/uploadShutdownScript" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -146,12 +160,17 @@
                         android:id="@+id/pickPhoto"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginStart="5dp"
+                        android:background="@drawable/button_rounded_grey"
                         android:text="@string/update_task_logo" />
 
                     <Button
                         android:id="@+id/deletePhoto"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:background="@drawable/button_rounded_grey"
                         android:text="@string/delete_task_logo" />
                     <!--End logo-->
                 </LinearLayout>
@@ -168,7 +187,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:background="@color/green"
+                android:background="@drawable/button_rounded_green"
                 android:text="@string/save_new_task"
                 android:textColor="@android:color/white" />
 
@@ -180,7 +199,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:background="@color/red"
+                android:background="@drawable/button_rounded_red"
                 android:text="@string/cancel"
                 android:textColor="@android:color/white" />
             </LinearLayout>
