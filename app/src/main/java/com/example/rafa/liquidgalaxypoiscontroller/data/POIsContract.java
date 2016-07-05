@@ -420,6 +420,7 @@ public class POIsContract {
         public static final String COLUMN_LG_TASK_USER = "User";
         public static final String COLUMN_LG_TASK_PASSWORD = "Password";
         public static final String COLUMN_LG_BROWSER_URL = "URL";
+        public static final String COLUMN_LG_ISRUNNING = "isRunning";
 
         public static Uri buildTourUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -427,6 +428,11 @@ public class POIsContract {
 
         public static Uri createNewTask(FragmentActivity activity, ContentValues contentValues) {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
+        }
+
+        public static Cursor updateTaskStateById(String itemSelectedID, boolean isRunning) {
+            POIsProvider.updateTaskStateByTaskId(itemSelectedID, isRunning);
+            return getTaskById(itemSelectedID);
         }
 
         public static Cursor getTaskById(String itemSelectedID) {

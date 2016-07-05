@@ -133,6 +133,7 @@ public class AdvancedToolsFragment extends Fragment {
             lgTask.setUser(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_USER)));
             lgTask.setPassword(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_TASK_PASSWORD)));
             lgTask.setBrowserUrl(taskCursor.getString(taskCursor.getColumnIndex(POIsContract.LGTaskEntry.COLUMN_LG_BROWSER_URL)));
+            lgTask.setRunning(taskCursor.getInt(taskCursor.getColumnIndex(LGTaskEntry.COLUMN_LG_ISRUNNING)) == 1);
         }
         return lgTask;
     }
@@ -167,8 +168,6 @@ public class AdvancedToolsFragment extends Fragment {
 
             public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<LGTask> parallaxRecyclerAdapter, int i) {
                 LGTask lgTask = parallaxRecyclerAdapter.getData().get(i);
-//                LGTask lgTask = getTaskData(Integer.parseInt(String.valueOf(lgTaskParallax.getId())));
-
 
                 LGTaskHolder taskHolder = (LGTaskHolder) viewHolder;
                 taskHolder.id = lgTask.getId();
@@ -184,6 +183,13 @@ public class AdvancedToolsFragment extends Fragment {
                 taskHolder.ip = lgTask.getIp();
                 taskHolder.user = lgTask.getUser();
                 taskHolder.password = lgTask.getPassword();
+
+                Toolbar toolbarCard = (Toolbar) viewHolder.itemView.findViewById(R.id.taskToolbar);
+                if (lgTask.isRunning()) {
+                    toolbarCard.getMenu().getItem(0).setVisible(false);
+                } else {
+                    toolbarCard.getMenu().getItem(1).setVisible(false);
+                }
             }
 
 
@@ -213,7 +219,7 @@ public class AdvancedToolsFragment extends Fragment {
             @Override
             public void onClick(View view, int i) {
                 LGTask task = tasks.get(i);
-                SendCommandTask sendCommandTask = new SendCommandTask(task.getScript(), task.getIp(), task.getUser(), task.getPassword(), task.getBrowserUrl(), false);
+                SendCommandTask sendCommandTask = new SendCommandTask(task.getScript(), task.getIp(), task.getUser(), task.getPassword(), task.getBrowserUrl(), false, task.getId());
                 sendCommandTask.execute();
             }
         });
@@ -261,15 +267,13 @@ public class AdvancedToolsFragment extends Fragment {
                             showEditDialog(id);
                             break;
                         case R.id.launchTask:
-                            SendCommandTask sendCommandTask = new SendCommandTask(script, ip, user, password, browserUrl, false);
+                            SendCommandTask sendCommandTask = new SendCommandTask(script, ip, user, password, browserUrl, false, id);
                             sendCommandTask.execute();
                             break;
                         case R.id.stopTask:
-                            SendCommandTask sendStopCommandTask = new SendCommandTask(shutdownScript, ip, user, password, browserUrl, true);
+                            SendCommandTask sendStopCommandTask = new SendCommandTask(shutdownScript, ip, user, password, browserUrl, true, id);
                             sendStopCommandTask.execute();
-
                             break;
-
                         case R.id.deleteTask:
                             AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                             alert.setTitle(getResources().getString(R.string.are_you_sure));
@@ -303,6 +307,7 @@ public class AdvancedToolsFragment extends Fragment {
 
     private class SendCommandTask extends AsyncTask<Void, Void, Boolean> {
 
+        long taskId;
         String command;
         String ip;
         String user;
@@ -312,13 +317,14 @@ public class AdvancedToolsFragment extends Fragment {
 
         private ProgressDialog dialog;
 
-        public SendCommandTask(String command, String ip, String user, String password, String browserUrl, boolean isStop) {
+        public SendCommandTask(String command, String ip, String user, String password, String browserUrl, boolean isStop, long taskId) {
             this.command = command;
             this.ip = ip;
             this.user = user;
             this.password = password;
             this.browserUrl = browserUrl;
             this.isStop = isStop;
+            this.taskId = taskId;
         }
 
         @Override
@@ -378,12 +384,20 @@ public class AdvancedToolsFragment extends Fragment {
             super.onPostExecute(success);
             if (success && !this.isStop) {
 
-                if (!browserUrl.startsWith("http://") && !browserUrl.startsWith("https://"))
-                    browserUrl = "http://" + browserUrl;
+                POIsContract.LGTaskEntry.updateTaskStateById(String.valueOf(taskId), true);
 
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUrl));
-                startActivity(browserIntent);
+                if (browserUrl != null && !browserUrl.equals("")) {
+                    if (!browserUrl.startsWith("http://") && !browserUrl.startsWith("https://"))
+                        browserUrl = "http://" + browserUrl;
 
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserUrl));
+                    startActivity(browserIntent);
+                }
+                populateUI();
+
+            } else if (success) {
+                POIsContract.LGTaskEntry.updateTaskStateById(String.valueOf(taskId), false);
+                populateUI();
             }
             if (dialog != null) {
                 dialog.hide();

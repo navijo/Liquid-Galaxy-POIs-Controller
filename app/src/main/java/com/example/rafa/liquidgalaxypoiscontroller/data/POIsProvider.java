@@ -55,11 +55,17 @@ public class POIsProvider extends ContentProvider {
     }
 
     public static Cursor queryByTaskId(String itemSelectedID) {
-        return mOpenHelper.getReadableDatabase().rawQuery("SELECT t._id,t.title, t.description, t.script,t.shutdown_script,t.image, t.ip,t.user,t.password,t.url FROM LG_TASK t WHERE t._id = ?", new String[]{itemSelectedID});
+        return mOpenHelper.getReadableDatabase().rawQuery("SELECT t._id,t.title, t.description, t.script,t.shutdown_script,t.image, t.ip,t.user,t.password,t.url, t.isrunning FROM LG_TASK t WHERE t._id = ?", new String[]{itemSelectedID});
+    }
+
+    public static void updateTaskStateByTaskId(String itemSelectedID, boolean isRunning) {
+        String sql = "UPDATE LG_TASK SET " + POIsContract.LGTaskEntry.COLUMN_LG_ISRUNNING + "=" + (isRunning ? 1 : 0) + " WHERE _id = ?";
+
+        mOpenHelper.getReadableDatabase().execSQL(sql, new String[]{itemSelectedID});
     }
 
     public static Cursor getAllLGTasks() {
-        String sql = "SELECT t._id,t.title, t.description, t.script,t.shutdown_script,t.image, t.ip,t.user,t.password,t.url FROM LG_TASK t";
+        String sql = "SELECT t._id,t.title, t.description, t.script,t.shutdown_script,t.image, t.ip,t.user,t.password,t.url, t.isrunning FROM LG_TASK t";
         return mOpenHelper.getReadableDatabase().rawQuery(sql, new String[]{});
     }
 

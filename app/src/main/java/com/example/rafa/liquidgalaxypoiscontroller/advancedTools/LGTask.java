@@ -29,6 +29,8 @@ public class LGTask implements Parcelable {
     private String password;
     private String browserUrl;
 
+    private boolean isRunning;
+
     public LGTask(long id, String title, String description, String script, byte[] image, String shutdownScript, String ip, String user, String password) {
         this.id = id;
         this.title = title;
@@ -69,6 +71,7 @@ public class LGTask implements Parcelable {
         user = in.readString();
         password = in.readString();
         browserUrl = in.readString();
+        isRunning = in.readByte() != 0;
     }
 
     public String getBrowserUrl() {
@@ -151,6 +154,14 @@ public class LGTask implements Parcelable {
         this.password = password;
     }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -188,5 +199,6 @@ public class LGTask implements Parcelable {
         dest.writeString(password);
         dest.writeString(user);
         dest.writeString(browserUrl);
+        dest.writeByte((byte) (isRunning ? 1 : 0));
     }
 }
