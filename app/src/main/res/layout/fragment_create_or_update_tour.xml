@@ -14,17 +14,23 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="10dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:divider="?android:attr/dividerHorizontal"
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:baselineAligned="false"
             android:divider="?android:attr/dividerVertical"
             android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/youtNameinputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp">
 
             <EditText
                 android:id="@+id/tour_name"
@@ -32,37 +38,51 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:hint="@string/name" />
+            </android.support.design.widget.TextInputLayout>
 
-            <ToggleButton
-                android:id="@+id/toggleButtonHide"
-                android:layout_width="wrap_content"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/hideInputlayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="false"
-                android:textOff="Visible"
-                android:textOn="Hidden" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp">
+
+                <Switch
+                    android:id="@+id/switchButtonHide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/visibility"
+                    android:textOff="Hidden"
+                    android:textOn="Visible" />
+            </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:baselineAligned="false"
             android:divider="?android:attr/dividerVertical"
             android:orientation="vertical">
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/poisIntervalInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp">
             <EditText
                 android:id="@+id/pois_interval"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/global_interval_tour_text"
                 android:inputType="number" />
+            </android.support.design.widget.TextInputLayout>
 
             <Spinner
                 android:id="@+id/categoryID_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_gravity="end"
-                android:layout_weight="1" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" />
         </LinearLayout>
 
     </LinearLayout>

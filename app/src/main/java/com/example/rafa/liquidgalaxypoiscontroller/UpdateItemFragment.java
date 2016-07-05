@@ -20,8 +20,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -259,9 +259,9 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             //viewHolder.altitudeModeET.setText(query.getString(viewHolder.ALTITUDE_MODE));
             viewHolder.categoryID.setSelection(adapter.getPosition(getShownNameByCategoryID(query, viewHolder, null, "POI")));
             if (query.getString(viewHolder.HIDE).equals("0")) {
-                viewHolder.toggleButtonHide.setChecked(false);
+                viewHolder.switchButtonHide.setChecked(true);
             } else {
-                viewHolder.toggleButtonHide.setChecked(true);
+                viewHolder.switchButtonHide.setChecked(false);
             }
         }
     }
@@ -289,7 +289,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
                 //altitudeMode = viewHolder.altitudeModeET.getText().toString();
                 altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
 
-                hide = getHideValueFromInputForm(viewHolder.toggleButtonHide);
+                hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
 
                 String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
                 categoryID = getFatherIDValueFromInputForm(shownName);
@@ -392,7 +392,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
                 ContentValues contentValues = new ContentValues();
                 final String categoryName = viewHolder.categoryName.getText().toString();
-                final int hideValue = getHideValueFromInputForm(viewHolder.toggleButtonHide);
+                final int hideValue = getHideValueFromInputForm(viewHolder.switchButtonHide);
                 String shownNameSelected = getShownNameValueFromInputForm(viewHolder.fatherID);
                 final int fatherID = getFatherIDValueFromInputForm(shownNameSelected);
                 final String correctShownName = shownNameSelected + viewHolder.categoryName.getText().toString() + "/";
@@ -449,9 +449,9 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             viewHolder.categoryName.setText(query.getString(viewHolder.NAME));
             viewHolder.fatherID.setSelection(adapter.getPosition(fatherShownName));
             if (query.getString(viewHolder.HIDE).equals("0")) {
-                viewHolder.toggleButtonHide.setChecked(false);
+                viewHolder.switchButtonHide.setChecked(true);
             } else {
-                viewHolder.toggleButtonHide.setChecked(true);
+                viewHolder.switchButtonHide.setChecked(false);
             }
         }
     }
@@ -503,9 +503,9 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             viewHolder.tourName.setText(query.getString(viewHolder.NAME));
             viewHolder.categoryID.setSelection(adapter.getPosition(getShownNameByCategoryID(query, null, viewHolder, "TOUR")));
             if (query.getString(viewHolder.HIDE).equals("0")) {
-                viewHolder.toggleButtonHide.setChecked(false);
+                viewHolder.switchButtonHide.setChecked(true);
             } else {
-                viewHolder.toggleButtonHide.setChecked(true);
+                viewHolder.switchButtonHide.setChecked(false);
             }
             int global_interval = query.getInt(viewHolder.INTERVAL);
             viewHolder.global_interval.setText(String.valueOf(global_interval));
@@ -569,7 +569,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         String name = "";
         int hide = 0, categoryID = 0;
         name = viewHolder.tourName.getText().toString();
-        hide = getHideValueFromInputForm(viewHolder.toggleButtonHide);
+        hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
         String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
         categoryID = getFatherIDValueFromInputForm(shownName);
 
@@ -583,11 +583,10 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     /*OTHER UTILITIES*/
-    private int getHideValueFromInputForm(ToggleButton editText) {
-        final String hide = editText.getText().toString();
-        int hideValue = 0;
-        if (hide.equals("Y") || hide.equals("y")) {
-            hideValue = 1;
+    private int getHideValueFromInputForm(Switch switchButton) {
+        int hideValue = 1;
+        if (switchButton.isChecked()) {
+            hideValue = 0;
         }
         return hideValue;
     }
@@ -654,7 +653,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         public FloatingActionButton cancel;
         public Spinner spinnerAltitudeMode;
         // public EditText altitudeModeET;
-        private ToggleButton toggleButtonHide;
+        private Switch switchButtonHide;
 
         public ViewHolderPoi(View rootView) {
 
@@ -668,7 +667,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             rangeET = (EditText) rootView.findViewById(R.id.range);
             //altitudeModeET = (EditText) rootView.findViewById(R.id.altitudeMode);
             spinnerAltitudeMode = (Spinner) rootView.findViewById(R.id.spinnerAltitude);
-            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
             createPOI = (FloatingActionButton) rootView.findViewById(R.id.create_poi);
             updatePOI = (FloatingActionButton) rootView.findViewById(R.id.update_poi);
@@ -692,12 +691,12 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         public ImageView down;
         public FloatingActionButton cancel;
         public EditText global_interval;
-        private ToggleButton toggleButtonHide;
+        private Switch switchButtonHide;
 
         public ViewHolderTour(View rootView) {
 
             tourName = (EditText) rootView.findViewById(R.id.tour_name);
-            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
             createTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.create_tour);
             updateTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.update_tour);
@@ -721,12 +720,12 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         private int FATHER_ID = 2;
         private int SHOWN_NAME = 3;
         private int HIDE = 4;
-        private ToggleButton toggleButtonHide;
+        private Switch switchButtonHide;
 
         public ViewHolderCategory(View rootView) {
 
             categoryName = (EditText) rootView.findViewById(R.id.category_name);
-            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             fatherID = (Spinner) rootView.findViewById(R.id.father_spinner);
             createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
             updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);

@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
-    android:divider="?android:attr/dividerVertical"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -13,122 +12,205 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.rafa.liquidgalaxypoiscontroller.CreateItemFragment">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:divider="?android:attr/dividerHorizontal"
-            android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/nameInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <EditText
                 android:id="@+id/name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:hint="@string/name" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/VisitedPlaceInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <EditText
                 android:id="@+id/visited_place"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:hint="@string/place_visit" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/longitudeInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <EditText
                 android:id="@+id/longitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:digits="0123456789."
                 android:hint="@string/longitude"
                 android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/latitudeInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <EditText
                 android:id="@+id/latitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:digits="0123456789."
                 android:hint="@string/latitude"
                 android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:divider="?android:attr/dividerHorizontal"
-            android:orientation="horizontal">
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="?android:attr/dividerHorizontal"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/altitudeInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <EditText
                 android:id="@+id/altitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:digits="0123456789."
                 android:hint="@string/altitude"
                 android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/headingInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <EditText
                 android:id="@+id/heading"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:digits="0123456789."
                 android:hint="@string/heading"
                 android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tiltInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <EditText
                 android:id="@+id/tilt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:digits="0123456789."
                 android:hint="@string/tilt"
                 android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/rangeInputlayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <EditText
                 android:id="@+id/range"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_weight="1"
                 android:digits="0123456789."
                 android:hint="@string/range"
                 android:inputType="number" />
 
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:divider="?android:attr/dividerHorizontal"
-            android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="?android:attr/dividerHorizontal"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/spinnerAltitudeInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="@string/altitude_prompt">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/altitude_prompt" />
 
             <Spinner
                 android:id="@+id/spinnerAltitude"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:entries="@array/altitudeMode"
                 android:prompt="@string/altitude_prompt" />
+        </android.support.design.widget.TextInputLayout>
 
-            <ToggleButton
-                android:id="@+id/toggleButtonHide"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:textOff="Visible"
-                android:textOn="Hidden" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/hideInputlayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_weight="3">
 
+            <Switch
+                android:id="@+id/switchButtonHide"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/visibility"
+                android:textOff="Hidden"
+                android:textOn="Visible" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/categoryInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_weight="2">
 
             <Spinner
                 android:id="@+id/categoryID_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="start" />
-        </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -144,41 +226,41 @@
             android:layout_weight="2" />
 
     </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/create_poi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toStartOf="@id/cancel_come_back"
-                android:src="@drawable/ic_check_white_24dp"
-                android:text="@string/create_poi"
-                app:backgroundTint="@color/green" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/update_poi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toStartOf="@id/cancel_come_back"
-                android:src="@drawable/ic_check_white_24dp"
-                android:text="@string/update_poi"
-                android:visibility="gone"
-                app:backgroundTint="@color/green" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/create_poi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@id/cancel_come_back"
+            android:src="@drawable/ic_check_white_24dp"
+            android:text="@string/create_poi"
+            app:backgroundTint="@color/green" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/cancel_come_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_close_white_24dp"
-                android:text="@string/cancel"
-                app:backgroundTint="@color/red" />
-        </RelativeLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/update_poi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@id/cancel_come_back"
+            android:src="@drawable/ic_check_white_24dp"
+            android:text="@string/update_poi"
+            android:visibility="gone"
+            app:backgroundTint="@color/green" />
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/cancel_come_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_close_white_24dp"
+            android:text="@string/cancel"
+            app:backgroundTint="@color/red" />
+    </RelativeLayout>
 </LinearLayout>

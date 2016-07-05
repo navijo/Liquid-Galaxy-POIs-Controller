@@ -14,30 +14,49 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <EditText
-        android:id="@+id/category_name"
-            android:layout_width="150dp"
-        android:layout_height="wrap_content"
-            android:layout_gravity="start"
-        android:layout_marginBottom="15dip"
-            android:hint="@string/name"
-            android:inputType="textNoSuggestions" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/categorynameInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp">
 
-        <ToggleButton
-            android:id="@+id/toggleButtonHide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:checked="false"
-            android:textOff="Visible"
-            android:textOn="Hidden" />
+            <EditText
+                android:id="@+id/category_name"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginBottom="15dip"
+                android:hint="@string/name"
+                android:inputType="textNoSuggestions" />
+        </android.support.design.widget.TextInputLayout>
 
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/hideInputlayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp">
+
+            <Switch
+                android:id="@+id/switchButtonHide"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/visibility"
+                android:textOff="Hidden"
+                android:textOn="Visible" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/fatherSpinnerInputLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1">
         <Spinner
-        android:id="@+id/father_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:id="@+id/father_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="200dp" />
+        </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
 

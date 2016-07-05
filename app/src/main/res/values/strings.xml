@@ -106,7 +106,7 @@
     <string name="no">No</string>
     <string name="add_task_header">Add New Task</string>
     <string name="save_new_task">Save</string>
-    <string name="new_task_script">Bash Script</string>
+    <string name="new_task_script">Execution Script</string>
     <string name="new_task_description">Task Description</string>
     <string name="new_task_name">Task Title</string>
     <string name="empty_name_error">The name must not be empty</string>
@@ -157,6 +157,10 @@
     <string name="new_task_password">SSH Password</string>
     <string name="new_task_browser_URL">Open Browser URL</string>
     <string name="context_menu_stop_task">Stop Task</string>
+
+    <string name="uploadExecutionFileScript">Upload Execution Script</string>
+    <string name="uploadShutdownScript">Upload Shutdown Script</string>
+    <string name="visibility">Visibility</string>
     <string-array name="altitudeMode">
         <item>absolute</item>
         <item>clampToGround</item>

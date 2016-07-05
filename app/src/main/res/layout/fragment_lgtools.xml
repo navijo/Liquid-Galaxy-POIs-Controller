@@ -26,7 +26,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="5dp"
             android:layout_weight="1"
-            android:background="#2196F3"
+            android:background="@drawable/button_rounded_blue"
             android:text="@string/import_pois"
             android:textColor="@color/black" />
 
@@ -38,7 +38,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
-            android:background="#00C853"
+            android:background="@drawable/button_rounded_green"
             android:text="@string/relaunch_lg"
             android:textColor="@color/black" />
     </LinearLayout>
@@ -58,7 +58,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:background="#FFEB3B"
+            android:background="@drawable/button_rounded_yellow"
             android:text="@string/reboot_lg"
             android:textColor="@color/black" />
 
@@ -70,7 +70,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:background="#F44336"
+            android:background="@drawable/button_rounded_red"
             android:text="@string/shutdown_lg"
             android:textColor="@color/black" />
 

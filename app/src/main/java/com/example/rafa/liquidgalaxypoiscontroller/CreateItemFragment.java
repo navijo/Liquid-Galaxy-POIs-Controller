@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -24,8 +25,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.google.android.gms.maps.CameraUpdate;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 /*This fragment is the responsible to create POIs, Tours and Categories*/
-public class CreateItemFragment extends android.support.v4.app.Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener, LocationListener, GoogleMap.OnMapLongClickListener {
+public class CreateItemFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener, LocationListener, GoogleMap.OnMapLongClickListener {
 
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
@@ -53,10 +54,8 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
     private static Map<String, String> spinnerIDsAndShownNames, namesAndIDs;
     private static ArrayList<String> tourPOIsNames, tourPOIsIDs;
     private static ViewHolderTour viewHolderTour;
-    double latitude;
-    double longitude;
-    String poiName;
     GoogleMap map;
+    EditText nameInput;
     private LocationManager locationManager;
     private String creationType;
     private Cursor queryCursor;
@@ -332,7 +331,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
         range = Float.parseFloat(viewHolder.rangeET.getText().toString());
         //altitudeMode = viewHolder.altitudeModeET.getText().toString();
-        hide = getHideValueFromInputForm(viewHolder.toggleButtonHide);
+        hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
 
         altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
 
@@ -371,6 +370,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         viewHolder.updatePOI.setVisibility(View.GONE);
         viewHolder.createPOI.setVisibility(View.VISIBLE);
 
+
         //If user has clicked on Create Here, obviously, no spinner categories option will be shown.
         if(creationType.endsWith("HERE")){
             viewHolder.categoryID.setVisibility(View.GONE);
@@ -402,7 +402,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         ContentValues contentValues = new ContentValues();
 
         String categoryName = viewHolder.categoryName.getText().toString();
-        int hideValue = getHideValueFromInputForm(viewHolder.toggleButtonHide);
+        int hideValue = getHideValueFromInputForm(viewHolder.switchButtonHide);
         int fatherID;
         String shownName = "";
         if(creationType.endsWith("HERE")) {
@@ -482,7 +482,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
             throw new Exception("Name field can't be empty. Please, write a name for the Tour.");
         }
 
-        hide = getHideValueFromInputForm(viewHolder.toggleButtonHide);
+        hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
         interval = Integer.parseInt(viewHolder.globalInterval.getText().toString());
         TourPOIsAdapter.setGlobalInterval(interval);
         if(creationType.endsWith("HERE")) {
@@ -564,11 +564,10 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         spinner.setAdapter(adapter);
     } //Fill the spinner with all the categories.
 
-    private int getHideValueFromInputForm(ToggleButton toggleButton) {
-        final String hide = toggleButton.getText().toString();
-        int hideValue = 0;
-        if (hide.equals("Hidden") || hide.equals("y")) {
-            hideValue = 1;
+    private int getHideValueFromInputForm(Switch switchButton) {
+        int hideValue = 1;
+        if (switchButton.isChecked()) {
+            hideValue = 0;
         }
         return hideValue;
     }
@@ -621,7 +620,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         public Spinner spinnerAltitudeMode;
         //  public EditText altitudeModeET;
 //        public EditText hide;
-        private ToggleButton toggleButtonHide;
+        private Switch switchButtonHide;
 
         public ViewHolderPoi(View rootView) {
 
@@ -639,7 +638,7 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
 
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
             //hide = (EditText) rootView.findViewById(R.id.poi_hide);
-            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             createPOI = (FloatingActionButton) rootView.findViewById(R.id.create_poi);
             updatePOI = (FloatingActionButton) rootView.findViewById(R.id.update_poi);
             cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
@@ -655,13 +654,13 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         public android.support.design.widget.FloatingActionButton cancel;
         public ListView addedPois;
         public EditText globalInterval;
-        private ToggleButton toggleButtonHide;
+        private Switch switchButtonHide;
 //        public DynamicListView addedPois;
 
         public ViewHolderTour(View rootView) {
 
             tourName = (EditText) rootView.findViewById(R.id.tour_name);
-            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
             createTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.create_tour);
             updateTOUR = (android.support.design.widget.FloatingActionButton) rootView.findViewById(R.id.update_tour);
@@ -679,12 +678,12 @@ public class CreateItemFragment extends android.support.v4.app.Fragment implemen
         public FloatingActionButton createCategory;
         public FloatingActionButton updateCategory;
         public FloatingActionButton cancel;
-        private ToggleButton toggleButtonHide;
+        private Switch switchButtonHide;
 
         public ViewHolderCategory(View rootView) {
 
             categoryName = (EditText) rootView.findViewById(R.id.category_name);
-            toggleButtonHide = (ToggleButton) rootView.findViewById(R.id.toggleButtonHide);
+            switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             fatherID = (Spinner) rootView.findViewById(R.id.father_spinner);
             createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
             updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
