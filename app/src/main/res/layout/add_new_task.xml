@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/new_task_script"
                     android:inputType="textMultiLine|textNoSuggestions"
-                    android:lines="10" />
+                    android:lines="5" />
 
                 <Button
                     android:id="@+id/uploadExecutionScript"
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/new_task_shutdown_script"
                     android:inputType="textMultiLine|textNoSuggestions"
-                    android:lines="10" />
+                    android:lines="5" />
 
                 <Button
                     android:id="@+id/uploadShutDownScript"
@@ -142,8 +142,8 @@
             <!--logo Upload-->
             <ImageView
                 android:id="@android:id/icon"
-                android:layout_width="100dp"
-                android:layout_height="100dp" />
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
 
             <Button
                 android:id="@+id/pickPhoto"

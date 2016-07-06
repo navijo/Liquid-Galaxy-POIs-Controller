@@ -311,10 +311,12 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
                 //int updatedRows = getActivity().getContentResolver().update(POIsContract.POIEntry.CONTENT_URI, contentValues, POI_IDselection, new String[]{itemSelectedID});
                 if (updatedRows > 0) {
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+                    intent.putExtra("comeFrom", "pois");
                     startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+                    intent.putExtra("comeFrom", "pois");
                     startActivity(intent);
                 }
             }
@@ -440,6 +442,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             }
         }
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+        intent.putExtra("comeFrom", "categories");
         startActivity(intent);
     }
 
@@ -495,6 +498,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             i++;
         }
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+        intent.putExtra("comeFrom", "tours");
         startActivity(intent);
     }
 

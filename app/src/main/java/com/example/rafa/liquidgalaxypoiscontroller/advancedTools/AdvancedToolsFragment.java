@@ -1,5 +1,6 @@
 package com.example.rafa.liquidgalaxypoiscontroller.advancedTools;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,6 +26,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +53,7 @@ import java.util.Properties;
  */
 public class AdvancedToolsFragment extends Fragment {
 
+    ImageButton documentListHelpBtn;
     private RecyclerView rv = null;
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fab;
@@ -77,8 +81,29 @@ public class AdvancedToolsFragment extends Fragment {
         fab = (FloatingActionButton) rootView.findViewById(R.id.add_app);
 
 
-        populateUI();
+        documentListHelpBtn = (ImageButton) rootView.findViewById(R.id.documentListHelp);
 
+        documentListHelpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // custom dialog
+                final Dialog dialog = new Dialog(getActivity());
+                dialog.setContentView(R.layout.help_task_list_dialog);
+                dialog.setTitle(getResources().getString(R.string.taskListHelpTitle));
+
+
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        populateUI();
 
         return rootView;
     }

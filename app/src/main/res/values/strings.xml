@@ -161,13 +161,38 @@
     <string name="uploadExecutionFileScript">Upload Execution Script</string>
     <string name="uploadShutdownScript">Upload Shutdown Script</string>
     <string name="visibility">Visibility</string>
+    <string name="poiNumericFields">The attributes \'Longitude, Latitude, Altitude, Heading, Tilt and Range\' must have numeric values.</string>
+    <string name="categoryExists">This category already exists. Modify the attribute \'Name\'</string>
+    <string name="TourNameExisting">Name field can\'t be empty. Please, write a name for the Tour.</string>
+    <string name="durationIntervalNumeric">The duration of each POI must be in seconds (numeric type).</string>
+    <string name="typeInterval">You must type a global POI interval in seconds.</string>
+    <string name="noRouteText">NO ROUTE</string>
+    <string name="taskListHelpTitle">Task Management Help</string>
+    <string name="playTaskHelpText">Run the script stored in the task with its configuration, if specified. If not, it takes the global configuration of the app</string>
+    <string name="stopTaskHelpText">If the task has been executed before, it runs the shutdown script stored in the task</string>
+    <string name="editTaskHelpText">Edit the task configuration</string>
+    <string name="deleteTaskHelpText">Deletes the task</string>
+    <string name="gotIt">Got it!</string>
     <string-array name="altitudeMode">
         <item>absolute</item>
         <item>clampToGround</item>
         <item>clampToSeaFloor</item>
         <item>relativeToGround</item>
         <item>relativeToSeaFloor</item>
-
     </string-array>
+    <string name="taskDialogHelpText"><b>Task title</b>: The task Title\n\n
+        <b>Task Description</b>:The task description\n\n
+        <b>Execution Script</b>:The script executed when the task is launched\n\n
+        <b>Upload Execution Script</b>:Upload a file containing the run script\n\n
+        <b>Shutdown Script</b>:The Script executed when the task is stopped\n\n
+        <b>Upload Shutdown Script</b>:Upload a file containing the stop script\n\n
+        <b>IP where launch the task</b>:The IP of the server where the task should be executed. If no specified, then the default value from the application setting will be used\n\n
+        <b>SSH UserName</b>:The username to connect to the server via ssh. If no specified, then the default value from the application setting will be used\n\n
+        <b>SSH Password</b>:The password to connect to the server via ssh. If no specified, then the default value from the application setting will be used\n\n
+        <b>Open Browser URL</b>:If specified, when the task finishes its initial script, a web browser pointing to this URL will be opened\n\n
+        <b>Select a Logo for this task</b>:Offers the possibility to upload an image associated with this task that will be displayed next to the task title in the list\n\n
+        <b>Save</b>:Save the task\n\n
+        <b>Cancel</b>:Cancel and close the dialog
+    </string>
 
 </resources>

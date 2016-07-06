@@ -40,6 +40,19 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         }
 
        intent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(getIntent()), PendingIntent.FLAG_ONE_SHOT);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String value = extras.getString("comeFrom");
+            if (value != null && value.equalsIgnoreCase("tours")) {
+                mViewPager.setCurrentItem(1);
+            } else if (value != null && value.equalsIgnoreCase("categories")) {
+                mViewPager.setCurrentItem(2);
+            } else if (value != null && value.equalsIgnoreCase("pois")) {
+                mViewPager.setCurrentItem(0);
+            }
+        }
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

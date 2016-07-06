@@ -178,8 +178,13 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = layoutInflater.inflate(R.layout.fragment_nearby_beacons, container, false);
-        initialize(rootView);
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initialize(view);
     }
 
     @Override

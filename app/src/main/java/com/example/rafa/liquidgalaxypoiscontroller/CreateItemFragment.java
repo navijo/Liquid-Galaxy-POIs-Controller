@@ -309,9 +309,11 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             //After creation, the next view page on screen would be the once corresponding to the
             //admin once.
             Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+            intent.putExtra("comeFrom", "pois");
             startActivity(intent);
+            ;
         }catch (NumberFormatException e){
-            Toast.makeText(getActivity(),"The attributes 'Longitude, Latitude, Altitude, Heading, Tilt and Range' must have numeric values.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.poiNumericFields), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -392,9 +394,10 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), contentValues);
 
             Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+            intent.putExtra("comeFrom", "categories");
             startActivity(intent);
         }catch(android.database.SQLException e){
-            Toast.makeText(getActivity(), "This category already exists. Modify the attribute 'Name'", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.categoryExists), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -479,7 +482,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         int hide = 0, categoryID = 0, interval = 0;
         name = viewHolder.tourName.getText().toString();
         if(name.equals("")){
-            throw new Exception("Name field can't be empty. Please, write a name for the Tour.");
+            throw new Exception(getResources().getString(R.string.TourNameExisting));
         }
 
         hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
@@ -524,7 +527,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
                                 seconds = global_interval;
                             }
                         } catch (NumberFormatException e) {
-                            Toast.makeText(getActivity(), "The duration of each POI must be in seconds (numeric type).", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), getResources().getString(R.string.durationIntervalNumeric), Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -537,10 +540,11 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             }
 
         }catch (NumberFormatException e){
-            Toast.makeText(getActivity(), "You must type a global POI interval in seconds.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.typeInterval), Toast.LENGTH_LONG).show();
         }
 
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
+        intent.putExtra("comeFrom", "tours");
         startActivity(intent);
     }
 
@@ -548,7 +552,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
     private void fillCategorySpinner(Spinner spinner){
 
         List<String> list = new ArrayList<String>();
-        list.add("NO ROUTE");
+        list.add(getResources().getString(R.string.noRouteText));
         spinnerIDsAndShownNames = new HashMap<String, String>();
 
         //We get all the categories IDs and ShownNames
@@ -689,7 +693,6 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
             cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
         }
-
 
     }
 }

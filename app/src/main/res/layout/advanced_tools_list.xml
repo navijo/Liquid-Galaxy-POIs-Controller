@@ -28,11 +28,20 @@
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="20dp"
         android:src="@drawable/ic_add_circle_black_48dp"
-        app:backgroundTint="@color/green"
         android:tintMode="@color/green"
+        app:backgroundTint="@color/green"
         app:elevation="6dp"
         app:fabSize="normal"
         app:pressedTranslationZ="12dp"
         app:rippleColor="@color/grey" />
+
+    <ImageButton
+        android:id="@+id/documentListHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="5dp"
+        android:background="@null"
+        android:src="@drawable/ic_help_black_48dp" />
 
 </RelativeLayout>
