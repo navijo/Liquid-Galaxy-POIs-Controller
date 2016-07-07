@@ -194,5 +194,6 @@
         <b>Save</b>:Save the task\n\n
         <b>Cancel</b>:Cancel and close the dialog
     </string>
+    <string name="changingPlanet">Changing Celestial Body…</string>
 
 </resources>

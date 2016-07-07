@@ -91,7 +91,6 @@ public class AdvancedToolsFragment extends Fragment {
                 dialog.setContentView(R.layout.help_task_list_dialog);
                 dialog.setTitle(getResources().getString(R.string.taskListHelpTitle));
 
-
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -135,6 +134,15 @@ public class AdvancedToolsFragment extends Fragment {
         try {
             while (allTasksCursor.moveToNext()) {
                 int taskId = allTasksCursor.getInt(0);
+                if (taskId == 1) {
+                    //If the task is the LG task, we need to add the  browser URL parameter
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    String hostname = prefs.getString("HostName", "172.26.17.21");
+                    LGTask task = getTaskData(taskId);
+                    if (task.getBrowserUrl() == null) {
+                        POIsContract.LGTaskEntry.updateTaskURlById(String.valueOf(taskId), hostname + ":81/php-interface/index.php");
+                    }
+                }
                 taksList.add(getTaskData(taskId));
             }
             fillAdapter(taksList);
@@ -211,8 +219,10 @@ public class AdvancedToolsFragment extends Fragment {
 
                 Toolbar toolbarCard = (Toolbar) viewHolder.itemView.findViewById(R.id.taskToolbar);
                 if (lgTask.isRunning()) {
+                    //We hide the play button
                     toolbarCard.getMenu().getItem(0).setVisible(false);
                 } else {
+                    //we hide the stop button
                     toolbarCard.getMenu().getItem(1).setVisible(false);
                 }
             }
@@ -409,7 +419,9 @@ public class AdvancedToolsFragment extends Fragment {
             super.onPostExecute(success);
             if (success && !this.isStop) {
 
-                POIsContract.LGTaskEntry.updateTaskStateById(String.valueOf(taskId), true);
+                if (!getTaskData(Integer.parseInt(String.valueOf(taskId))).getShutdownScript().equalsIgnoreCase("")) {
+                    POIsContract.LGTaskEntry.updateTaskStateById(String.valueOf(taskId), true);
+                }
 
                 if (browserUrl != null && !browserUrl.equals("")) {
                     if (!browserUrl.startsWith("http://") && !browserUrl.startsWith("https://"))
@@ -466,7 +478,7 @@ public class AdvancedToolsFragment extends Fragment {
             channelExec.connect();
 
             channelExec.disconnect();
-
+            baos.toString();
             return true;
         }
 

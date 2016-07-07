@@ -19,6 +19,12 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(createTourPOIsEntryTable());
         db.execSQL(createTasksEntryTable());
         createBaseCategories(db);
+        createLgTask(db);
+    }
+
+    private void createLgTask(SQLiteDatabase db) {
+        String sql = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh > /home/lg/startupLog.txt','',0)";
+        db.execSQL(sql);
     }
 
     private void createBaseCategories(SQLiteDatabase db) {

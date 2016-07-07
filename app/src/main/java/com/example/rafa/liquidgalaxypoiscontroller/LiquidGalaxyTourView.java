@@ -3,25 +3,19 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.POIEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourPOIsEntry;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
+import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     private static final String TAG;
@@ -112,7 +106,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
 
     private void sendFirstTourPOI(HashMap<String, String> firstPoi) {
         try {
-            setConnectionWithLiquidGalaxy(buildCommand(firstPoi));
+            LGUtils.setConnectionWithLiquidGalaxy(buildCommand(firstPoi), poisFragmentAct);
             Log.d(TAG, "First send");
         } catch (JSchException e) {
             Log.d(TAG, "Error in connection with Liquid Galaxy.");
@@ -122,7 +116,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     private void sendTourPOI(Integer duration, String command) {
         try {
             Thread.sleep((long) (duration.intValue() * 1000));
-            setConnectionWithLiquidGalaxy(command);
+            LGUtils.setConnectionWithLiquidGalaxy(command, poisFragmentAct);
         } catch (InterruptedException e) {
             e.printStackTrace();
             Log.d(TAG, "Error in duration of POIs.");
@@ -135,24 +129,6 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
         super.onCancelled();
     }
 
-    private String setConnectionWithLiquidGalaxy(String command) throws JSchException {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.poisFragmentAct);
-        String user = prefs.getString("User", "lg");
-        String password = prefs.getString("Password", "lqgalaxy");
-        Session session = new JSch().getSession(user, prefs.getString("HostName", "172.26.17.21"), Integer.parseInt(prefs.getString("Port", "22")));
-        session.setPassword(password);
-        Properties prop = new Properties();
-        prop.put("StrictHostKeyChecking", "no");
-        session.setConfig(prop);
-        session.connect();
-        ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        channelssh.setOutputStream(baos);
-        channelssh.setCommand(command);
-        channelssh.connect();
-        channelssh.disconnect();
-        return baos.toString();
-    }
 
     /* renamed from: com.example.rafa.liquidgalaxypoiscontroller.LiquidGalaxyTourView.1 */
     class TourDialog implements OnClickListener {

@@ -64,6 +64,12 @@ public class POIsProvider extends ContentProvider {
         mOpenHelper.getReadableDatabase().execSQL(sql, new String[]{itemSelectedID});
     }
 
+    public static void updateTaskUrlById(String itemSelectedID, String taskUrl) {
+        String sql = "UPDATE LG_TASK SET " + LGTaskEntry.COLUMN_LG_BROWSER_URL + "='" + (taskUrl) + "' WHERE _id = ?";
+
+        mOpenHelper.getReadableDatabase().execSQL(sql, new String[]{itemSelectedID});
+    }
+
     public static Cursor getAllLGTasks() {
         String sql = "SELECT t._id,t.title, t.description, t.script,t.shutdown_script,t.image, t.ip,t.user,t.password,t.url, t.isrunning FROM LG_TASK t";
         return mOpenHelper.getReadableDatabase().rawQuery(sql, new String[]{});
@@ -72,6 +78,11 @@ public class POIsProvider extends ContentProvider {
     public static Cursor queryByPoiJOINTourPois(String itemSelectedID) {
         String sql = "SELECT t.POI, p.Name, t.POI_Duration FROM poi p INNER JOIN Tour_POIs t ON p._id = t.POI WHERE t.Tour = ? ORDER BY t.POI_Order ASC";
         return mOpenHelper.getReadableDatabase().rawQuery("SELECT t.POI, p.Name, t.POI_Duration FROM poi p INNER JOIN Tour_POIs t ON p._id = t.POI WHERE t.Tour = ? ORDER BY t.POI_Order ASC", new String[]{itemSelectedID});
+    }
+
+    public static Cursor queryPOIById(int poiId) {
+        String sql = "SELECT p.* FROM POI p WHERE p._id = ?";
+        return mOpenHelper.getReadableDatabase().rawQuery(sql, new String[]{String.valueOf(poiId)});
     }
 
     public boolean onCreate() {
@@ -288,4 +299,6 @@ public class POIsProvider extends ContentProvider {
         mOpenHelper = new POIsDbHelper(getContext());
         mOpenHelper.resetDatabase(mOpenHelper.getWritableDatabase());
     }
+
+
 }

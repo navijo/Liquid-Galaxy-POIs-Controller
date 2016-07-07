@@ -7,6 +7,10 @@ public class Category {
     private String name;
     private String shownName;
 
+    public Category() {
+        super();
+    }
+
     public Category(int id, String name, int fatherID, String shownName, String hide) {
         this.id = id;
         this.name = name;

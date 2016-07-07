@@ -50,6 +50,7 @@ public class POIsContract {
         public static final String TABLE_NAME = "poi";
 
         //Table columns
+        public static final String COLUMN_ID = "_id";
         public static final String COLUMN_COMPLETE_NAME = "Name";
         public static final String COLUMN_VISITED_PLACE_NAME = "Visited_Place";
         public static final String COLUMN_LONGITUDE = "Longitude";
@@ -125,6 +126,10 @@ public class POIsContract {
         public static Cursor getPOIByID(FragmentActivity activity, String id) {
             return activity.getContentResolver().query(CONTENT_URI ,null, _ID + " = ?", new String[]{id}, null);
         }
+
+        public static Cursor getPoiByID(int poiId) {
+            return POIsProvider.queryPOIById(poiId);
+        }
     }
 
     public static final class CategoryEntry implements BaseColumns {
@@ -139,6 +144,7 @@ public class POIsContract {
         public static final String TABLE_NAME = "category";
 
         //Table columns
+        public static final String COLUMN_ID = "_id";
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_FATHER_ID = "Father_ID";
         public static final String COLUMN_SHOWN_NAME = "Shown_Name";
@@ -432,6 +438,11 @@ public class POIsContract {
 
         public static Cursor updateTaskStateById(String itemSelectedID, boolean isRunning) {
             POIsProvider.updateTaskStateByTaskId(itemSelectedID, isRunning);
+            return getTaskById(itemSelectedID);
+        }
+
+        public static Cursor updateTaskURlById(String itemSelectedID, String taskUrl) {
+            POIsProvider.updateTaskUrlById(itemSelectedID, taskUrl);
             return getTaskById(itemSelectedID);
         }
 

@@ -6,12 +6,10 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +18,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
+import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,7 +29,6 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /*This class makes reference to the functionalities to apply to Liquid Galaxy. This class is the once
 * which is able to reboot the LG, relaunch it or shut it down. It also is able to import files containing
@@ -124,7 +118,7 @@ public class LGTools extends Fragment {
             // When button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
                 try {
-                    setConnectionWithLiquidGalaxy(sentence);
+                    LGUtils.setConnectionWithLiquidGalaxy(sentence, getActivity());
                 } catch (JSchException e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
@@ -141,35 +135,6 @@ public class LGTools extends Fragment {
         alertbox.show();
     }
 
-    //Here is where the connection to LG is established
-    private void setConnectionWithLiquidGalaxy(String command) throws JSchException {
-
-        //We get the mandatory settings to be able to connect with Liquid Galaxy system.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String user = prefs.getString("User", "lg");
-        String password = prefs.getString("Password", "lqgalaxy");
-        String hostname = prefs.getString("HostName", "172.26.17.21");
-        int port = Integer.parseInt(prefs.getString("Port", "22"));
-
-        JSch jsch = new JSch();
-
-        Session session = jsch.getSession(user, hostname, port);
-        session.setPassword(password);
-
-        Properties prop = new Properties();
-        prop.put("StrictHostKeyChecking", "no");
-        session.setConfig(prop);
-        session.connect();
-
-        ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        channelssh.setOutputStream(baos);
-
-        channelssh.setCommand(command);
-        channelssh.connect();
-        channelssh.disconnect();
-
-    }
 
     /*IMPORT POIS*/
     private void setImportPOIsButtonBehaviour() {
