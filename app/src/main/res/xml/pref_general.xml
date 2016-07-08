@@ -1,39 +1,39 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:title="Liquid Galaxy connection User"
-        android:key="User"
         android:defaultValue="lg"
         android:inputType="text"
-        android:singleLine="true" />
+        android:key="User"
+        android:singleLine="true"
+        android:title="Liquid Galaxy connection User" />
 
     <EditTextPreference
-        android:title="Liquid Galaxy connection Password"
-        android:key="Password"
         android:defaultValue="lqgalaxy"
         android:inputType="text"
-        android:singleLine="true" />
+        android:key="Password"
+        android:singleLine="true"
+        android:title="Liquid Galaxy connection Password" />
 
     <EditTextPreference
-        android:title="Liquid Galaxy connection Host Name (IP)"
-        android:key="HostName"
         android:defaultValue="172.26.17.21"
-        android:inputType="number"
         android:digits="0123456789."
-        android:singleLine="true" />
+        android:inputType="numberDecimal"
+        android:key="HostName"
+        android:singleLine="true"
+        android:title="Liquid Galaxy connection Host Name (IP)" />
 
     <EditTextPreference
-        android:title="Liquid Galaxy connection Port"
-        android:key="Port"
         android:defaultValue="22"
         android:inputType="number"
-        android:singleLine="true" />
+        android:key="Port"
+        android:singleLine="true"
+        android:title="Liquid Galaxy connection Port" />
 
     <EditTextPreference
-        android:title="Administration Password"
-        android:key="AdminPassword"
         android:defaultValue="lg"
         android:inputType="text"
-        android:singleLine="true" />
+        android:key="AdminPassword"
+        android:singleLine="true"
+        android:title="Administration Password" />
 
 </PreferenceScreen>

@@ -59,7 +59,7 @@
                 android:layout_gravity="start"
                 android:digits="0123456789."
                 android:hint="@string/longitude"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -75,7 +75,7 @@
                 android:layout_gravity="start"
                 android:digits="0123456789."
                 android:hint="@string/latitude"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
@@ -100,7 +100,7 @@
                 android:layout_gravity="start"
                 android:digits="0123456789."
                 android:hint="@string/altitude"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -116,7 +116,7 @@
                 android:layout_gravity="start"
                 android:digits="0123456789."
                 android:hint="@string/heading"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -132,7 +132,7 @@
                 android:layout_gravity="start"
                 android:digits="0123456789."
                 android:hint="@string/tilt"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -148,7 +148,7 @@
                 android:layout_gravity="start"
                 android:digits="0123456789."
                 android:hint="@string/range"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
 
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>

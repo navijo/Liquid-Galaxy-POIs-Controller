@@ -1,10 +1,14 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -26,24 +30,26 @@ import com.jcraft.jsch.JSchException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class SearchFragment extends Fragment {
 
+    private final int REQ_CODE_SPEECH_INPUT = 100;
     View rootView;
     GridView poisGridView;
     private EditText editSearch;
     private FloatingActionButton buttonSearch;
     private ImageView earth, moon, mars;
     private String currentPlanet = "EARTH";
+    private FloatingActionButton btnSpeak;
 
     public SearchFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
         editSearch = (EditText) rootView.findViewById(R.id.search_edittext);
@@ -52,6 +58,16 @@ public class SearchFragment extends Fragment {
         moon = (ImageView) rootView.findViewById(R.id.moon);
         mars = (ImageView) rootView.findViewById(R.id.mars);
 
+        btnSpeak = (FloatingActionButton) rootView.findViewById(R.id.btnSpeak);
+
+        btnSpeak.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                promptSpeechInput();
+            }
+        });
+
         screenSizeTreatment();
         setSearchInLGButton(rootView);
         setPlanetsButtonsBehaviour();
@@ -59,6 +75,45 @@ public class SearchFragment extends Fragment {
         poisGridView = (GridView) rootView.findViewById(R.id.POISgridview);
 
         return rootView;
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.speech_not_supported),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == Activity.RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                    String placeToSearch = result.get(0);
+                    if (!placeToSearch.equals("") && placeToSearch != null) {
+                        editSearch.setText(placeToSearch);
+                        String command = buildSearchCommand(placeToSearch);
+                        SearchTask searchTask = new SearchTask(command, false);
+                        searchTask.execute();
+
+                    } else {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.please_enter_search), Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+            }
+
+        }
     }
 
     @Override

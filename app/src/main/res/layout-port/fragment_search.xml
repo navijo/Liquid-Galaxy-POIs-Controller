@@ -15,29 +15,29 @@
 
         <ImageView
             android:id="@+id/earth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="10dp"
-            android:maxHeight="20dp"
+            android:maxHeight="50dp"
             android:src="@drawable/earth" />
 
         <ImageView
             android:id="@+id/moon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="10dp"
-            android:maxHeight="20dp"
+            android:maxHeight="50dp"
             android:src="@drawable/moon" />
 
         <ImageView
             android:id="@+id/mars"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="10dp"
-            android:maxHeight="20dp"
+            android:maxHeight="50dp"
             android:src="@drawable/mars" />
     </LinearLayout>
 
@@ -53,7 +53,7 @@
 
         <EditText
             android:id="@+id/search_edittext"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"

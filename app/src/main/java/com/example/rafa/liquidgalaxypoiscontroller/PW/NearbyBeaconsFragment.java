@@ -47,6 +47,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,6 +99,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     private SwipeRefreshWidget mSwipeRefreshWidget;
     private boolean mDebugViewEnabled = false;
     private boolean mSecondScanComplete;
+
+    private LinearLayout arrowDownLayout;
 
     // The display of gathered urls happens as follows
     // 0. Begin scan
@@ -168,6 +171,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         ListView listView = (ListView) rootView.findViewById(android.R.id.list);
         listView.setOnItemLongClickListener(mAdapterViewItemLongClickListener);
 
+        arrowDownLayout = (LinearLayout) rootView.findViewById(R.id.arrow_down);
     }
 
     @Override
@@ -268,6 +272,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         // for long enough
         Log.d(TAG, "startScanningDisplay " + scanStartTime + " " + hasResults);
         long elapsedMillis = new Date().getTime() - scanStartTime;
+        arrowDownLayout.setVisibility(View.VISIBLE);
         if (elapsedMillis < FIRST_SCAN_TIME_MILLIS
                 || (elapsedMillis < SECOND_SCAN_TIME_MILLIS && !hasResults)) {
             mScanningAnimationTextView.setAlpha(1f);
@@ -299,6 +304,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         mDiscoveryServiceConnection.disconnect();
         mSwipeRefreshWidget.setRefreshing(true);
         mDiscoveryServiceConnection.connect(false);
+        arrowDownLayout.setVisibility(View.INVISIBLE);
     }
 
     private void emptyGroupIdQueue() {
@@ -336,6 +342,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             public void onAnimationEnd(Animator animation) {
                 mScanningAnimationTextView.setAlpha(0f);
                 mScanningAnimationDrawable.stop();
+                arrowDownLayout.setVisibility(View.VISIBLE);
             }
 
             @Override
