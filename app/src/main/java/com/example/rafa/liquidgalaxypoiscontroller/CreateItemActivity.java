@@ -12,7 +12,7 @@ public class CreateItemActivity extends ActionBarActivity {
         setContentView(R.layout.activity_create_item);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new CreateItemFragment())
+                    .add(R.id.container, CreateItemFragment.newInstance())
                     .commit();
         }
     }

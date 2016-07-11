@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +55,12 @@ public class PoisGridViewAdapter extends BaseAdapter {
         final POI currentPoi = this.poiList.get(i);
         Button button = new Button(context);
         button.setText(currentPoi.getName());
+
+        Drawable top = context.getResources().getDrawable(R.drawable.ic_place_black_24dp);
+        button.setCompoundDrawablesWithIntrinsicBounds(top, null, null, null);
+
         button.setBackground(context.getResources().getDrawable(R.drawable.button_rounded_grey));
         button.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,6 +75,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
 
     private String buildCommand(POI poi) {
+
         return "echo 'flytoview=<LookAt><longitude>" + poi.getLongitude() +
                 "</longitude><latitude>" + poi.getLatitude() +
                 "</latitude><altitude>" + poi.getAltitude() +
@@ -115,15 +120,22 @@ public class PoisGridViewAdapter extends BaseAdapter {
             try {
                 return LGUtils.setConnectionWithLiquidGalaxy(command, activity);
             } catch (JSchException e) {
-                cancel(true);
+                this.cancel(true);
                 if (dialog != null) {
-                    dialog.hide();
                     dialog.dismiss();
                 }
-                Toast.makeText(context, context.getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, context.getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
+                    }
+                });
+
                 return null;
             }
         }
+
 
         @Override
         protected void onPostExecute(String success) {

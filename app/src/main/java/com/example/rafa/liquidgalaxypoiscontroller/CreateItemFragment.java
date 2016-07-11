@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,6 +51,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
+    static CreateItemFragment fragment;
     private static View rootView= null;
     private static Map<String, String> spinnerIDsAndShownNames, namesAndIDs;
     private static ArrayList<String> tourPOIsNames, tourPOIsIDs;
@@ -59,11 +61,17 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
     private LocationManager locationManager;
     private String creationType;
     private Cursor queryCursor;
+    private long categoryId;
 
     public CreateItemFragment() {
         tourPOIsIDs = new ArrayList<String>();
         tourPOIsNames = new ArrayList<String>();
         namesAndIDs = new HashMap<String, String>();
+    }
+
+    public static CreateItemFragment newInstance() {
+        fragment = new CreateItemFragment();
+        return fragment;
     }
 
     /*    To be able to add one POI inside the Tour POIs List, as it is said inside setTourLayoutSettings method,
@@ -376,6 +384,21 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         //If user has clicked on Create Here, obviously, no spinner categories option will be shown.
         if(creationType.endsWith("HERE")){
             viewHolder.categoryID.setVisibility(View.GONE);
+
+            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(fragment.getActivity(), "EARTH");
+            long earthCategorycategoryId = 0;
+            if (categories != null && categories.moveToFirst()) {
+                //Category Exists, we fetch it
+                earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(fragment.getActivity(), "EARTH/");
+
+                if (POISFragment.routeID != 0 && earthCategorycategoryId != POISFragment.routeID) {
+                    rootView.findViewById(R.id.mapPOILayout).setVisibility(View.GONE);
+                } else {
+                    rootView.findViewById(R.id.mapPOILayout).setVisibility(View.VISIBLE);
+                }
+            }
+
+
         }else{
             fillCategorySpinner(viewHolder.categoryID);
         }
@@ -626,7 +649,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 //        public EditText hide;
         private Switch switchButtonHide;
 
-        public ViewHolderPoi(View rootView) {
+        public ViewHolderPoi(final View rootView) {
 
             name = (EditText) rootView.findViewById(R.id.name);
             visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
@@ -641,6 +664,29 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             spinnerAltitudeMode = (Spinner) rootView.findViewById(R.id.spinnerAltitude);
 
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
+            categoryID.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long selectedItemId) {
+                    Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(fragment.getActivity(), "EARTH");
+                    long earthCategorycategoryId = 0;
+                    if (categories != null && categories.moveToFirst()) {
+                        //Category Exists, we fetch it
+                        earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(fragment.getActivity(), "EARTH/");
+
+                        if (selectedItemId != 0 && earthCategorycategoryId != selectedItemId) {
+                            rootView.findViewById(R.id.mapPOILayout).setVisibility(View.GONE);
+                        } else {
+                            rootView.findViewById(R.id.mapPOILayout).setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
             //hide = (EditText) rootView.findViewById(R.id.poi_hide);
             switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             createPOI = (FloatingActionButton) rootView.findViewById(R.id.create_poi);
