@@ -20,7 +20,9 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -88,6 +90,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     private static final long FIRST_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final long SECOND_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final long THIRD_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
+    public static int REQUEST_ENABLE_BLUETOOTH = 1;
     String requestedFileUrl;
     String queriesString = "";
     private List<String> mGroupIdQueue;
@@ -101,6 +104,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     private boolean mSecondScanComplete;
 
     private LinearLayout arrowDownLayout;
+
+    private View rootView;
 
     // The display of gathered urls happens as follows
     // 0. Begin scan
@@ -153,6 +158,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     }
 
     private void initialize(View rootView) {
+
+
         mGroupIdQueue = new ArrayList<>();
         mHandler = new Handler();
 
@@ -172,6 +179,16 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         listView.setOnItemLongClickListener(mAdapterViewItemLongClickListener);
 
         arrowDownLayout = (LinearLayout) rootView.findViewById(R.id.arrow_down);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
+            if (resultCode == Activity.RESULT_OK) {
+                initialize(rootView);
+            }
+        }
     }
 
     @Override
@@ -181,7 +198,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = layoutInflater.inflate(R.layout.fragment_nearby_beacons, container, false);
+        rootView = layoutInflater.inflate(R.layout.fragment_nearby_beacons, container, false);
         return rootView;
     }
 
@@ -268,30 +285,44 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     }
 
     private void startScanningDisplay(long scanStartTime, boolean hasResults) {
-        // Start the scanning animation only if we don't haven't already been scanning
-        // for long enough
-        Log.d(TAG, "startScanningDisplay " + scanStartTime + " " + hasResults);
-        long elapsedMillis = new Date().getTime() - scanStartTime;
-        arrowDownLayout.setVisibility(View.VISIBLE);
-        if (elapsedMillis < FIRST_SCAN_TIME_MILLIS
-                || (elapsedMillis < SECOND_SCAN_TIME_MILLIS && !hasResults)) {
-            mScanningAnimationTextView.setAlpha(1f);
-            mScanningAnimationDrawable.start();
-            getListView().setVisibility(View.INVISIBLE);
-        } else {
-            showListView();
-        }
 
-        // Schedule the timeouts
-        // We delay at least 50 milliseconds to give the discovery service a chance to
-        // give us cached results.
-        mSecondScanComplete = false;
-        long firstDelay = Math.max(FIRST_SCAN_TIME_MILLIS - elapsedMillis, 50);
-        long secondDelay = Math.max(SECOND_SCAN_TIME_MILLIS - elapsedMillis, 50);
-        long thirdDelay = Math.max(THIRD_SCAN_TIME_MILLIS - elapsedMillis, 50);
-        mHandler.postDelayed(mFirstScanTimeout, firstDelay);
-        mHandler.postDelayed(mSecondScanTimeout, secondDelay);
-        mHandler.postDelayed(mThirdScanTimeout, thirdDelay);
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            //Bluetooth not available
+            Toast.makeText(getActivity(), getResources().getString(R.string.bluetoothNotAvailable), Toast.LENGTH_LONG);
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+        } else {
+            // Start the scanning animation only if we don't haven't already been scanning
+            // for long enough
+            Log.d(TAG, "startScanningDisplay " + scanStartTime + " " + hasResults);
+            long elapsedMillis = new Date().getTime() - scanStartTime;
+            if (arrowDownLayout != null) {
+                arrowDownLayout.setVisibility(View.VISIBLE);
+            }
+            if (elapsedMillis < FIRST_SCAN_TIME_MILLIS
+                    || (elapsedMillis < SECOND_SCAN_TIME_MILLIS && !hasResults)) {
+                mScanningAnimationTextView.setAlpha(1f);
+                mScanningAnimationDrawable.start();
+                if (getListView() != null) {
+                    getListView().setVisibility(View.INVISIBLE);
+                }
+            } else {
+                showListView();
+            }
+
+            // Schedule the timeouts
+            // We delay at least 50 milliseconds to give the discovery service a chance to
+            // give us cached results.
+            mSecondScanComplete = false;
+            long firstDelay = Math.max(FIRST_SCAN_TIME_MILLIS - elapsedMillis, 50);
+            long secondDelay = Math.max(SECOND_SCAN_TIME_MILLIS - elapsedMillis, 50);
+            long thirdDelay = Math.max(THIRD_SCAN_TIME_MILLIS - elapsedMillis, 50);
+            mHandler.postDelayed(mFirstScanTimeout, firstDelay);
+            mHandler.postDelayed(mSecondScanTimeout, secondDelay);
+            mHandler.postDelayed(mThirdScanTimeout, thirdDelay);
+        }
     }
 
     @Override
@@ -313,47 +344,51 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             Log.d(TAG, "groupid " + groupId);
             pwPairs.add(Utils.getTopRankedPwPairByGroupId(mPwCollection, groupId));
         }
-        Collections.sort(pwPairs, Collections.reverseOrder());
-        for (PwPair pwPair : pwPairs) {
-            mNearbyDeviceAdapter.addItem(pwPair);
+        if (pwPairs != null) {
+            Collections.sort(pwPairs, Collections.reverseOrder());
+            for (PwPair pwPair : pwPairs) {
+                mNearbyDeviceAdapter.addItem(pwPair);
+            }
         }
         mGroupIdQueue.clear();
         safeNotifyChange();
     }
 
     private void showListView() {
-        if (getListView().getVisibility() == View.VISIBLE) {
-            return;
+        if (getListView() != null) {
+            if (getListView().getVisibility() == View.VISIBLE) {
+                return;
+            }
+
+            mSwipeRefreshWidget.setRefreshing(false);
+            getListView().setAlpha(0f);
+            getListView().setVisibility(View.VISIBLE);
+            safeNotifyChange();
+            ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(getListView(), "alpha", 0f, 1f);
+            alphaAnimation.setDuration(400);
+            alphaAnimation.setInterpolator(new DecelerateInterpolator());
+            alphaAnimation.addListener(new AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mScanningAnimationTextView.setAlpha(0f);
+                    mScanningAnimationDrawable.stop();
+                    arrowDownLayout.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                }
+            });
+            alphaAnimation.start();
         }
-
-        mSwipeRefreshWidget.setRefreshing(false);
-        getListView().setAlpha(0f);
-        getListView().setVisibility(View.VISIBLE);
-        safeNotifyChange();
-        ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(getListView(), "alpha", 0f, 1f);
-        alphaAnimation.setDuration(400);
-        alphaAnimation.setInterpolator(new DecelerateInterpolator());
-        alphaAnimation.addListener(new AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mScanningAnimationTextView.setAlpha(0f);
-                mScanningAnimationDrawable.stop();
-                arrowDownLayout.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-        });
-        alphaAnimation.start();
     }
 
     /**

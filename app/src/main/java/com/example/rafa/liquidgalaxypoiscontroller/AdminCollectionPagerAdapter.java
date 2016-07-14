@@ -41,13 +41,15 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return NearbyBeaconsFragment.newInstance();
             case 5 /*5*/:
                 return AdvancedToolsFragment.newInstance();
+            case 6 /*6*/:
+                return NewPOISList.newInstance();
             default:
                 return null;
         }
     }
 
     public int getCount() {
-        return 6;
+        return 7;
     }
 
     public CharSequence getPageTitle(int position) {
@@ -64,6 +66,8 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return "SCAN BEACON";
             case 5 /*5*/:
                 return "ADVANCED TOOLS";
+            case 6 /*6*/:
+                return "NEW POIS LISTS";
             default:
                 return "PAGE" + (position - 1);
         }

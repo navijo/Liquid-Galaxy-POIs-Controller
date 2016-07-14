@@ -13,6 +13,8 @@ import android.widget.TextView;
 public class CategoriesAdapter extends CursorAdapter {
 
     public static final int CATEGORY_COLUMN_NAME = 1;
+    public static final int CATEGORY_COLUMN_SHOWN_NAME = 3;
+
 
     public CategoriesAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -29,7 +31,8 @@ public class CategoriesAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         TextView poiName = (TextView) view.findViewById(R.id.category_list_item_textview);
-        poiName.setText(cursor.getString(CATEGORY_COLUMN_NAME));
+        String showName = cursor.getString(CATEGORY_COLUMN_NAME);
+        poiName.setText(showName);
 
     }
 }

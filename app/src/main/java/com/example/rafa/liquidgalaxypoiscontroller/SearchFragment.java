@@ -112,7 +112,6 @@ public class SearchFragment extends Fragment {
                 }
                 break;
             }
-
         }
     }
 
@@ -158,7 +157,7 @@ public class SearchFragment extends Fragment {
 
 
     private List<POI> getPoisList(int categoryId) {
-
+        //TODO: Get pois of subcategories that have father_id=categoryId
         List<POI> lPois = new ArrayList<>();
 
         Cursor allPoisByCategoryCursor = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(categoryId));

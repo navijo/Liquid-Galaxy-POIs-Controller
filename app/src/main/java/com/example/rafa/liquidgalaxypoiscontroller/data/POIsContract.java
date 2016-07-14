@@ -3,6 +3,7 @@ package com.example.rafa.liquidgalaxypoiscontroller.data;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -130,6 +131,11 @@ public class POIsContract {
         public static Cursor getPoiByID(int poiId) {
             return POIsProvider.queryPOIById(poiId);
         }
+
+        public static int deletePOIById(Context context, String poiId) {
+            String whereClause = COLUMN_ID + " = ?";
+            return context.getContentResolver().delete(CONTENT_URI, whereClause, new String[]{poiId});
+        }
     }
 
     public static final class CategoryEntry implements BaseColumns {
@@ -256,19 +262,7 @@ public class POIsContract {
             return activity.getContentResolver().update(CONTENT_URI, contentValues, Category_IDselection, new String[]{itemSelectedID});
         }
 
-        public static String getShownNameByID(FragmentActivity activity, String id) {
-            Cursor cursor = activity.getContentResolver().query(
-                    CONTENT_URI,
-                    new String[]{COLUMN_SHOWN_NAME},
-                    _ID + " = ?",
-                    new String[]{id},
-                    null);
-            if(cursor.moveToNext()){
-                return cursor.getString(0);
-            }else{
-                return "/";
-            }
-        }
+
 
         public static String getShownNameByID(FragmentActivity fragmentActivity, int categoryID) {
             Cursor c = fragmentActivity.getContentResolver().query( CONTENT_URI,new String[]{COLUMN_SHOWN_NAME},
@@ -287,8 +281,9 @@ public class POIsContract {
         }
 
         public static int getIdByShownName(FragmentActivity activity, String shownName) {
+
             Cursor c = activity.getContentResolver().query( CONTENT_URI,new String[]{_ID},
-                    COLUMN_SHOWN_NAME + " = ?", new String[]{shownName},null);
+                    COLUMN_SHOWN_NAME + " LIKE ?", new String[]{shownName}, null);
 
             if(c!=null && c.getCount() == 1){
                 c.moveToNext();
@@ -296,6 +291,47 @@ public class POIsContract {
             }else{
                 return 0;
             }
+        }
+
+        public static int getIdByName(FragmentActivity activity, String shownName) {
+            Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID},
+                    COLUMN_NAME + " = ?", new String[]{shownName}, null);
+
+            if (c != null && c.getCount() == 1) {
+                c.moveToNext();
+                return c.getInt(0);
+            } else {
+                return 0;
+            }
+        }
+
+        public static String getNameById(FragmentActivity activity, int categoryId) {
+            Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID}, COLUMN_ID + " = ?", new String[]{String.valueOf(categoryId)}, null);
+
+            if (c != null && c.getCount() == 1) {
+                c.moveToNext();
+                return c.getString(0);
+            } else {
+                return "";
+            }
+        }
+
+        public static Cursor getCategoriesByShownName(FragmentActivity activity, String categoryShownName) {
+            return activity.getContentResolver().query(
+                    CONTENT_URI,
+                    null,
+                    COLUMN_SHOWN_NAME + " LIKE ?",
+                    new String[]{categoryShownName},
+                    null);
+        }
+
+        public static Cursor getRootCategories(FragmentActivity activity) {
+            return activity.getContentResolver().query(CONTENT_URI, null, COLUMN_FATHER_ID + " = 0", null, COLUMN_ID);
+        }
+
+        public static int deleteCategoryById(Context context, String categoryId) {
+            String whereClause = COLUMN_ID + " = ?";
+            return context.getContentResolver().delete(CONTENT_URI, whereClause, new String[]{categoryId});
         }
     }
 

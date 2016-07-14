@@ -349,6 +349,9 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         //category ID of the once shown on screen.
         if(creationType.endsWith("HERE")) {
             categoryID = POISFragment.routeID;
+        } else if (creationType.endsWith("HERENEW")) {
+            Bundle extras = getActivity().getIntent().getExtras();
+            categoryID = extras.getInt("CATEGORY_ID");
         }else{
             //Contrary, the algorythm takes the category name selected and gets its ID.
             String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
@@ -382,7 +385,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
 
         //If user has clicked on Create Here, obviously, no spinner categories option will be shown.
-        if(creationType.endsWith("HERE")){
+        if (creationType.endsWith("HERE")) {
             viewHolder.categoryID.setVisibility(View.GONE);
 
             Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(fragment.getActivity(), "EARTH");
@@ -397,8 +400,6 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
                     rootView.findViewById(R.id.mapPOILayout).setVisibility(View.VISIBLE);
                 }
             }
-
-
         }else{
             fillCategorySpinner(viewHolder.categoryID);
         }
@@ -435,7 +436,10 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             fatherID = POISFragment.routeID;
             shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherID)
                     + viewHolder.categoryName.getText().toString() + "/";
-
+        } else if (creationType.endsWith("HERENEW")) {
+            //FIXME: Review
+            Bundle extras = getActivity().getIntent().getExtras();
+            fatherID = extras.getInt("CATEGORY_ID");
         }else{
             shownName = getShownNameValueFromInputForm(viewHolder.fatherID);
             fatherID = getFatherIDValueFromInputForm(shownName);
@@ -456,7 +460,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         viewHolder.updateCategory.setVisibility(View.GONE);
         viewHolder.createCategory.setVisibility(View.VISIBLE);
 
-        if(creationType.endsWith("HERE")){
+        if (creationType.endsWith("HERE")) {
             viewHolder.fatherID.setVisibility(View.GONE);
         }else {
             fillCategorySpinner(viewHolder.fatherID);

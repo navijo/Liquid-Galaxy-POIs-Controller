@@ -38,7 +38,8 @@ public class LGTools extends Fragment {
     private String filePath = "";
     private Button importPois, relaunch, reboot, shutDown;
 
-    public LGTools() {}
+    public LGTools() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,7 +66,7 @@ public class LGTools extends Fragment {
                 try {
                     String sentence = "/home/lg/bin/lg-sudo 'shutdown -h 0' > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "shut down");
-                }catch (Exception e){
+                } catch (Exception e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
@@ -81,7 +82,7 @@ public class LGTools extends Fragment {
                 try {
                     String sentence = "/home/lg/bin/lg-sudo reboot > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "reboot");
-                }catch (Exception e){
+                } catch (Exception e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
@@ -97,7 +98,7 @@ public class LGTools extends Fragment {
                 try {
                     String sentence = "/home/lg/bin/lg-relaunch > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "relaunch");
-                }catch (Exception e){
+                } catch (Exception e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
             }
@@ -105,7 +106,7 @@ public class LGTools extends Fragment {
     }
 
     /*SHUT DOWN, RELAUNCH and REBOOT*/
-    private void showAlertAndExecution(final String sentence, String action){
+    private void showAlertAndExecution(final String sentence, String action) {
         // prepare the alert box
         AlertDialog.Builder alertbox = new AlertDialog.Builder(getActivity());
 
@@ -146,20 +147,20 @@ public class LGTools extends Fragment {
                 final AlertDialog chooseDialog = new AlertDialog.Builder(getActivity()).create();
                 chooseDialog.setTitle(getResources().getString(R.string.import_pois_dialog_title));
                 chooseDialog.setMessage(getResources().getString(R.string.import_pois_dialog_msg));
-                chooseDialog.setButton(Dialog.BUTTON_NEGATIVE,getResources().getString(R.string.cancel), new DialogInterface.OnClickListener()    {
+                chooseDialog.setButton(Dialog.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         chooseDialog.dismiss();
                     }
                 });
 
-                chooseDialog.setButton( Dialog.BUTTON_NEUTRAL, getResources().getString(R.string.import_pois_dialog_fromFile), new DialogInterface.OnClickListener()    {
+                chooseDialog.setButton(Dialog.BUTTON_NEUTRAL, getResources().getString(R.string.import_pois_dialog_fromFile), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         //Complete procedure to get the file with the POIs to import
                         selectFileToImport();
                     }
                 });
 
-                chooseDialog.setButton(Dialog.BUTTON_POSITIVE,getResources().getString(R.string.import_pois_dialog_fromPW), new DialogInterface.OnClickListener() {
+                chooseDialog.setButton(Dialog.BUTTON_POSITIVE, getResources().getString(R.string.import_pois_dialog_fromPW), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         openBluetoothImport();
                     }
@@ -178,15 +179,15 @@ public class LGTools extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //When user select one file
-        if(requestCode == 1){
-            if(resultCode == Activity.RESULT_OK){
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getData();
                 if (uri != null) {
                     String path = uri.toString();
                     //We get the file path by executing one of the following methods, depending the explorer the user uses.
                     if (path.toLowerCase().startsWith("file://")) {
                         filePath = (new File(URI.create(path))).getAbsolutePath();
-                    }else {
+                    } else {
                         filePath = pathTreatment(data.getData().getPath(), Environment.getExternalStorageDirectory().getAbsolutePath());
                     }
 
@@ -202,20 +203,21 @@ public class LGTools extends Fragment {
             }
         }
     }
+
     private List<ContentValues> readFile(/*int categoryID*/) {
         List<ContentValues> poisList = new ArrayList<ContentValues>();
         File file = new File(filePath);
-        if(file.exists()) {
+        if (file.exists()) {
 
             try {
                 FileInputStream inputStream = null;
                 inputStream = new FileInputStream(file);
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                 String line = "";
 
                 while ((line = br.readLine()) != null) {
                     //for each POI described inside the file we read and introduce it inside a POIs list.
-                    if(!line.equals("") && line != null) {
+                    if (!line.equals("") && line != null) {
                         readPOI(poisList, line/*, categoryID*/);
                     }
                 }
@@ -223,12 +225,13 @@ public class LGTools extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             Toast.makeText(getActivity(), "File couldn't be opened. Try to open it with a different file explorer, for example 'Root Explorer' once.", Toast.LENGTH_LONG).show();
         }
         return poisList;
     }
-    private void readPOI(List<ContentValues> poisList, String line/*, int categoryID*/){
+
+    private void readPOI(List<ContentValues> poisList, String line/*, int categoryID*/) {
 
         try {
             ContentValues poi = new ContentValues();
@@ -259,52 +262,61 @@ public class LGTools extends Fragment {
             poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
             poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
             poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
-           // poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
+            // poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
             poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryId);
 
             poisList.add(poi);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), getResources().getString(R.string.error_reading_pois), Toast.LENGTH_LONG).show();
         }
     }
-    private String getFileName(){
+
+    private String getFileName() {
         int startIndex = filePath.lastIndexOf("/") + 1;
         return filePath.substring(startIndex, filePath.length() - 4);
     }
-    private void selectFileToImport(){
+
+    private void selectFileToImport() {
         //We use Intent.GATA_GET_CONTENT to let the user select the file to import
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        if ( intent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(intent, 1);
         }
     }
 
-    private int getOrCreatePoiCategoryByName(String line){
+    private int getOrCreatePoiCategoryByName(String line) {
         int firstArrova = line.indexOf("@");
         int categoryId = 0;
-        String categoryName = line.substring(0,firstArrova);
-        Cursor categories =  POIsContract.CategoryEntry.getCategoriesByName(getActivity(), categoryName.toUpperCase());
-        if(categories!=null && categories.moveToFirst()){
+        String categoryName = line.substring(0, firstArrova);
+
+
+        Cursor categories = POIsContract.CategoryEntry.getCategoriesByShownName(getActivity(), categoryName.toUpperCase());
+        if (categories != null && categories.moveToFirst()) {
             //Category Exists, we fetch it
-            categoryId =  POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName.toUpperCase() + "/");
-        }else{
+            categoryId = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName.toUpperCase());
+        } else {
             //Category not exist, we need to create it
-            categoryId = createCategory(categoryName);
+            String[] categoryTreeNames = categoryName.split("/");
+            if (categoryTreeNames != null && categoryTreeNames.length > 1) {
+                categoryId = createCategoryTree(categoryTreeNames);
+            } else {
+                categoryId = createCategory(categoryName);
+            }
         }
 
         return categoryId;
     }
 
-    private String getPOIName(String line){
+    private String getPOIName(String line) {
         int start = line.indexOf("@") + 1;
         int end = line.lastIndexOf("@");
         return line.substring(start, end);
     }
 
-    private String getPOIAttribute(String attribute, String line){
+    private String getPOIAttribute(String attribute, String line) {
 
         int attributeSize = attribute.length();
         int start = line.indexOf("<" + attribute + ">") + 1 + attributeSize + 1;
@@ -312,26 +324,85 @@ public class LGTools extends Fragment {
         return line.substring(start, end);
 
     }
-    private String getAltitudeMode(String line){
+
+    private String getAltitudeMode(String line) {
 
         int attributeSize = "gx:altitudeMode>".length();
         int start = line.indexOf("<gx:altitudeMode>") + attributeSize + 1;
         int end = line.indexOf("</gx:altitudeMode>");
         return line.substring(start, end);
     }
-    private void createPOis(List<ContentValues> pois){
-        for(ContentValues poi: pois){
+
+    private void createPOis(List<ContentValues> pois) {
+        for (ContentValues poi : pois) {
             try {
                 Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), poi);
                 Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
-            }catch (android.database.SQLException e){
+            } catch (android.database.SQLException e) {
                 String poiName = poi.get(POIsContract.POIEntry.COLUMN_COMPLETE_NAME).toString();
                 e.printStackTrace();
                 Toast.makeText(getActivity(), "Already exists one POI with the same name: " + poiName + ". Please, change it.", Toast.LENGTH_LONG).show();
             }
         }
     }
-    private int createCategory(String categoryName){
+
+    private int createCategoryTree(String[] categoryTreeName) {
+        int categoryID = 0;
+
+        int fatherCategoryId = 0;
+        for (int i = 0; i < categoryTreeName.length - 1; i++) {
+
+            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(getActivity(), categoryTreeName[i].toUpperCase());
+            if (categories != null && categories.moveToFirst()) {
+                //FatherCategory Exists, we fetch it
+                fatherCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), categoryTreeName[i].toUpperCase());
+            } else {
+                fatherCategoryId = createNestedCategory(categoryTreeName[i].toUpperCase(), fatherCategoryId);
+            }
+
+            String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherCategoryId);
+
+            ContentValues category = new ContentValues();
+            category.put(POIsContract.CategoryEntry.COLUMN_NAME, categoryTreeName[i + 1].toUpperCase());
+            category.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, fatherCategoryId);
+            category.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, fatherShownName.endsWith("/") ? fatherShownName + categoryTreeName[i + 1].toUpperCase() : fatherShownName + "/" + categoryTreeName[i + 1].toUpperCase());
+            category.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
+
+            try {
+                Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), category);
+                categoryID = POIsContract.CategoryEntry.getIdByUri(insertedUri);
+            } catch (android.database.SQLException e) {
+                Toast.makeText(getActivity(), "Already exists one category with the same name. Please, change it.", Toast.LENGTH_SHORT).show();
+                categoryID = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryTreeName[i] + "/");
+                return categoryID;
+            }
+        }
+
+        return categoryID;
+    }
+
+
+    private int createNestedCategory(String categoryName, int fatherId) {
+
+        int categoryID = 0;
+        ContentValues category = new ContentValues();
+        category.put(POIsContract.CategoryEntry.COLUMN_NAME, categoryName);
+        category.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, fatherId);
+        category.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, categoryName + "/");
+        category.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
+
+        try {
+            Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), category);
+            categoryID = POIsContract.CategoryEntry.getIdByUri(insertedUri);
+            return categoryID;
+        } catch (android.database.SQLException e) {
+            Toast.makeText(getActivity(), "Already exists one category with the same name. Please, change it.", Toast.LENGTH_SHORT).show();
+            categoryID = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName + "/");
+            return categoryID;
+        }
+    }
+
+    private int createCategory(String categoryName) {
 
         int categoryID = 0;
         ContentValues category = new ContentValues();
@@ -344,37 +415,38 @@ public class LGTools extends Fragment {
             Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), category);
             categoryID = POIsContract.CategoryEntry.getIdByUri(insertedUri);
             return categoryID;
-        }catch (android.database.SQLException e){
+        } catch (android.database.SQLException e) {
             Toast.makeText(getActivity(), "Already exists one category with the same name. Please, change it.", Toast.LENGTH_SHORT).show();
             categoryID = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName + "/");
             return categoryID;
         }
     }
-    private String pathTreatment(String path, String absolutePath){
+
+    private String pathTreatment(String path, String absolutePath) {
         int start = 0;
         String firstPathFolder = "";
-        if(path.contains(":")) {
+        if (path.contains(":")) {
             start = path.indexOf(":") + 1;
             path = path.substring(start);
         }
 
-        if(path.startsWith("/")){
+        if (path.startsWith("/")) {
             firstPathFolder = path.split("/")[1];
-        }else {
+        } else {
             firstPathFolder = path.split("/")[0];
         }
         String[] absoluteFolders = absolutePath.split("/");
-        String lastAbsoluteFolder = absoluteFolders[absoluteFolders.length-1];
+        String lastAbsoluteFolder = absoluteFolders[absoluteFolders.length - 1];
 
-        if(firstPathFolder.equals(lastAbsoluteFolder)){
-            if(path.startsWith("/")){
+        if (firstPathFolder.equals(lastAbsoluteFolder)) {
+            if (path.startsWith("/")) {
                 path = path.substring(firstPathFolder.length() + 2);
-            }else{
+            } else {
                 path = path.substring(firstPathFolder.length() + 1);
             }
         }
 
-        if(!absolutePath.endsWith("/")){
+        if (!absolutePath.endsWith("/")) {
             absolutePath = absolutePath + "/";
         }
         return absolutePath + path;

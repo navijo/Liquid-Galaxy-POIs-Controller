@@ -299,7 +299,7 @@ public class POISFragment extends Fragment {
     }
 
     private void updateRouteAndPOIsOrToursViews(){
-        String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), backIDs.get(0));
+        String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), Integer.parseInt(backIDs.get(0)));
         route.setText(routeShownName);
 
         //Shows the POIS LIST
@@ -554,7 +554,7 @@ public class POISFragment extends Fragment {
         }else{
             queryCursor = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(categoryID));
         }
-        String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), String.valueOf(categoryID));
+        String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), categoryID);
         route.setText(routeShownName);
 
         adapterPOI = new POIsAdapter(getActivity(), queryCursor, 0);
@@ -781,7 +781,7 @@ public class POISFragment extends Fragment {
         } else {//ADMIN
             queryCursor = POIsContract.TourEntry.getToursByCategory(getActivity(), String.valueOf(categoryID));
         }
-        String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), String.valueOf(categoryID));
+        String routeShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), categoryID);
         route.setText(routeShownName);
 
         adapterPOI = new POIsAdapter(getActivity(), queryCursor, 0);
@@ -915,7 +915,7 @@ public class POISFragment extends Fragment {
         });
     }
     private void editButtonTreatment(final String itemSelectedId, final String type, android.support.design.widget.FloatingActionButton edit, final Dialog dialog){
-
+        //FIXME: IVAN
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
