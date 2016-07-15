@@ -211,5 +211,6 @@
     <string name="ic_close">&#xe048;</string>
     <string name="categoriesRoot">Categories</string>
     <string name="loadingTree">Loading...</string>
+    <string name="action_exportDB">Export Database to local storage</string>
 
 </resources>

@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class POIsDbHelper extends SQLiteOpenHelper {
-    static final String DATABASE_NAME = "poi_controller.db";
+    public static final String DATABASE_NAME = "poi_controller.db";
     private static final int DATABASE_VERSION = 33;
 
     public POIsDbHelper(Context context) {
@@ -19,12 +19,14 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(createTourPOIsEntryTable());
         db.execSQL(createTasksEntryTable());
         createBaseCategories(db);
-        createLgTask(db);
+        createDefaultLgTasks(db);
     }
 
-    private void createLgTask(SQLiteDatabase db) {
-        String sql = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh > /home/lg/startupLog.txt','',0)";
-        db.execSQL(sql);
+    private void createDefaultLgTasks(SQLiteDatabase db) {
+        String sqlLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh','',0)";
+        db.execSQL(sqlLG);
+        String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('LG-Potree','Launch LG-Potree Task','./asherat666-lg-potree/scripts/lg-potree','./asherat666-lg-potree/scripts/lg-potree-stop',0)";
+        db.execSQL(sqlPotree);
     }
 
     private void createBaseCategories(SQLiteDatabase db) {
@@ -50,7 +52,6 @@ public class POIsDbHelper extends SQLiteOpenHelper {
 
     private String createPOInEntryTable() {
         String SQL_CREATE_POI_TABLE = "CREATE TABLE poi (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT UNIQUE NOT NULL, Visited_Place TEXT NOT NULL, Longitude REAL NOT NULL, Latitude REAL NOT NULL, Altitude REAL NOT NULL, Heading REAL NOT NULL, Tilt REAL NOT NULL, Range REAL NOT NULL, Altitude_Mode TEXT NOT NULL, Hide INTEGER NOT NULL, Category INTEGER DEFAULT 0, FOREIGN KEY (Category) REFERENCES category (_id)  );";
-        //FIXME : NAME UNIQUE FOR THE SAME CATEGORY!! return "CREATE TABLE poi (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT UNIQUE NOT NULL, Visited_Place TEXT NOT NULL, Longitude REAL NOT NULL, Latitude REAL NOT NULL, Altitude REAL NOT NULL, Heading REAL NOT NULL, Tilt REAL NOT NULL, Range REAL NOT NULL, Altitude_Mode TEXT NOT NULL, Hide INTEGER NOT NULL, Category INTEGER DEFAULT 0, FOREIGN KEY (Category) REFERENCES category (_id)  );";
         return "CREATE TABLE poi (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, Visited_Place TEXT NOT NULL, Longitude REAL NOT NULL, Latitude REAL NOT NULL, Altitude REAL NOT NULL, Heading REAL NOT NULL, Tilt REAL NOT NULL, Range REAL NOT NULL, Altitude_Mode TEXT NOT NULL, Hide INTEGER NOT NULL, Category INTEGER DEFAULT 0, FOREIGN KEY (Category) REFERENCES category (_id),UNIQUE(Name, Category) ON CONFLICT FAIL  );";
     }
 

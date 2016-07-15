@@ -218,6 +218,7 @@ public class AdvancedToolsFragment extends Fragment {
                 taskHolder.password = lgTask.getPassword();
 
                 Toolbar toolbarCard = (Toolbar) viewHolder.itemView.findViewById(R.id.taskToolbar);
+                //FIXMe: Review
                 if (lgTask.isRunning()) {
                     //We hide the play button
                     toolbarCard.getMenu().getItem(0).setVisible(false);
@@ -387,6 +388,7 @@ public class AdvancedToolsFragment extends Fragment {
         protected Boolean doInBackground(Void... params) {
             try {
                 return sendCommandToLG(command, ip, user, password);
+                // return sendCommandToLGShell(command, ip, user, password);
             } catch (JSchException e) {
                 cancel(true);
                 if (dialog != null) {
@@ -448,6 +450,7 @@ public class AdvancedToolsFragment extends Fragment {
             Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
         }
 
+
         private Boolean sendCommandToLG(String command, String pIp, String pUser, String pPassword) throws Exception {
 
 
@@ -473,7 +476,9 @@ public class AdvancedToolsFragment extends Fragment {
 
             channelExec.setOutputStream(baos);
 
-            channelExec.setCommand(command);
+            //We need to redirect the output to a log file
+            //channelExec.setCommand(command + " >> " + "LGControllerLogs/log"+ System.currentTimeMillis()+".txt");
+            channelExec.setCommand(command + " >> " + "LGControllerLog.txt");
 
             channelExec.connect();
 

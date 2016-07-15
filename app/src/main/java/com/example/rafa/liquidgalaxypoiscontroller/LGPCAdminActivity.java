@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
@@ -18,7 +19,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.rafa.liquidgalaxypoiscontroller.data.POIsDbHelper;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsProvider;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
+import java.util.Calendar;
 
 public class LGPCAdminActivity extends ActionBarActivity implements TabListener {
     AdminCollectionPagerAdapter mSectionsPagerAdapter;
@@ -68,7 +76,9 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         }
         else if (id == R.id.reset_db) {
             resetDatabase();
-//            resetApp();
+            return true;
+        } else if (id == R.id.export_db) {
+            exportDatabase();
             return true;
         }
         else if (id == R.id.action_information_help) {
@@ -82,10 +92,37 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         }
     }
 
+    private void exportDatabase() {
+        Log.i("INFO", "EXPORTING DATABASE");
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+            if (sd.canWrite()) {
+                Calendar c = Calendar.getInstance();
+                String dayAndMonth = c.get(Calendar.DAY_OF_MONTH) + "_" + (c.get(Calendar.MONTH) + 1) + "_" + c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE);
+
+                String currentDBPath = "/data/" + this.getPackageName() + "/databases/" + POIsDbHelper.DATABASE_NAME;
+                String backupDBPath = "DB_" + dayAndMonth + ".sqlite";
+                File currentDB = new File(data, currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                if (currentDB.exists()) {
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                }
+            }
+            Log.i("INFO", "DATABASE EXPORTED");
+        } catch (Exception e) {
+            Log.e("ERROR", "EXPORTING DATABASE ERROR" + e.getCause());
+
+        }
+    }
+
     public void resetDatabase() {
-       //this.deleteDatabase("com.example.rafa.liquidgalaxypoiscontroller/poi_controller.db");
         ContentResolver resolver = getApplicationContext().getContentResolver();
-        ContentProviderClient client = resolver.acquireContentProviderClient("com.example.rafa.liquidgalaxypoiscontroller");
+        ContentProviderClient client = resolver.acquireContentProviderClient(this.getPackageName());
         POIsProvider provider = (POIsProvider) client.getLocalContentProvider();
         provider.resetDatabase();
         client.release();
@@ -99,7 +136,6 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
 
     public void onTabSelected(Tab tab, FragmentTransaction fragmentTransaction) {
         this.mViewPager.setCurrentItem(tab.getPosition());
-        Log.d(String.valueOf(tab.getPosition()), "hello");
     }
 
     public void onTabUnselected(Tab tab, FragmentTransaction fragmentTransaction) {

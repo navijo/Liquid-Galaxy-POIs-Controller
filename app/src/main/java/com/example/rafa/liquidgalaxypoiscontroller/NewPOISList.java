@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
 import com.example.rafa.liquidgalaxypoiscontroller.beans.POI;
@@ -47,7 +48,7 @@ public class NewPOISList extends Fragment {
 
         try (Cursor rootCategories = POIsContract.CategoryEntry.getRootCategories(getActivity())) {
             while (rootCategories.moveToNext()) {
-                Category rootCategory = getCategoryData(rootCategories);
+                final Category rootCategory = getCategoryData(rootCategories);
                 TreeItemHolder.IconTreeItem parentNode;
 
                 switch (rootCategory.getName()) {
@@ -68,21 +69,32 @@ public class NewPOISList extends Fragment {
                         break;
                 }
 
-                TreeNode parent = new TreeNode(parentNode).setViewHolder(new TreeItemHolder(getActivity()));
+                final TreeNode parent = new TreeNode(parentNode).setViewHolder(new TreeItemHolder(getActivity()));
 
-                getChildCategories(rootCategory, parent);
-                getPois(rootCategory, parent);
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            getChildCategories(rootCategory, parent);
+                            getPois(rootCategory, parent);
+
+                        } catch (Exception e) {
+                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }).start();
 
                 categoriesRoot.addChild(parent);
             }
+
+            rootCategories.close();
 
             root.addChildren(categoriesRoot);
 
             tView = new AndroidTreeView(getActivity(), root);
             tView.setDefaultAnimation(false);
+            tView.setUseAutoToggle(true);
             tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
             tView.setDefaultViewHolder(TreeItemHolder.class);
-
 
             containerView.addView(tView.getView());
 
@@ -104,6 +116,7 @@ public class NewPOISList extends Fragment {
                 TreeNode poiNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_place_black_24dp, poi.getName(), poi.getId(), 1, true));
                 parent.addChild(poiNode);
             }
+            poisInCategory.close();
         }
     }
 
@@ -117,15 +130,21 @@ public class NewPOISList extends Fragment {
     private void getChildCategories(Category parentCategory, TreeNode parent) {
         try (Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(parentCategory.getId()))) {
             while (childCategories.moveToNext()) {
-                Category childCategory = getCategoryData(childCategories);
-                TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName(), childCategory.getId(), 0, true));
-
-                getChildCategories(childCategory, childCategoryNode);
-                getPois(childCategory, childCategoryNode);
-
+                final Category childCategory = getCategoryData(childCategories);
+                final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName(), childCategory.getId(), 0, true));
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            getChildCategories(childCategory, childCategoryNode);
+                            getPois(childCategory, childCategoryNode);
+                        } catch (Exception e) {
+                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }).start();
                 parent.addChild(childCategoryNode);
             }
-
+            childCategories.close();
         }
     }
 

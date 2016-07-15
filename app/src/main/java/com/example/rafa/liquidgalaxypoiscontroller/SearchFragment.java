@@ -160,6 +160,7 @@ public class SearchFragment extends Fragment {
         //TODO: Get pois of subcategories that have father_id=categoryId
         List<POI> lPois = new ArrayList<>();
 
+
         Cursor allPoisByCategoryCursor = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(categoryId));
 
         while (allPoisByCategoryCursor.moveToNext()) {
@@ -170,7 +171,17 @@ public class SearchFragment extends Fragment {
             lPois.add(poiEntry);
         }
 
+        getPOisFromSubcategories(lPois, categoryId);
+
         return lPois;
+    }
+
+    private void getPOisFromSubcategories(List<POI> lPois, int categoryId) {
+        Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(categoryId));
+        while (childCategories.moveToNext()) {
+            int childCategoryId = childCategories.getInt(childCategories.getColumnIndex(POIsContract.CategoryEntry.COLUMN_ID));
+            lPois.addAll(getPoisList(childCategoryId));
+        }
     }
 
     private POI getPoiData(int poiId) {
@@ -366,8 +377,9 @@ public class SearchFragment extends Fragment {
             try {
                 return LGUtils.setConnectionWithLiquidGalaxy(command, getActivity());
             } catch (JSchException e) {
-                cancel(true);
-                Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
                 return null;
             }
         }
@@ -377,9 +389,10 @@ public class SearchFragment extends Fragment {
             super.onPostExecute(success);
             if (success != null) {
                 if (dialog != null) {
-                    dialog.hide();
                     dialog.dismiss();
                 }
+            } else {
+                Toast.makeText(getActivity(), getResources().getString(R.string.connection_failure), Toast.LENGTH_LONG).show();
             }
         }
     }

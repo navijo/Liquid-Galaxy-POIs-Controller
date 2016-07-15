@@ -23,6 +23,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/export_db"
+        android:orderInCategory="99"
+        android:title="@string/action_exportDB"
+        app:showAsAction="never" />
+
+
+    <item
         android:id="@+id/log_out"
         android:orderInCategory="100"
         android:title="@string/logOut"

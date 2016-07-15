@@ -351,7 +351,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             categoryID = POISFragment.routeID;
         } else if (creationType.endsWith("HERENEW")) {
             Bundle extras = getActivity().getIntent().getExtras();
-            categoryID = extras.getInt("CATEGORY_ID");
+            categoryID = Integer.parseInt(extras.getString("CATEGORY_ID"));
         }else{
             //Contrary, the algorythm takes the category name selected and gets its ID.
             String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
@@ -400,7 +400,28 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
                     rootView.findViewById(R.id.mapPOILayout).setVisibility(View.VISIBLE);
                 }
             }
-        }else{
+        } else if (creationType.endsWith("HERENEW")) {
+            viewHolder.categoryID.setVisibility(View.GONE);
+
+            Bundle extras = getActivity().getIntent().getExtras();
+            POISFragment.routeID = Integer.parseInt(extras.getString("CATEGORY_ID"));
+
+            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(fragment.getActivity(), "EARTH");
+            long earthCategorycategoryId = 0;
+            if (categories != null && categories.moveToFirst()) {
+                //Category Exists, we fetch it
+                earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(fragment.getActivity(), "EARTH/");
+
+                //We check if category belongs to earth in order to display the map
+                if (categories.getString(categories.getColumnIndex(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME)).toUpperCase().contains("EARTH")) {
+                    rootView.findViewById(R.id.mapPOILayout).setVisibility(View.VISIBLE);
+                } else if (POISFragment.routeID != 0 && earthCategorycategoryId != POISFragment.routeID) {
+                    rootView.findViewById(R.id.mapPOILayout).setVisibility(View.GONE);
+                } else {
+                    rootView.findViewById(R.id.mapPOILayout).setVisibility(View.VISIBLE);
+                }
+            }
+        } else {
             fillCategorySpinner(viewHolder.categoryID);
         }
         //On the screen there is a button to cancel the creation and return to the main administration view
@@ -437,9 +458,10 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherID)
                     + viewHolder.categoryName.getText().toString() + "/";
         } else if (creationType.endsWith("HERENEW")) {
-            //FIXME: Review
             Bundle extras = getActivity().getIntent().getExtras();
-            fatherID = extras.getInt("CATEGORY_ID");
+            fatherID = Integer.parseInt(extras.getString("CATEGORY_ID"));
+            shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherID)
+                    + viewHolder.categoryName.getText().toString() + "/";
         }else{
             shownName = getShownNameValueFromInputForm(viewHolder.fatherID);
             fatherID = getFatherIDValueFromInputForm(shownName);
@@ -461,6 +483,8 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         viewHolder.createCategory.setVisibility(View.VISIBLE);
 
         if (creationType.endsWith("HERE")) {
+            viewHolder.fatherID.setVisibility(View.GONE);
+        } else if (creationType.endsWith("HERENEW")) {
             viewHolder.fatherID.setVisibility(View.GONE);
         }else {
             fillCategorySpinner(viewHolder.fatherID);

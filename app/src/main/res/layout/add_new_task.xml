@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:digits="0123456789."
                     android:hint="@string/new_task_ip"
-                    android:inputType="number" />
+                    android:inputType="numberDecimal" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout

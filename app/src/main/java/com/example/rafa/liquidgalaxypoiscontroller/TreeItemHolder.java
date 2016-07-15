@@ -75,7 +75,7 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
                     Intent createCategoryIntent = new Intent(context, CreateItemActivity.class);
                     createCategoryIntent.putExtra("CREATION_TYPE", "CATEGORY/HERENEW");
                     //FIXME: Review
-                    createCategoryIntent.putExtra("CATEGORY_ID", ((IconTreeItem) node.getParent().getValue()).id);
+                    createCategoryIntent.putExtra("CATEGORY_ID", String.valueOf(value.id));
                     context.startActivity(createCategoryIntent);
                 }
             });
@@ -99,7 +99,7 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
                         Intent createPoiIntent = new Intent(context, CreateItemActivity.class);
                         createPoiIntent.putExtra("CREATION_TYPE", "POI/HERENEW");
                         //FIXME: Review
-                        createPoiIntent.putExtra("CATEGORY_ID", ((IconTreeItem) node.getParent().getValue()).id);
+                        createPoiIntent.putExtra("CATEGORY_ID", String.valueOf(value.id));
                         context.startActivity(createPoiIntent);
                     }
                 });
