@@ -45,8 +45,7 @@ public class NewPOISList extends Fragment {
 
         TreeNode categoriesRoot = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_home_black_24dp, getResources().getString(R.string.categoriesRoot), 0, 0, false));
 
-        Cursor rootCategories = POIsContract.CategoryEntry.getRootCategories(getActivity());
-        try {
+        try (Cursor rootCategories = POIsContract.CategoryEntry.getRootCategories(getActivity())) {
             while (rootCategories.moveToNext()) {
                 final Category rootCategory = getCategoryData(rootCategories);
                 TreeItemHolder.IconTreeItem parentNode;
@@ -85,10 +84,8 @@ public class NewPOISList extends Fragment {
 
                 categoriesRoot.addChild(parent);
             }
-        } finally {
             rootCategories.close();
         }
-
 
         root.addChildren(categoriesRoot);
 
@@ -106,34 +103,24 @@ public class NewPOISList extends Fragment {
                 tView.restoreState(state);
             }
         }
-
         return rootView;
     }
 
     private void getPois(Category category, TreeNode parent) {
 
-        Cursor poisInCategory = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(category.getId()));
-        try {
+        try (Cursor poisInCategory = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(category.getId()))) {
             while (poisInCategory.moveToNext()) {
                 POI poi = getPoiData(poisInCategory);
                 TreeNode poiNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_place_black_24dp, poi.getName(), poi.getId(), 1, true));
                 parent.addChild(poiNode);
             }
-        } finally {
             poisInCategory.close();
         }
     }
 
-    private POI getPoiData(Cursor poisInCategory) {
-        POI poi = new POI();
-        poi.setName(poisInCategory.getString(poisInCategory.getColumnIndex(POIsContract.POIEntry.COLUMN_COMPLETE_NAME)));
-        poi.setId(poisInCategory.getInt(poisInCategory.getColumnIndex(POIsContract.POIEntry.COLUMN_ID)));
-        return poi;
-    }
 
     private void getChildCategories(Category parentCategory, TreeNode parent) {
-        Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(parentCategory.getId()));
-        try {
+        try (Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(parentCategory.getId()))) {
             while (childCategories.moveToNext()) {
                 final Category childCategory = getCategoryData(childCategories);
                 final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName(), childCategory.getId(), 0, true));
@@ -149,11 +136,16 @@ public class NewPOISList extends Fragment {
                 }).start();
                 parent.addChild(childCategoryNode);
             }
-        } finally {
             childCategories.close();
         }
     }
 
+    private POI getPoiData(Cursor poisInCategory) {
+        POI poi = new POI();
+        poi.setName(poisInCategory.getString(poisInCategory.getColumnIndex(POIsContract.POIEntry.COLUMN_COMPLETE_NAME)));
+        poi.setId(poisInCategory.getInt(poisInCategory.getColumnIndex(POIsContract.POIEntry.COLUMN_ID)));
+        return poi;
+    }
 
     private Category getCategoryData(Cursor rootCategories) {
         Category category = new Category();

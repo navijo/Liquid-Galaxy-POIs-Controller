@@ -60,6 +60,9 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
                 mViewPager.setCurrentItem(2);
             } else if (value != null && value.equalsIgnoreCase("pois")) {
                 mViewPager.setCurrentItem(0);
+            } else if (value != null && value.equalsIgnoreCase("treeView")) {
+                //FIXME: When the first tabs were removed, update the index correspondingly
+                mViewPager.setCurrentItem(6);
             }
         }
 

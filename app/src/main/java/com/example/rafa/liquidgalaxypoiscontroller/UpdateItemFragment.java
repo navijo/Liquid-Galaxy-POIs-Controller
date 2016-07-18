@@ -251,13 +251,9 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             viewHolder.headingET.setText(String.valueOf(query.getFloat(viewHolder.HEADING)));
             viewHolder.tiltET.setText(String.valueOf(query.getFloat(viewHolder.TILT)));
             viewHolder.rangeET.setText(String.valueOf(query.getFloat(viewHolder.RANGE)));
-
-
             viewHolder.spinnerAltitudeMode.setSelection(((ArrayAdapter) viewHolder.spinnerAltitudeMode.getAdapter()).getPosition(query.getString(viewHolder.ALTITUDE_MODE)));
-
-
-            //viewHolder.altitudeModeET.setText(query.getString(viewHolder.ALTITUDE_MODE));
             viewHolder.categoryID.setSelection(adapter.getPosition(getShownNameByCategoryID(query, viewHolder, null, "POI")));
+
             if (query.getString(viewHolder.HIDE).equals("0")) {
                 viewHolder.switchButtonHide.setChecked(true);
             } else {
@@ -286,7 +282,6 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
                 heading = Float.parseFloat(viewHolder.headingET.getText().toString());
                 tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
                 range = Float.parseFloat(viewHolder.rangeET.getText().toString());
-                //altitudeMode = viewHolder.altitudeModeET.getText().toString();
                 altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
 
                 hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
@@ -311,12 +306,14 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
                 //int updatedRows = getActivity().getContentResolver().update(POIsContract.POIEntry.CONTENT_URI, contentValues, POI_IDselection, new String[]{itemSelectedID});
                 if (updatedRows > 0) {
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
-                    intent.putExtra("comeFrom", "pois");
+//                    intent.putExtra("comeFrom", "pois");
+                    intent.putExtra("comeFrom", "treeView");
                     startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
-                    intent.putExtra("comeFrom", "pois");
+//                    intent.putExtra("comeFrom", "pois");
+                    intent.putExtra("comeFrom", "treeView");
                     startActivity(intent);
                 }
             }
@@ -442,7 +439,8 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             }
         }
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
-        intent.putExtra("comeFrom", "categories");
+//        intent.putExtra("comeFrom", "categories");
+        intent.putExtra("comeFrom", "treeView");
         startActivity(intent);
     }
 
