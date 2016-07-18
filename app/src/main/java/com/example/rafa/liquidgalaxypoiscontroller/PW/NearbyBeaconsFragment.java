@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -54,11 +55,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rafa.liquidgalaxypoiscontroller.ImportTourDialogFragment;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PhysicalWebCollection;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PwPair;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.collection.PwsResult;
 import com.example.rafa.liquidgalaxypoiscontroller.PW.model.POI;
 import com.example.rafa.liquidgalaxypoiscontroller.R;
+import com.example.rafa.liquidgalaxypoiscontroller.beans.Tour;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.example.rafa.liquidgalaxypoiscontroller.utils.CustomXmlPullParser;
 
@@ -86,6 +89,7 @@ import java.util.concurrent.TimeUnit;
 public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDiscoveryService.UrlDeviceDiscoveryListener,
         SwipeRefreshWidget.OnRefreshListener {
 
+    public static final int TOURDATAPICKER_FRAGMENT = 2;
     public static final String TAG = "NearbyBeaconsFragment";
     private static final long FIRST_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final long SECOND_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
@@ -187,6 +191,14 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
                 initialize(rootView);
+            }
+        } else if (requestCode == TOURDATAPICKER_FRAGMENT) {
+            if (resultCode == Activity.RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                int createdTourId = bundle.getInt("createdTourId");
+
+                ImportAsTourTask importAsTourTask = new ImportAsTourTask(requestedFileUrl, createdTourId);
+                importAsTourTask.execute();
             }
         }
     }
@@ -512,7 +524,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             ((TextView) view.findViewById(textViewId)).setText(text);
         }
 
-        private void addButton(Button btn, final String url) {
+        private void addButtonImportAsPois(Button btn, final String url) {
 
             btn.setText(getResources().getString(R.string.import_pois_dialog_title));
             btn.setOnClickListener(new View.OnClickListener() {
@@ -521,6 +533,30 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                     requestedFileUrl = url;
                     ImportPOISTask importAsPOISTask = new ImportPOISTask(requestedFileUrl);
                     importAsPOISTask.execute();
+                }
+            });
+        }
+
+        private void addButtonImportAsTour(Button btn, final String url) {
+
+            btn.setText(getResources().getString(R.string.importAsTourStr));
+            btn.setBackground(getActivity().getResources().getDrawable(R.drawable.button_rounded_grey));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(5, 0, 0, 0);
+            btn.setLayoutParams(params);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestedFileUrl = url;
+                    ImportTourDialogFragment tourDataFragment = ImportTourDialogFragment.newInstance();
+                    tourDataFragment.setTargetFragment(NearbyBeaconsFragment.this, TOURDATAPICKER_FRAGMENT);
+                    tourDataFragment.show(getFragmentManager().beginTransaction(), "Tour Data");
+
+//                    ImportAsVisitTask importAsVisitTask = new ImportAsVisitTask(requestedFileUrl);
+//                    importAsVisitTask.execute();
                 }
             });
         }
@@ -544,15 +580,20 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             setText(view, R.id.url, pwsResult.getSiteUrl());
             setText(view, R.id.description, pwsResult.getDescription());
             ((ImageView) view.findViewById(R.id.icon)).setImageBitmap(Utils.getBitmapIcon(mPwCollection, pwsResult));
+
             Button btnImportAsPOIs = (Button) view.findViewById(R.id.btnImportAsPOIS);
+            Button btnImportAsTour = (Button) view.findViewById(R.id.btnImportAsTour);
 
             if (pwsResult.getSiteUrl().contains("drive")) {
                 btnImportAsPOIs.setVisibility(View.VISIBLE);
+                btnImportAsTour.setVisibility(View.VISIBLE);
 
-                addButton(btnImportAsPOIs, pwsResult.getSiteUrl());
+                addButtonImportAsPois(btnImportAsPOIs, pwsResult.getSiteUrl());
+                addButtonImportAsTour(btnImportAsTour, pwsResult.getSiteUrl());
 
             } else {
                 btnImportAsPOIs.setVisibility(View.INVISIBLE);
+                btnImportAsTour.setVisibility(View.INVISIBLE);
             }
 
             (view.findViewById(R.id.icon)).setVisibility(View.VISIBLE);
@@ -644,7 +685,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 return success;
             }
         }
-
 
         private boolean createPOIS(List<POI> poisList) {
             Looper.prepare();
@@ -745,11 +785,169 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     }
 
 
-    private class createPoisTask extends AsyncTask<Void, Void, Boolean> {
+    private class ImportAsTourTask extends AsyncTask<Void, Integer, Boolean> {
+
+        String fileId;
+        String downloadUrl = "";
+        int tourId;
+        private ProgressDialog importingDialog;
+
+        public ImportAsTourTask(String fileUrl, int tourId) {
+            String[] urlSplitted = fileUrl.split("/");
+            this.fileId = urlSplitted[5];
+            this.tourId = tourId;
+            this.downloadUrl = "https://docs.google.com/uc?authuser=0&id=" + this.fileId + "&export=download";
+        }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
-            return null;
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (importingDialog == null) {
+                importingDialog = new ProgressDialog(getActivity());
+                importingDialog.setMessage(getResources().getString(R.string.importingContents));
+                importingDialog.setIndeterminate(false);
+                importingDialog.setMax(100);
+                importingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                importingDialog.setCancelable(true);
+                importingDialog.setCanceledOnTouchOutside(false);
+                importingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel(true);
+                    }
+                });
+                importingDialog.show();
+            }
+        }
+
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                return importAsVisit();
+            } catch (Exception e) {
+                cancel(true);
+                return null;
+            }
+        }
+
+
+        private boolean importAsVisit() throws IOException {
+            URL url = null;
+            boolean success = false;
+            HttpURLConnection urlConnection = null;
+            try {
+                url = new URL(this.downloadUrl);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+
+                CustomXmlPullParser customXmlPullParser = new CustomXmlPullParser();
+                List<POI> poisList = customXmlPullParser.parse(in, getActivity());
+                createPOISAndAddToTour(poisList, this.tourId);
+
+
+                return success;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                urlConnection.disconnect();
+                return success;
+            }
+        }
+
+        private boolean createPOISAndAddToTour(List<POI> poisList, int tourId) {
+            Looper.prepare();
+
+            long total = 0;
+            Cursor tourCursor = POIsContract.TourEntry.getTourById(getActivity(), tourId);
+            Tour tour = null;
+            if (tourCursor.moveToFirst()) {
+                tour = getTourFromCursor(tourCursor);
+            }
+
+            int earthCategory = POIsContract.CategoryEntry.getIdByShownName(getActivity(), "EARTH" + "/");
+            for (POI poiImported : poisList) {
+                total++;
+                ContentValues poi = getFromImportedPOI(poiImported, earthCategory);
+
+                try {
+
+                    Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), poi);
+                    int newPoiId = POIsContract.POIEntry.getIdByUri(insertedUri);
+
+                    ContentValues tourPoiValues = new ContentValues();
+                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, newPoiId);
+                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, tour.getId());
+                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, tour.getDuration());
+                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, total);
+
+                    POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), tourPoiValues);
+
+                    publishProgress((int) (total * 100 / poisList.size()));
+                } catch (android.database.SQLException e) {
+                    String poiName = poi.get(POIsContract.POIEntry.COLUMN_COMPLETE_NAME).toString();
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Already exists one POI with the same name: " + poiName + ". Please, change it.", Toast.LENGTH_LONG).show();
+                }
+            }
+            return true;
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            importingDialog.setProgress(values[0]);
+        }
+
+        private Tour getTourFromCursor(Cursor tourCursor) {
+            Tour tour = new Tour();
+            tour.setId(tourCursor.getInt(tourCursor.getColumnIndex(POIsContract.TourEntry.COLUMN_ID)));
+            tour.setName(tourCursor.getString(tourCursor.getColumnIndex(POIsContract.TourEntry.COLUMN_NAME)));
+            tour.setCategoryId(tourCursor.getInt(tourCursor.getColumnIndex(POIsContract.TourEntry.COLUMN_CATEGORY_ID)));
+            tour.setDuration(tourCursor.getInt(tourCursor.getColumnIndex(POIsContract.TourEntry.COLUMN_INTERVAL)));
+            tour.setHidden(tourCursor.getInt(tourCursor.getColumnIndex(POIsContract.TourEntry.COLUMN_HIDE)) == 1);
+
+            return tour;
+        }
+
+
+        private ContentValues getFromImportedPOI(POI poiImported, int earthCategory) {
+
+            ContentValues poi = new ContentValues();
+
+            String name = poiImported.getName();
+            String visited_place = name;
+            String longitude = poiImported.getPoint().getLongitude();
+            String latitude = poiImported.getPoint().getLatitude();
+            String altitude = "0";
+            String heading = "79";
+            String tilt = "62";
+            String range = "339";
+            String altitudeMode = "relativeToSeaFloor";
+
+            poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
+            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
+            poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
+            poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
+            poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
+            poi.put(POIsContract.POIEntry.COLUMN_HEADING, heading);
+            poi.put(POIsContract.POIEntry.COLUMN_TILT, tilt);
+            poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
+            poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
+            poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
+            poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, earthCategory);
+
+            return poi;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if (importingDialog != null) {
+                importingDialog.dismiss();
+            }
         }
     }
 

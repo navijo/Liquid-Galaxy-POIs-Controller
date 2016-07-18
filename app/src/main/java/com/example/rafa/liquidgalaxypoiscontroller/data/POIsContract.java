@@ -86,6 +86,15 @@ public class POIsContract {
                     COLUMN_COMPLETE_NAME);
         }
 
+        public static Cursor getPOIsIdByCategory(Context context, String categoryID) {
+            return context.getContentResolver().query(
+                    CONTENT_URI,
+                    null,
+                    COLUMN_CATEGORY_ID + " = ?",
+                    new String[]{categoryID},
+                    COLUMN_ID);
+        }
+
         public static Cursor getNotHidenPOIsByCategory(FragmentActivity fragmentActivity, String categoryID) {
             return fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
@@ -135,6 +144,12 @@ public class POIsContract {
         public static int deletePOIById(Context context, String poiId) {
             String whereClause = COLUMN_ID + " = ?";
             return context.getContentResolver().delete(CONTENT_URI, whereClause, new String[]{poiId});
+        }
+
+        public static int getIdByUri(Uri insertedUri) {
+            String uri = insertedUri.toString();
+            String[] uriSplit = uri.split("/");
+            return Integer.parseInt(uriSplit[uriSplit.length - 1]);
         }
     }
 
@@ -348,6 +363,7 @@ public class POIsContract {
         public static final String TABLE_NAME = "tour";
 
         //Table columns
+        public static final String COLUMN_ID = "_id";
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_CATEGORY_ID = "Category";
         public static final String COLUMN_HIDE = "Hide";
@@ -392,6 +408,15 @@ public class POIsContract {
 
         public static Cursor getAllNotHidenTours(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI, null, COLUMN_HIDE + " = 0", null, null);
+        }
+
+        public static Cursor getTourById(FragmentActivity activity, int tourId) {
+            return activity.getContentResolver().query(
+                    CONTENT_URI,
+                    null,
+                    COLUMN_ID + " = ?",
+                    new String[]{String.valueOf(tourId)},
+                    null);
         }
     }
 

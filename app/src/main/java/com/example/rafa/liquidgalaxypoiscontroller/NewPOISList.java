@@ -2,6 +2,7 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -13,17 +14,15 @@ import android.widget.Toast;
 import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
 import com.example.rafa.liquidgalaxypoiscontroller.beans.POI;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
+import com.example.rafa.liquidgalaxypoiscontroller.utils.CustomAndroidTreeView;
 import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
 
 /**
  * Created by lgwork on 13/07/16.
  */
 public class NewPOISList extends Fragment {
 
-
-    private AndroidTreeView tView;
-
+    private CustomAndroidTreeView tView;
 
     public static NewPOISList newInstance() {
         Bundle args = new Bundle();
@@ -46,7 +45,8 @@ public class NewPOISList extends Fragment {
 
         TreeNode categoriesRoot = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_home_black_24dp, getResources().getString(R.string.categoriesRoot), 0, 0, false));
 
-        try (Cursor rootCategories = POIsContract.CategoryEntry.getRootCategories(getActivity())) {
+        Cursor rootCategories = POIsContract.CategoryEntry.getRootCategories(getActivity());
+        try {
             while (rootCategories.moveToNext()) {
                 final Category rootCategory = getCategoryData(rootCategories);
                 TreeItemHolder.IconTreeItem parentNode;
@@ -73,10 +73,10 @@ public class NewPOISList extends Fragment {
 
                 new Thread(new Runnable() {
                     public void run() {
+                        Looper.prepare();
                         try {
                             getChildCategories(rootCategory, parent);
                             getPois(rootCategory, parent);
-
                         } catch (Exception e) {
                             Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
                         }
@@ -85,37 +85,41 @@ public class NewPOISList extends Fragment {
 
                 categoriesRoot.addChild(parent);
             }
-
+        } finally {
             rootCategories.close();
-
-            root.addChildren(categoriesRoot);
-
-            tView = new AndroidTreeView(getActivity(), root);
-            tView.setDefaultAnimation(false);
-            tView.setUseAutoToggle(true);
-            tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
-            tView.setDefaultViewHolder(TreeItemHolder.class);
-
-            containerView.addView(tView.getView());
-
-            if (savedInstanceState != null) {
-                String state = savedInstanceState.getString("tState");
-                if (!TextUtils.isEmpty(state)) {
-                    tView.restoreState(state);
-                }
-            }
-
-            return rootView;
         }
+
+
+        root.addChildren(categoriesRoot);
+
+        tView = new CustomAndroidTreeView(getActivity(), root);
+        tView.setDefaultAnimation(false);
+//        tView.setUseAutoToggle(false);
+        tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+        tView.setDefaultViewHolder(TreeItemHolder.class);
+
+        containerView.addView(tView.getView());
+
+        if (savedInstanceState != null) {
+            String state = savedInstanceState.getString("tState");
+            if (!TextUtils.isEmpty(state)) {
+                tView.restoreState(state);
+            }
+        }
+
+        return rootView;
     }
 
     private void getPois(Category category, TreeNode parent) {
-        try (Cursor poisInCategory = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(category.getId()))) {
+
+        Cursor poisInCategory = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(category.getId()));
+        try {
             while (poisInCategory.moveToNext()) {
                 POI poi = getPoiData(poisInCategory);
                 TreeNode poiNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_place_black_24dp, poi.getName(), poi.getId(), 1, true));
                 parent.addChild(poiNode);
             }
+        } finally {
             poisInCategory.close();
         }
     }
@@ -128,7 +132,8 @@ public class NewPOISList extends Fragment {
     }
 
     private void getChildCategories(Category parentCategory, TreeNode parent) {
-        try (Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(parentCategory.getId()))) {
+        Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(parentCategory.getId()));
+        try {
             while (childCategories.moveToNext()) {
                 final Category childCategory = getCategoryData(childCategories);
                 final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName(), childCategory.getId(), 0, true));
@@ -144,6 +149,7 @@ public class NewPOISList extends Fragment {
                 }).start();
                 parent.addChild(childCategoryNode);
             }
+        } finally {
             childCategories.close();
         }
     }

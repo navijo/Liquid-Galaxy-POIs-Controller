@@ -212,5 +212,12 @@
     <string name="categoriesRoot">Categories</string>
     <string name="loadingTree">Loading...</string>
     <string name="action_exportDB">Export Database to local storage</string>
+    <string name="importAsTourStr">Import as Tour</string>
+    <string name="tourValues">Create new Tour</string>
+    <string name="save">Save</string>
+    <string name="empty_duration_error">The duration must not be empty</string>
+    <string name="importingContentsTour">Importing contents into tour</string>
+    <string name="cancelImporting">Cancel Import</string>
+    <string name="are_you_sure_delete_database">This action will delete all the data inside the application. Are you sure?</string>
 
 </resources>

@@ -3,6 +3,7 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,7 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
     @Override
     public View createNodeView(final TreeNode node, final IconTreeItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
-        final View view = inflater.inflate(R.layout.layout_profile_node, null, false);
+        final View view = inflater.inflate(R.layout.treeview_node, null, false);
         tvValue = (TextView) view.findViewById(R.id.node_value);
         tvValue.setText(value.text);
 
@@ -44,7 +45,6 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
 
         final ImageView iconView = (ImageView) view.findViewById(R.id.imageIcon);
         iconView.setImageDrawable(context.getResources().getDrawable(value.icon));
-
 
         arrowView = (ImageView) view.findViewById(R.id.arrow_icon);
         addCategoryButton = (ImageView) view.findViewById(R.id.btn_addCategory);
@@ -74,7 +74,6 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
                 public void onClick(View v) {
                     Intent createCategoryIntent = new Intent(context, CreateItemActivity.class);
                     createCategoryIntent.putExtra("CREATION_TYPE", "CATEGORY/HERENEW");
-                    //FIXME: Review
                     createCategoryIntent.putExtra("CATEGORY_ID", String.valueOf(value.id));
                     context.startActivity(createCategoryIntent);
                 }
@@ -90,19 +89,18 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
                 }
             });
 
-            if (node.getLevel() == 1) {
-                addPOIButton.setVisibility(View.GONE);
-            } else {
+            if (node.getLevel() != 1) {
                 addPOIButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent createPoiIntent = new Intent(context, CreateItemActivity.class);
                         createPoiIntent.putExtra("CREATION_TYPE", "POI/HERENEW");
-                        //FIXME: Review
                         createPoiIntent.putExtra("CATEGORY_ID", String.valueOf(value.id));
                         context.startActivity(createPoiIntent);
                     }
                 });
+            } else {
+                addPOIButton.setVisibility(View.GONE);
             }
         }
 
@@ -121,8 +119,8 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
                                 POIsContract.POIEntry.deletePOIById(context, String.valueOf(value.id));
                             } else {
                                 //It's a Category
+                                deletePoisInCategory(String.valueOf(value.id));
                                 POIsContract.CategoryEntry.deleteCategoryById(context, String.valueOf(value.id));
-                                //TODO: Delete category contents?
                             }
                             getTreeView().removeNode(node);
                         }
@@ -143,9 +141,17 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
         return view;
     }
 
+    private void deletePoisInCategory(String categoryId) {
+        Cursor poisIdsInCategory = POIsContract.POIEntry.getPOIsIdByCategory(context, categoryId);
+        while (poisIdsInCategory.moveToNext()) {
+            int poiId = poisIdsInCategory.getInt(0);
+            POIsContract.POIEntry.deletePOIById(context, String.valueOf(poiId));
+        }
+    }
+
     @Override
     public void toggle(boolean active) {
-        arrowView.setImageDrawable(context.getResources().getDrawable(active ? R.drawable.ic_keyboard_arrow_down_black_24dp : R.drawable.ic_keyboard_arrow_right_black_24dp));
+        arrowView.setImageDrawable(context.getResources().getDrawable(active ? R.drawable.ic_keyboard_arrow_down_black_36dp : R.drawable.ic_keyboard_arrow_right_black_36dp));
     }
 
     public static class IconTreeItem {

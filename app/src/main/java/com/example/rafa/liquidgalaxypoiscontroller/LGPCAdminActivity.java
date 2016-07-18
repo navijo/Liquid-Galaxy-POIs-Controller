@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,7 +77,23 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
             return true;
         }
         else if (id == R.id.reset_db) {
-            resetDatabase();
+            final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(getResources().getString(R.string.are_you_sure_delete_database));
+
+            alert.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    resetDatabase();
+                }
+            });
+
+            alert.setNegativeButton(getResources().getString(R.string.no),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    });
+            alert.show();
+
+
             return true;
         } else if (id == R.id.export_db) {
             exportDatabase();
