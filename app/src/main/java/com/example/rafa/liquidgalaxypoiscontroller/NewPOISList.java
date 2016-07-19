@@ -2,14 +2,12 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
 import com.example.rafa.liquidgalaxypoiscontroller.beans.POI;
@@ -70,17 +68,17 @@ public class NewPOISList extends Fragment {
 
                 final TreeNode parent = new TreeNode(parentNode).setViewHolder(new TreeItemHolder(getActivity()));
 
-                new Thread(new Runnable() {
-                    public void run() {
-                        Looper.prepare();
-                        try {
+//                new Thread(new Runnable() {
+//                    public void run() {
+//                        Looper.prepare();
+//                        try {
                             getChildCategories(rootCategory, parent);
                             getPois(rootCategory, parent);
-                        } catch (Exception e) {
-                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }).start();
+//                        } catch (Exception e) {
+//                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                }).start();
 
                 categoriesRoot.addChild(parent);
             }
@@ -123,17 +121,18 @@ public class NewPOISList extends Fragment {
         try (Cursor childCategories = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), String.valueOf(parentCategory.getId()))) {
             while (childCategories.moveToNext()) {
                 final Category childCategory = getCategoryData(childCategories);
-                final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName(), childCategory.getId(), 0, true));
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
+                int count = POIsContract.POIEntry.countPOIsByCategory(getActivity(), String.valueOf(childCategory.getId()));
+                final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName() + " (" + count + ") ", childCategory.getId(), 0, true));
+//                new Thread(new Runnable() {
+//                    public void run() {
+//                        try {
                             getChildCategories(childCategory, childCategoryNode);
                             getPois(childCategory, childCategoryNode);
-                        } catch (Exception e) {
-                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }).start();
+//                        } catch (Exception e) {
+//                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                }).start();
                 parent.addChild(childCategoryNode);
             }
             childCategories.close();

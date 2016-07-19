@@ -69,7 +69,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,8 +91,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
     public static final int TOURDATAPICKER_FRAGMENT = 2;
     public static final String TAG = "NearbyBeaconsFragment";
     private static final long FIRST_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
-    private static final long SECOND_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
-    private static final long THIRD_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
+    private static final long SECOND_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(5);
+    private static final long THIRD_SCAN_TIME_MILLIS = TimeUnit.SECONDS.toMillis(10);
     public static int REQUEST_ENABLE_BLUETOOTH = 1;
     String requestedFileUrl;
     String queriesString = "";
@@ -554,9 +553,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                     ImportTourDialogFragment tourDataFragment = ImportTourDialogFragment.newInstance();
                     tourDataFragment.setTargetFragment(NearbyBeaconsFragment.this, TOURDATAPICKER_FRAGMENT);
                     tourDataFragment.show(getFragmentManager().beginTransaction(), "Tour Data");
-
-//                    ImportAsVisitTask importAsVisitTask = new ImportAsVisitTask(requestedFileUrl);
-//                    importAsVisitTask.execute();
                 }
             });
         }
@@ -676,11 +672,10 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
                 return success;
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                assert urlConnection != null;
                 urlConnection.disconnect();
                 return success;
             }

@@ -1,9 +1,11 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,8 +121,9 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
                                 POIsContract.POIEntry.deletePOIById(context, String.valueOf(value.id));
                             } else {
                                 //It's a Category
-                                deletePoisInCategory(String.valueOf(value.id));
-                                POIsContract.CategoryEntry.deleteCategoryById(context, String.valueOf(value.id));
+                                DeletePoisTask deletePoisTask = new DeletePoisTask(String.valueOf(value.id));
+                                deletePoisTask.execute();
+                                // deletePoisInCategory(String.valueOf(value.id));
                             }
                             getTreeView().removeNode(node);
                         }
@@ -141,13 +144,7 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
         return view;
     }
 
-    private void deletePoisInCategory(String categoryId) {
-        Cursor poisIdsInCategory = POIsContract.POIEntry.getPOIsIdByCategory(context, categoryId);
-        while (poisIdsInCategory.moveToNext()) {
-            int poiId = poisIdsInCategory.getInt(0);
-            POIsContract.POIEntry.deletePOIById(context, String.valueOf(poiId));
-        }
-    }
+
 
     @Override
     public void toggle(boolean active) {
@@ -167,6 +164,77 @@ public class TreeItemHolder extends TreeNode.BaseNodeViewHolder<TreeItemHolder.I
             this.type = type;
             this.isDeletable = isDeletable;
             this.id = id;
+        }
+    }
+
+    private class DeletePoisTask extends AsyncTask<Void, Integer, Void> {
+
+        String categoryId;
+        private ProgressDialog deletingDialog;
+
+        public DeletePoisTask(String categoryId) {
+            this.categoryId = categoryId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (deletingDialog == null) {
+                deletingDialog = new ProgressDialog(context);
+                deletingDialog.setMessage(context.getResources().getString(R.string.deletingPoisInCategory));
+                deletingDialog.setIndeterminate(false);
+                deletingDialog.setMax(100);
+                deletingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                deletingDialog.setCancelable(true);
+                deletingDialog.setCanceledOnTouchOutside(false);
+                deletingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel(true);
+                    }
+                });
+                deletingDialog.show();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                deletePoisInCategory(this.categoryId);
+            } catch (Exception e) {
+                cancel(true);
+            }
+            return null;
+        }
+
+        private void deletePoisInCategory(String categoryId) {
+            Cursor poisIdsInCategory = POIsContract.POIEntry.getPOIsIdByCategory(context, categoryId);
+            long total = 0;
+            long numPois = poisIdsInCategory.getCount();
+            while (poisIdsInCategory.moveToNext()) {
+                total++;
+                int poiId = poisIdsInCategory.getInt(0);
+                POIsContract.POIEntry.deletePOIById(context, String.valueOf(poiId));
+                publishProgress((int) (total * 100 / numPois));
+            }
+
+            POIsContract.CategoryEntry.deleteCategoryById(context, categoryId);
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            deletingDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            if (params != null) {
+                super.onPostExecute(params);
+            }
+            if (deletingDialog != null) {
+                deletingDialog.dismiss();
+            }
         }
     }
 

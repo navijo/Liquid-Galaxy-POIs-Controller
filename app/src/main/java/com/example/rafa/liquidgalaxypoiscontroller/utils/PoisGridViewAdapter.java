@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.rafa.liquidgalaxypoiscontroller.R;
 import com.example.rafa.liquidgalaxypoiscontroller.beans.POI;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import java.util.List;
 
@@ -27,11 +28,15 @@ public class PoisGridViewAdapter extends BaseAdapter {
     List<POI> poiList;
     Context context;
     Activity activity;
+    Session session;
 
     public PoisGridViewAdapter(List<POI> poiList, Context context, Activity activity) {
         this.poiList = poiList;
         this.context = context;
         this.activity = activity;
+
+        GetSessionTask getSessionTask = new GetSessionTask();
+        getSessionTask.execute();
     }
 
     @Override
@@ -53,14 +58,19 @@ public class PoisGridViewAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         final POI currentPoi = this.poiList.get(i);
+
         Button button = new Button(context);
-        button.setText(currentPoi.getName());
+        String displayName = currentPoi.getName();
+        button.setText(displayName);
 
         Drawable top = context.getResources().getDrawable(R.drawable.ic_place_black_24dp);
         button.setCompoundDrawablesWithIntrinsicBounds(top, null, null, null);
 
+        AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        button.setMaxLines(1);
+
         button.setBackground(context.getResources().getDrawable(R.drawable.button_rounded_grey));
-        button.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+        button.setLayoutParams(params);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,7 +128,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                return LGUtils.setConnectionWithLiquidGalaxy(command, activity);
+                return LGUtils.setConnectionWithLiquidGalaxy(session, command, activity);
             } catch (JSchException e) {
                 this.cancel(true);
                 if (dialog != null) {
@@ -147,7 +157,28 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 }
             }
         }
+    }
 
+    private class GetSessionTask extends AsyncTask<Void, Void, Void> {
+
+        public GetSessionTask() {
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            session = LGUtils.getSession(activity);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void success) {
+            super.onPostExecute(success);
+        }
     }
 
 }

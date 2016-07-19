@@ -3,13 +3,16 @@ package com.example.rafa.liquidgalaxypoiscontroller;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,21 +23,25 @@ import android.widget.Toast;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-/*This class makes reference to the functionalities to apply to Liquid Galaxy. This class is the once
-* which is able to reboot the LG, relaunch it or shut it down. It also is able to import files containing
- * a list of POIs and save it persistently in the application data base.*/
+/* This class makes reference to the functionalities to apply to Liquid Galaxy. This class is the once
+*  which is able to reboot the LG, relaunch it or shut it down. It also is able to import files containing
+*  a list of POIs and save it persistently in the application data base.*/
 public class LGTools extends Fragment {
 
+    Session session;
     private String filePath = "";
     private Button importPois, relaunch, reboot, shutDown;
 
@@ -55,6 +62,13 @@ public class LGTools extends Fragment {
         setRebootButtonBehaviour();
         setShutDownButtonBehaviour();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        GetSessionTask getSessionTask = new GetSessionTask();
+        getSessionTask.execute();
     }
 
     /*SHUT DOWN*/
@@ -119,7 +133,7 @@ public class LGTools extends Fragment {
             // When button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
                 try {
-                    LGUtils.setConnectionWithLiquidGalaxy(sentence, getActivity());
+                    LGUtils.setConnectionWithLiquidGalaxy(session, sentence, getActivity());
                 } catch (JSchException e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
                 }
@@ -191,91 +205,14 @@ public class LGTools extends Fragment {
                         filePath = pathTreatment(data.getData().getPath(), Environment.getExternalStorageDirectory().getAbsolutePath());
                     }
 
-                    //FIXME: The category must not be taken from the filename, instead it must be taken from the string before the @<name>@
-//                    String category = getFileName();
-//                    int categoryID = createCategory(category);
-
                     //We read the file and create the POIs described inside it.
-                    List<ContentValues> poisToImport = readFile(/*categoryID*/);
-                    createPOis(poisToImport);
-
+                    ReadImportFileTask readFileImportTask = new ReadImportFileTask();
+                    readFileImportTask.execute();
                 }
             }
         }
     }
 
-    private List<ContentValues> readFile(/*int categoryID*/) {
-        List<ContentValues> poisList = new ArrayList<ContentValues>();
-        File file = new File(filePath);
-        if (file.exists()) {
-
-            try {
-                FileInputStream inputStream = null;
-                inputStream = new FileInputStream(file);
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line = "";
-
-                while ((line = br.readLine()) != null) {
-                    //for each POI described inside the file we read and introduce it inside a POIs list.
-                    if (!line.equals("") && line != null) {
-                        readPOI(poisList, line/*, categoryID*/);
-                    }
-                }
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(getActivity(), "File couldn't be opened. Try to open it with a different file explorer, for example 'Root Explorer' once.", Toast.LENGTH_LONG).show();
-        }
-        return poisList;
-    }
-
-    private void readPOI(List<ContentValues> poisList, String line/*, int categoryID*/) {
-
-        try {
-            ContentValues poi = new ContentValues();
-            /**
-             * Added by Ivan Josa
-             */
-            int categoryId = getOrCreatePoiCategoryByName(line);
-
-
-            /**************/
-            String name = getPOIName(line);
-            String visited_place = name;
-            String longitude = getPOIAttribute("longitude", line);
-            String latitude = getPOIAttribute("latitude", line);
-            String altitude = getPOIAttribute("altitude", line);
-            String heading = getPOIAttribute("heading", line);
-            String tilt = getPOIAttribute("tilt", line);
-            String range = getPOIAttribute("range", line);
-            String altitudeMode = getAltitudeMode(line);
-
-            poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
-            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
-            poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
-            poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
-            poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
-            poi.put(POIsContract.POIEntry.COLUMN_HEADING, heading);
-            poi.put(POIsContract.POIEntry.COLUMN_TILT, tilt);
-            poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
-            poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
-            poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
-            // poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
-            poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryId);
-
-            poisList.add(poi);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(), getResources().getString(R.string.error_reading_pois), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private String getFileName() {
-        int startIndex = filePath.lastIndexOf("/") + 1;
-        return filePath.substring(startIndex, filePath.length() - 4);
-    }
 
     private void selectFileToImport() {
         //We use Intent.GATA_GET_CONTENT to let the user select the file to import
@@ -287,34 +224,6 @@ public class LGTools extends Fragment {
         }
     }
 
-    private int getOrCreatePoiCategoryByName(String line) {
-        int firstArrova = line.indexOf("@");
-        int categoryId = 0;
-        String categoryName = line.substring(0, firstArrova);
-
-
-        Cursor categories = POIsContract.CategoryEntry.getCategoriesByShownName(getActivity(), categoryName.toUpperCase());
-        if (categories != null && categories.moveToFirst()) {
-            //Category Exists, we fetch it
-            categoryId = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName.toUpperCase());
-        } else {
-            //Category not exist, we need to create it
-            String[] categoryTreeNames = categoryName.split("/");
-            if (categoryTreeNames != null && categoryTreeNames.length > 1) {
-                categoryId = createCategoryTree(categoryTreeNames);
-            } else {
-                categoryId = createCategory(categoryName);
-            }
-        }
-
-        return categoryId;
-    }
-
-    private String getPOIName(String line) {
-        int start = line.indexOf("@") + 1;
-        int end = line.lastIndexOf("@");
-        return line.substring(start, end);
-    }
 
     private String getPOIAttribute(String attribute, String line) {
 
@@ -333,54 +242,41 @@ public class LGTools extends Fragment {
         return line.substring(start, end);
     }
 
-    private void createPOis(List<ContentValues> pois) {
-        for (ContentValues poi : pois) {
-            try {
-                Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), poi);
-                Toast.makeText(getActivity(), insertedUri.toString(), Toast.LENGTH_SHORT).show();
-            } catch (android.database.SQLException e) {
-                String poiName = poi.get(POIsContract.POIEntry.COLUMN_COMPLETE_NAME).toString();
-                e.printStackTrace();
-                Toast.makeText(getActivity(), "Already exists one POI with the same name: " + poiName + ". Please, change it.", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     private int createCategoryTree(String[] categoryTreeName) {
         int categoryID = 0;
 
         int fatherCategoryId = 0;
         for (int i = 0; i < categoryTreeName.length - 1; i++) {
 
-            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(getActivity(), categoryTreeName[i].toUpperCase());
-            if (categories != null && categories.moveToFirst()) {
-                //FatherCategory Exists, we fetch it
-                fatherCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), categoryTreeName[i].toUpperCase());
-            } else {
-                fatherCategoryId = createNestedCategory(categoryTreeName[i].toUpperCase(), fatherCategoryId);
-            }
+            try (Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(getActivity(), categoryTreeName[i].toUpperCase())) {
+                if (categories != null && categories.moveToFirst()) {
+                    //FatherCategory Exists, we fetch it
+                    fatherCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), categoryTreeName[i].toUpperCase());
+                } else {
+                    fatherCategoryId = createNestedCategory(categoryTreeName[i].toUpperCase(), fatherCategoryId);
+                }
 
-            String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherCategoryId);
+                String fatherShownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherCategoryId);
 
-            ContentValues category = new ContentValues();
-            category.put(POIsContract.CategoryEntry.COLUMN_NAME, categoryTreeName[i + 1].toUpperCase());
-            category.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, fatherCategoryId);
-            category.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, fatherShownName.endsWith("/") ? fatherShownName + categoryTreeName[i + 1].toUpperCase() : fatherShownName + "/" + categoryTreeName[i + 1].toUpperCase());
-            category.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
+                ContentValues category = new ContentValues();
+                category.put(POIsContract.CategoryEntry.COLUMN_NAME, categoryTreeName[i + 1].toUpperCase());
+                category.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, fatherCategoryId);
+                category.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, fatherShownName.endsWith("/") ? fatherShownName + categoryTreeName[i + 1].toUpperCase() : fatherShownName + "/" + categoryTreeName[i + 1].toUpperCase());
+                category.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
 
-            try {
-                Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), category);
-                categoryID = POIsContract.CategoryEntry.getIdByUri(insertedUri);
-            } catch (android.database.SQLException e) {
-                Toast.makeText(getActivity(), "Already exists one category with the same name. Please, change it.", Toast.LENGTH_SHORT).show();
-                categoryID = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryTreeName[i] + "/");
-                return categoryID;
+                try {
+                    Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), category);
+                    categoryID = POIsContract.CategoryEntry.getIdByUri(insertedUri);
+                } catch (android.database.SQLException e) {
+                    Toast.makeText(getActivity(), "Already exists one category with the same name. Please, change it.", Toast.LENGTH_SHORT).show();
+                    categoryID = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryTreeName[i] + "/");
+                    return categoryID;
+                }
             }
         }
 
         return categoryID;
     }
-
 
     private int createNestedCategory(String categoryName, int fatherId) {
 
@@ -451,4 +347,188 @@ public class LGTools extends Fragment {
         }
         return absolutePath + path;
     }
+
+    private class ReadImportFileTask extends AsyncTask<Void, Integer, List<ContentValues>> {
+
+        private ProgressDialog importingDialog;
+
+        public ReadImportFileTask() {
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (importingDialog == null) {
+                importingDialog = new ProgressDialog(getActivity());
+                importingDialog.setMessage(getResources().getString(R.string.readingFileAndImportingPois));
+                importingDialog.setIndeterminate(false);
+                importingDialog.setMax(100);
+                importingDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                importingDialog.setCancelable(true);
+                importingDialog.setCanceledOnTouchOutside(false);
+                importingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancel(true);
+                    }
+                });
+                importingDialog.show();
+            }
+        }
+
+        @Override
+        protected List<ContentValues> doInBackground(Void... params) {
+            try {
+                return readFile();
+            } catch (Exception e) {
+                cancel(true);
+                return null;
+            }
+        }
+
+        private List<ContentValues> readFile() {
+            List<ContentValues> poisList = new ArrayList<ContentValues>();
+            File file = new File(filePath);
+            if (file.exists()) {
+                long total = 0;
+                try {
+                    FileInputStream inputStream = null;
+                    inputStream = new FileInputStream(file);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                    String line = "";
+                    int numLines = countLines(filePath);
+                    while ((line = br.readLine()) != null) {
+                        //for each POI described inside the file we read and introduce it inside the database.
+                        if (!line.equals("")) {
+                            total++;
+                            readAndImportPOI(line);
+                            publishProgress((int) (total * 100 / numLines));
+                        }
+                    }
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getActivity(), "File couldn't be opened. Try to open it with a different file explorer, for example 'Root Explorer' once.", Toast.LENGTH_LONG).show();
+            }
+            return poisList;
+        }
+
+        public int countLines(String filename) throws IOException {
+
+            LineNumberReader lnr = new LineNumberReader(new FileReader(new File(filename)));
+
+            lnr.skip(Long.MAX_VALUE);
+
+            return lnr.getLineNumber() + 1;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            importingDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<ContentValues> params) {
+            if (params != null) {
+                super.onPostExecute(params);
+            }
+            if (importingDialog != null) {
+                importingDialog.dismiss();
+            }
+        }
+
+        private void readAndImportPOI(String line) {
+            ContentValues poi = new ContentValues();
+            try {
+                /**
+                 * Added by Ivan Josa
+                 */
+                int categoryId = getOrCreatePoiCategoryByName(line);
+
+                /**************/
+                String name = getPOIName(line);
+                String visited_place = name;
+                String longitude = getPOIAttribute("longitude", line);
+                String latitude = getPOIAttribute("latitude", line);
+                String altitude = getPOIAttribute("altitude", line);
+                String heading = getPOIAttribute("heading", line);
+                String tilt = getPOIAttribute("tilt", line);
+                String range = getPOIAttribute("range", line);
+                String altitudeMode = getAltitudeMode(line);
+
+                poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
+                poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
+                poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
+                poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
+                poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
+                poi.put(POIsContract.POIEntry.COLUMN_HEADING, heading);
+                poi.put(POIsContract.POIEntry.COLUMN_TILT, tilt);
+                poi.put(POIsContract.POIEntry.COLUMN_RANGE, range);
+                poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE_MODE, altitudeMode);
+                poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
+                poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryId);
+
+                Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), poi);
+            } catch (android.database.SQLException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        private String getPOIName(String line) {
+            int start = line.indexOf("@") + 1;
+            int end = line.lastIndexOf("@");
+            return line.substring(start, end);
+        }
+
+        private int getOrCreatePoiCategoryByName(String line) {
+            int firstArrova = line.indexOf("@");
+            int categoryId = 0;
+            String categoryName = line.substring(0, firstArrova);
+
+
+            try (Cursor categories = POIsContract.CategoryEntry.getCategoriesByShownName(getActivity(), categoryName.toUpperCase())) {
+                if (categories != null && categories.moveToFirst()) {
+                    //Category Exists, we fetch it
+                    categoryId = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName.toUpperCase());
+                } else {
+                    //Category not exist, we need to create it
+                    String[] categoryTreeNames = categoryName.split("/");
+                    if (categoryTreeNames != null && categoryTreeNames.length > 1) {
+                        categoryId = createCategoryTree(categoryTreeNames);
+                    } else {
+                        categoryId = createCategory(categoryName);
+                    }
+                }
+            }
+
+            return categoryId;
+        }
+    }
+
+    private class GetSessionTask extends AsyncTask<Void, Void, Void> {
+
+        public GetSessionTask() {
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            session = LGUtils.getSession(getActivity());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void success) {
+            super.onPostExecute(success);
+        }
+    }
+
 }

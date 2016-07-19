@@ -32,71 +32,71 @@ import java.util.List;
 
 
 class BleUrlDeviceDiscoverer extends UrlDeviceDiscoverer
-                             implements BluetoothAdapter.LeScanCallback {
-  private static final String TAG = "BleUrlDeviceDiscoverer";
-  private static final ParcelUuid URIBEACON_SERVICE_UUID =
-      ParcelUuid.fromString("0000FED8-0000-1000-8000-00805F9B34FB");
-  private static final ParcelUuid EDDYSTONE_URL_SERVICE_UUID =
-      ParcelUuid.fromString("0000FEAA-0000-1000-8000-00805F9B34FB");
-  private BluetoothAdapter mBluetoothAdapter;
-  private Parcelable[] mScanFilterUuids;
-  private boolean isRunning;
+        implements BluetoothAdapter.LeScanCallback {
+    private static final String TAG = "BleUrlDeviceDiscoverer";
+    private static final ParcelUuid URIBEACON_SERVICE_UUID =
+            ParcelUuid.fromString("0000FED8-0000-1000-8000-00805F9B34FB");
+    private static final ParcelUuid EDDYSTONE_URL_SERVICE_UUID =
+            ParcelUuid.fromString("0000FEAA-0000-1000-8000-00805F9B34FB");
+    private BluetoothAdapter mBluetoothAdapter;
+    private Parcelable[] mScanFilterUuids;
+    private boolean isRunning;
 
-  public BleUrlDeviceDiscoverer(Context context) {
-    final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(
-        Context.BLUETOOTH_SERVICE);
-    mBluetoothAdapter = bluetoothManager.getAdapter();
-    mScanFilterUuids = new ParcelUuid[]{URIBEACON_SERVICE_UUID, EDDYSTONE_URL_SERVICE_UUID};
-  }
-
-  private boolean leScanMatches(ScanRecord scanRecord) {
-    if (mScanFilterUuids == null) {
-      return true;
+    public BleUrlDeviceDiscoverer(Context context) {
+        final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(
+                Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+        mScanFilterUuids = new ParcelUuid[]{URIBEACON_SERVICE_UUID, EDDYSTONE_URL_SERVICE_UUID};
     }
-    List services = scanRecord.getServiceUuids();
-    if (services != null) {
-      for (Parcelable uuid : mScanFilterUuids) {
-        if (services.contains(uuid)) {
-          return true;
+
+    private boolean leScanMatches(ScanRecord scanRecord) {
+        if (mScanFilterUuids == null) {
+            return true;
         }
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanBytes) {
-    if (!leScanMatches(ScanRecord.parseFromBytes(scanBytes))) {
-      return;
-    }
-
-    UriBeacon uriBeacon = UriBeacon.parseFromBytes(scanBytes);
-    if (uriBeacon == null) {
-      return;
+        List services = scanRecord.getServiceUuids();
+        if (services != null) {
+            for (Parcelable uuid : mScanFilterUuids) {
+                if (services.contains(uuid)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    String url = uriBeacon.getUriString();
-    if (!URLUtil.isNetworkUrl(url)) {
-      return;
+    @Override
+    public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanBytes) {
+        if (!leScanMatches(ScanRecord.parseFromBytes(scanBytes))) {
+            return;
+        }
+
+        UriBeacon uriBeacon = UriBeacon.parseFromBytes(scanBytes);
+        if (uriBeacon == null) {
+            return;
+        }
+
+        String url = uriBeacon.getUriString();
+        if (!URLUtil.isNetworkUrl(url)) {
+            return;
+        }
+
+        UrlDevice urlDevice = createUrlDeviceBuilder(TAG + device.getAddress(), url)
+                .setRssi(rssi)
+                .setTxPower(uriBeacon.getTxPowerLevel())
+                .build();
+        Utils.updateRegion(urlDevice);
+        reportUrlDevice(urlDevice);
     }
 
-    UrlDevice urlDevice = createUrlDeviceBuilder(TAG + device.getAddress(), url)
-        .setRssi(rssi)
-        .setTxPower(uriBeacon.getTxPowerLevel())
-        .build();
-    Utils.updateRegion(urlDevice);
-    reportUrlDevice(urlDevice);
-  }
+    @Override
+    @SuppressWarnings("deprecation")
+    public synchronized void startScanImpl() {
+        mBluetoothAdapter.startLeScan(this);
+    }
 
-  @Override
-  @SuppressWarnings("deprecation")
-  public synchronized void startScanImpl() {
-    mBluetoothAdapter.startLeScan(this);
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  public synchronized void stopScanImpl() {
-    mBluetoothAdapter.stopLeScan(this);
-  }
+    @Override
+    @SuppressWarnings("deprecation")
+    public synchronized void stopScanImpl() {
+        mBluetoothAdapter.stopLeScan(this);
+    }
 }

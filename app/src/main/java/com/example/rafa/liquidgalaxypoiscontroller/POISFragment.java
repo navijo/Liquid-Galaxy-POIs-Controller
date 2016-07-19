@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public class POISFragment extends Fragment {
     private final Uri POI_URI = POIsContract.POIEntry.CONTENT_URI;
     private final Uri TOUR_URI = POIsContract.TourEntry.CONTENT_URI;
     private final Uri Category_URI = POIsContract.CategoryEntry.CONTENT_URI;
+    Session session;
     private CategoriesAdapter adapter;
     private POIsAdapter adapterPOI;
     private ListView poisListView, categoriesListView;
@@ -117,6 +119,7 @@ public class POISFragment extends Fragment {
         return poisView;
     }
 
+
     private void PriorPreparation(){
 
         poisListView = (ListView) poisView.findViewById(R.id.pois_listview); //List with pois or tours
@@ -145,6 +148,9 @@ public class POISFragment extends Fragment {
         delete = (FloatingActionButton) dialogView.findViewById(R.id.delete_poi);
 
         screenSizeTreatment();
+
+        GetSessionTask getSessionTask = new GetSessionTask();
+        getSessionTask.execute();
     }
 
     /* Depending on the screen size, it will set different font size.*/
@@ -1062,7 +1068,7 @@ public class POISFragment extends Fragment {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                return LGUtils.setConnectionWithLiquidGalaxy(command, getActivity());
+                return LGUtils.setConnectionWithLiquidGalaxy(session, command, getActivity());
             } catch (JSchException e) {
                 cancel(true);
                 if (dialog != null) {
@@ -1084,6 +1090,27 @@ public class POISFragment extends Fragment {
                 }
             }
         }
+    }
 
+    private class GetSessionTask extends AsyncTask<Void, Void, Void> {
+
+        public GetSessionTask() {
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            session = LGUtils.getSession(getActivity());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void success) {
+            super.onPostExecute(success);
+        }
     }
 }

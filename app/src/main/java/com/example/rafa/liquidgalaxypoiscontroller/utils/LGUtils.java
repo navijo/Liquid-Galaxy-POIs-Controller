@@ -17,8 +17,9 @@ import java.util.Properties;
  */
 public class LGUtils {
 
-    public static String setConnectionWithLiquidGalaxy(String command, Activity activity) throws JSchException {
+    static Session session = null;
 
+    public static Session getSession(Activity activity) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         String user = prefs.getString("User", "lg");
         String password = prefs.getString("Password", "lqgalaxy");
@@ -27,13 +28,33 @@ public class LGUtils {
 
         JSch jsch = new JSch();
 
-        Session session = jsch.getSession(user, hostname, port);
-        session.setPassword(password);
+        try {
+            if (session == null || !session.isConnected()) {
+                session = jsch.getSession(user, hostname, port);
+                session.setPassword(password);
 
-        Properties prop = new Properties();
-        prop.put("StrictHostKeyChecking", "no");
-        session.setConfig(prop);
-        session.connect();
+                Properties prop = new Properties();
+                prop.put("StrictHostKeyChecking", "no");
+                session.setConfig(prop);
+                session.connect(Integer.MAX_VALUE);
+            } else {
+                session.sendKeepAliveMsg();
+                return session;
+            }
+
+        } catch (JSchException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return session;
+    }
+
+    public static String setConnectionWithLiquidGalaxy(Session session, String command, Activity activity) throws JSchException {
+
+        if (session == null || !session.isConnected()) {
+            session = getSession(activity);
+        }
 
         ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -45,5 +66,6 @@ public class LGUtils {
 
         return baos.toString();
     }
+
 
 }

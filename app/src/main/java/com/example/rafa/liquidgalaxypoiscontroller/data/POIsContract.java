@@ -86,6 +86,17 @@ public class POIsContract {
                     COLUMN_COMPLETE_NAME);
         }
 
+        public static int countPOIsByCategory(FragmentActivity fragmentActivity, String categoryID) {
+            try (Cursor cursor = fragmentActivity.getContentResolver().query(
+                    CONTENT_URI,
+                    null,
+                    COLUMN_CATEGORY_ID + " = ?",
+                    new String[]{categoryID},
+                    COLUMN_COMPLETE_NAME)) {
+                return cursor.getCount();
+            }
+        }
+
         public static Cursor getPOIsIdByCategory(Context context, String categoryID) {
             return context.getContentResolver().query(
                     CONTENT_URI,
@@ -113,22 +124,25 @@ public class POIsContract {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
         }
         public static String getCompleteNameByID(FragmentActivity fragmentActivity, String id) {
-            Cursor cursor = fragmentActivity.getContentResolver().query(
+            try (Cursor cursor = fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
                     new String[]{COLUMN_COMPLETE_NAME},
                     _ID + " = ?",
                     new String[]{id},
-                    null);
-            if(cursor.moveToNext()){
-                return cursor.getString(0);
-            }else{
-                return "POI not found";
+                    null)) {
+                if (cursor.moveToNext()) {
+                    return cursor.getString(0);
+                } else {
+                    return "POI not found";
+                }
             }
         }
+
         public static int updateByID(FragmentActivity activity, ContentValues contentValues, String itemSelectedID) {
             String POI_IDselection = _ID + " = ?";
             return activity.getContentResolver().update(CONTENT_URI, contentValues, POI_IDselection, new String[]{itemSelectedID});
         }
+
         public static Cursor getAllNotHidenPOIs(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI,null, COLUMN_HIDE + " = 0", null, null);
         }
@@ -215,19 +229,21 @@ public class POIsContract {
             return fragmentActivity.getContentResolver().query(CONTENT_URI, null, whereClause, null, null);
         }
         public static String getFatherIdByID(FragmentActivity fragmentActivity, String itemSelectedID) {
-            Cursor queryCursor = fragmentActivity.getContentResolver().query(
+            try (Cursor queryCursor = fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
                     new String[]{COLUMN_FATHER_ID},
                     _ID + " = ?",
                     new String[]{itemSelectedID},
-                    null);
-            if(queryCursor.getCount()>0) {
-                queryCursor.moveToNext();
-                return String.valueOf(queryCursor.getInt(0));
-            }else{
-                return "0";
+                    null)) {
+                if (queryCursor.getCount() > 0) {
+                    queryCursor.moveToNext();
+                    return String.valueOf(queryCursor.getInt(0));
+                } else {
+                    return "0";
+                }
             }
         }
+
         public static Cursor getIDAndNameByFatherID(FragmentActivity fragmentActivity, String fatherID) {
             return fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
@@ -280,14 +296,15 @@ public class POIsContract {
 
 
         public static String getShownNameByID(FragmentActivity fragmentActivity, int categoryID) {
-            Cursor c = fragmentActivity.getContentResolver().query( CONTENT_URI,new String[]{COLUMN_SHOWN_NAME},
-                    _ID + " = ?", new String[]{String.valueOf(categoryID)},null);
+            try (Cursor c = fragmentActivity.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_SHOWN_NAME},
+                    _ID + " = ?", new String[]{String.valueOf(categoryID)}, null)) {
 
-            if(c.getCount()>0){
-                c.moveToNext();
-                return c.getString(0);
-            }else{
-                return "NO ROUTE";
+                if (c.getCount() > 0) {
+                    c.moveToNext();
+                    return c.getString(0);
+                } else {
+                    return "NO ROUTE";
+                }
             }
         }
 
@@ -297,37 +314,51 @@ public class POIsContract {
 
         public static int getIdByShownName(FragmentActivity activity, String shownName) {
 
-            Cursor c = activity.getContentResolver().query( CONTENT_URI,new String[]{_ID},
-                    COLUMN_SHOWN_NAME + " LIKE ?", new String[]{shownName}, null);
+            try (Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID},
+                    COLUMN_SHOWN_NAME + " LIKE ?", new String[]{shownName}, null)) {
 
-            if(c!=null && c.getCount() == 1){
-                c.moveToNext();
-                return c.getInt(0);
-            }else{
-                return 0;
+                if (c != null && c.getCount() == 1) {
+                    c.moveToNext();
+                    return c.getInt(0);
+                } else {
+                    return 0;
+                }
             }
         }
 
         public static int getIdByName(FragmentActivity activity, String shownName) {
-            Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID},
-                    COLUMN_NAME + " = ?", new String[]{shownName}, null);
+            try (Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID},
+                    COLUMN_NAME + " = ?", new String[]{shownName}, null)) {
 
-            if (c != null && c.getCount() == 1) {
-                c.moveToNext();
-                return c.getInt(0);
-            } else {
-                return 0;
+                if (c != null && c.getCount() == 1) {
+                    c.moveToNext();
+                    return c.getInt(0);
+                } else {
+                    return 0;
+                }
             }
         }
 
         public static String getNameById(FragmentActivity activity, int categoryId) {
-            Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID}, COLUMN_ID + " = ?", new String[]{String.valueOf(categoryId)}, null);
+            try (Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID}, COLUMN_ID + " = ?", new String[]{String.valueOf(categoryId)}, null)) {
 
-            if (c != null && c.getCount() == 1) {
-                c.moveToNext();
-                return c.getString(0);
-            } else {
-                return "";
+                if (c != null && c.getCount() == 1) {
+                    c.moveToNext();
+                    return c.getString(0);
+                } else {
+                    return "";
+                }
+            }
+        }
+
+        public static String getNameById(Context context, int categoryId) {
+            try (Cursor c = context.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_NAME}, COLUMN_ID + " = ?", new String[]{String.valueOf(categoryId)}, null)) {
+                if (c != null && c.getCount() == 1) {
+                    c.moveToNext();
+                    return c.getString(0);
+                } else {
+                    return "";
+                }
             }
         }
 

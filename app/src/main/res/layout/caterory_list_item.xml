@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:text="@string/category"
-        android:textColor="@color/accent_material_light" />
+        android:textColor="@color/accent_material_light"
+        android:textSize="20sp" />
 
 </LinearLayout>

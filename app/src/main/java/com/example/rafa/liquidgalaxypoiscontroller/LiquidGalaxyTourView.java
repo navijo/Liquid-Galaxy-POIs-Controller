@@ -12,21 +12,30 @@ import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.POIEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.TourPOIsEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
+
+
     private static final String TAG;
 
     static {
         TAG = LiquidGalaxyTourView.class.getSimpleName();
     }
 
+    Session session;
     private FragmentActivity poisFragmentAct;
 
+    public LiquidGalaxyTourView() {
+        session = LGUtils.getSession(this.poisFragmentAct);
+    }
+
     protected String doInBackground(String... params) {
+
         List<HashMap<String, String>> pois = new ArrayList();
         List<Integer> poisDuration = new ArrayList();
         if (params.length == 0 || params == null) {
@@ -106,7 +115,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
 
     private void sendFirstTourPOI(HashMap<String, String> firstPoi) {
         try {
-            LGUtils.setConnectionWithLiquidGalaxy(buildCommand(firstPoi), poisFragmentAct);
+            LGUtils.setConnectionWithLiquidGalaxy(session, buildCommand(firstPoi), poisFragmentAct);
             Log.d(TAG, "First send");
         } catch (JSchException e) {
             Log.d(TAG, "Error in connection with Liquid Galaxy.");
@@ -116,7 +125,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     private void sendTourPOI(Integer duration, String command) {
         try {
             Thread.sleep((long) (duration.intValue() * 1000));
-            LGUtils.setConnectionWithLiquidGalaxy(command, poisFragmentAct);
+            LGUtils.setConnectionWithLiquidGalaxy(session, command, poisFragmentAct);
         } catch (InterruptedException e) {
             e.printStackTrace();
             Log.d(TAG, "Error in duration of POIs.");
