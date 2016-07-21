@@ -55,14 +55,13 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         if (extras != null) {
             String value = extras.getString("comeFrom");
             if (value != null && value.equalsIgnoreCase("tours")) {
-                mViewPager.setCurrentItem(1);
-            } else if (value != null && value.equalsIgnoreCase("categories")) {
-                mViewPager.setCurrentItem(2);
-            } else if (value != null && value.equalsIgnoreCase("pois")) {
-                mViewPager.setCurrentItem(0);
+                mViewPager.setCurrentItem(AdminCollectionPagerAdapter.PAGE_TOURS);
+//            } else if (value != null && value.equalsIgnoreCase("categories")) {
+//                mViewPager.setCurrentItem(2);
+//            } else if (value != null && value.equalsIgnoreCase("pois")) {
+//                mViewPager.setCurrentItem(0);
             } else if (value != null && value.equalsIgnoreCase("treeView")) {
-                //FIXME: When the first tabs were removed, update the index correspondingly
-                mViewPager.setCurrentItem(6);
+                mViewPager.setCurrentItem(AdminCollectionPagerAdapter.PAGE_TREEEVIEW);
             }
         }
 
@@ -147,12 +146,14 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         POIsProvider provider = (POIsProvider) client.getLocalContentProvider();
         provider.resetDatabase();
         client.release();
+        resetApp();
     }
 
     public void resetApp() {
-        AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, intent);
-        System.exit(2);
+
+        AlarmManager alm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alm.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
+        System.exit(0);
     }
 
     public void onTabSelected(Tab tab, FragmentTransaction fragmentTransaction) {

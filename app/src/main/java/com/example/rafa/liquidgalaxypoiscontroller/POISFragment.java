@@ -29,6 +29,7 @@ import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -148,7 +149,11 @@ public class POISFragment extends Fragment {
         delete = (FloatingActionButton) dialogView.findViewById(R.id.delete_poi);
 
         screenSizeTreatment();
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         GetSessionTask getSessionTask = new GetSessionTask();
         getSessionTask.execute();
     }
@@ -1076,8 +1081,11 @@ public class POISFragment extends Fragment {
                     dialog.dismiss();
                 }
                 Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
-                return null;
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return null;
         }
 
         @Override

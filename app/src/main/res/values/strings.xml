@@ -210,7 +210,7 @@
     <string name="ic_add">&#xe006;</string>
     <string name="ic_close">&#xe048;</string>
     <string name="categoriesRoot">Categories</string>
-    <string name="loadingTree">Loading...</string>
+    <string name="loadingTree">Loading…</string>
     <string name="action_exportDB">Export Database to local storage</string>
     <string name="importAsTourStr">Import as Tour</string>
     <string name="tourValues">Create new Tour</string>
@@ -219,8 +219,9 @@
     <string name="importingContentsTour">Importing contents into tour</string>
     <string name="cancelImporting">Cancel Import</string>
     <string name="are_you_sure_delete_database">This action will delete all the data inside the application. Are you sure?</string>
-    <string name="readingFile">Reading File...</string>
+    <string name="readingFile">Reading File…</string>
     <string name="readingFileAndImportingPois">Reading Pois and importing them</string>
     <string name="deletingPoisInCategory">Deleting Pois inside the category</string>
+    <string name="viewing_category">Viewing Category: </string>
 
 </resources>

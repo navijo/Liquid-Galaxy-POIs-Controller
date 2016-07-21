@@ -7,9 +7,24 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.rafa.liquidgalaxypoiscontroller.PW.NearbyBeaconsFragment;
 import com.example.rafa.liquidgalaxypoiscontroller.advancedTools.AdvancedToolsFragment;
-import com.jcraft.jsch.ChannelSftp;
 
 public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
+
+    public static final int PAGE_TREEEVIEW = 0;
+    public static final int PAGE_TOURS = 1;
+    public static final int PAGE_TOOLS = 2;
+    public static final int PAGE_TASKS = 3;
+    public static final int PAGE_BEACONS = 4;
+
+
+//    private static final int PAGE_POIS = 0;
+//    private static final int PAGE_TOURS = 1;
+//    private static final int PAGE_CATEGORIES = 2;
+//    private static final int PAGE_TOOLS = 3;
+//    private static final int PAGE_BEACONS = 4;
+//    private static final int PAGE_TASKS = 5;
+//    private static final int PAGE_TREEEVIEW = 6;
+
     public AdminCollectionPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -17,59 +32,59 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Bundle args = new Bundle();
         switch (position) {
-            case ChannelSftp.SSH_FX_OK /*0*/:
-                Fragment fragmentPOIs = new POISFragment();
-                args.clear();
-                args.putString("EDITABLE", "ADMIN/POIS");
-                fragmentPOIs.setArguments(args);
-                return fragmentPOIs;
-            case ChannelSftp.SSH_FX_EOF /*1*/:
+            case PAGE_TREEEVIEW:
+                return NewPOISList.newInstance();
+            case PAGE_TOURS:
                 Fragment fragmentTours = new POISFragment();
                 args.clear();
                 args.putString("EDITABLE", "ADMIN/TOURS");
                 fragmentTours.setArguments(args);
                 return fragmentTours;
-            case ChannelSftp.SSH_FX_NO_SUCH_FILE /*2*/:
-                Fragment fragmentCategories = new POISFragment();
-                args.clear();
-                args.putString("EDITABLE", "ADMIN/CATEGORIES");
-                fragmentCategories.setArguments(args);
-                return fragmentCategories;
-            case ChannelSftp.SSH_FX_PERMISSION_DENIED /*3*/:
+            case PAGE_TOOLS:
                 return new LGTools();
-            case 4 /*4*/:
-                return NearbyBeaconsFragment.newInstance();
-            case 5 /*5*/:
+            case PAGE_TASKS:
                 return AdvancedToolsFragment.newInstance();
-            case 6 /*6*/:
-                return NewPOISList.newInstance();
+            case PAGE_BEACONS:
+                return NearbyBeaconsFragment.newInstance();
             default:
                 return null;
+//            case PAGE_POIS:
+//                Fragment fragmentPOIs = new POISFragment();
+//                args.clear();
+//                args.putString("EDITABLE", "ADMIN/POIS");
+//                fragmentPOIs.setArguments(args);
+//                return fragmentPOIs;
+//            case PAGE_CATEGORIES:
+//                Fragment fragmentCategories = new POISFragment();
+//                args.clear();
+//                args.putString("EDITABLE", "ADMIN/CATEGORIES");
+//                fragmentCategories.setArguments(args);
+//                return fragmentCategories;
         }
     }
 
     public int getCount() {
-        return 7;
+        return 5;
     }
 
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            case ChannelSftp.SSH_FX_OK /*0*/:
-                return "POIS";
-            case ChannelSftp.SSH_FX_EOF /*1*/:
+            case PAGE_TREEEVIEW:
+                return "CATEGORIES & POIS";
+            case PAGE_TOURS:
                 return "TOURS";
-            case ChannelSftp.SSH_FX_NO_SUCH_FILE /*2*/:
-                return "CATEGORIES";
-            case ChannelSftp.SSH_FX_PERMISSION_DENIED /*3*/:
+            case PAGE_TOOLS:
                 return "TOOLS";
-            case 4 /*4*/:
+            case PAGE_TASKS:
+                return "LG TASKS";
+            case PAGE_BEACONS:
                 return "SCAN BEACON";
-            case 5 /*5*/:
-                return "ADVANCED TOOLS";
-            case 6 /*6*/:
-                return "NEW POIS LISTS";
             default:
                 return "PAGE" + (position - 1);
+//            case PAGE_POIS:
+//                return "POIS";
+//            case PAGE_CATEGORIES:
+//                return "CATEGORIES";
         }
     }
 }

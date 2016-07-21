@@ -663,12 +663,12 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
+                String fileName = getFileName(urlConnection);
 
                 CustomXmlPullParser customXmlPullParser = new CustomXmlPullParser();
                 final List<POI> poisList = customXmlPullParser.parse(in, getActivity());
 
-
-                success = createPOIS(poisList);
+                success = createPOIS(fileName, poisList);
 
                 return success;
 
@@ -681,15 +681,35 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             }
         }
 
-        private boolean createPOIS(List<POI> poisList) {
+        private String getFileName(HttpURLConnection urlConnection) {
+            try {
+                String fileName = "";
+                String raw = urlConnection.getHeaderField("Content-Disposition");
+                // raw = "attachment; filename=abc.jpg"
+                if (raw != null && raw.contains("=")) {
+                    fileName = raw.split("=")[1]; //getting value after '='
+                    fileName = fileName.split(";")[0];
+                } else {
+                    // fall back to random generated file name?
+                }
+                return fileName.replaceAll("\"", "");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "unknowFileName";
+            }
+        }
+
+
+        private boolean createPOIS(String fileName, List<POI> poisList) {
             Looper.prepare();
 
             long total = 0;
 
-            int earthCategory =  POIsContract.CategoryEntry.getIdByShownName(getActivity(), "EARTH" + "/");
+            int importedCategoryId = getImportingFolder(fileName);
+
                 for(POI poiImported: poisList){
                     total++;
-                    ContentValues poi = getFromImportedPOI(poiImported,earthCategory);
+                    ContentValues poi = getFromImportedPOI(poiImported, importedCategoryId);
 
                     try {
 
@@ -705,6 +725,31 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 return true;
          }
 
+        private int getImportingFolder(String fileName) {
+            int importedCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), "PW Beacon Imported");
+
+            int importedSubCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), fileName);
+            if (importedSubCategoryId > 0) {
+                //It exist a category with the same name
+                return importedSubCategoryId;
+            } else {
+                //We create a category for the new folders
+
+                String shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), importedCategoryId);
+
+                ContentValues newCategory = new ContentValues();
+                newCategory.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, importedCategoryId);
+                newCategory.put(POIsContract.CategoryEntry.COLUMN_NAME, fileName);
+                newCategory.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
+                newCategory.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, shownName + fileName.trim() + "/");
+
+                Uri categoryUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), newCategory);
+                importedCategoryId = POIsContract.CategoryEntry.getIdByUri(categoryUri);
+            }
+
+            return importedCategoryId;
+        }
+
         @Override
         protected void onProgressUpdate(Integer... values) {
             importingDialog.setProgress(values[0]);
@@ -715,7 +760,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             ContentValues poi = new ContentValues();
 
             String name = poiImported.getName();
-            String visited_place = name;
             String longitude = poiImported.getPoint().getLongitude();
             String latitude = poiImported.getPoint().getLatitude();
             String altitude = "0";
@@ -725,7 +769,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             String altitudeMode = "relativeToSeaFloor";
 
             poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
-            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
+            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, name);
             poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
             poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
             poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);

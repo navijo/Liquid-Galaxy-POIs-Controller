@@ -33,6 +33,12 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(Earth());
         db.execSQL(Moon());
         db.execSQL(Mars());
+        db.execSQL(ImportedFolder());
+    }
+
+    private String ImportedFolder() {
+        String SQL_CREATE_IMPORTED_FOLDER = "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('PW Beacon Imported',(SELECT _ID FROM CATEGORY WHERE NAME LIKE 'EARTH'), 'PW IMPORTED/', 0);";
+        return SQL_CREATE_IMPORTED_FOLDER;
     }
 
     private String Earth() {

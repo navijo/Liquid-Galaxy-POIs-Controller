@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rafa.liquidgalaxypoiscontroller.beans.Category;
@@ -31,6 +32,7 @@ import com.example.rafa.liquidgalaxypoiscontroller.utils.PoisGridViewAdapter;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,10 +51,9 @@ public class SearchFragment extends Fragment {
     private FloatingActionButton btnSpeak;
     private ListView categoriesListView;
     private CategoriesAdapter adapter;
+    private TextView categorySelectorTitle;
     private ImageView backIcon, backStartIcon;
-    private List<String> backIDs = new ArrayList<String>() {{
-        add("0");
-    }};
+    private List<String> backIDs = new ArrayList<String>();
 
     public SearchFragment() {
         // Required empty public constructor
@@ -73,6 +74,7 @@ public class SearchFragment extends Fragment {
         categoriesListView = (ListView) rootView.findViewById(R.id.categories_listview);
         backIcon = (ImageView) rootView.findViewById(R.id.back_icon);
         backStartIcon = (ImageView) rootView.findViewById(R.id.back_start_icon);//comes back to the initial category
+        categorySelectorTitle = (TextView) rootView.findViewById(R.id.viewing_category_text);
 
         btnSpeak.setOnClickListener(new View.OnClickListener() {
 
@@ -92,28 +94,35 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 backIDs.clear();
-//                backIDs.add("0");
                 Category category = getCategoryByName(currentPlanet);
                 backIDs.add(String.valueOf(category.getId()));
-                showCategoriesByLevel();
+
+                showPoisByCategory();
             }
         });
 
         backIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                backIDs.remove(0);
-                showCategoriesByLevel();
+                if (backIDs.size() > 1) {
+                    backIDs.remove(0);
+                }
+                showPoisByCategory();
             }
         });
 
         return rootView;
     }
 
-    private void showCategoriesByLevel() {
+    private void showPoisByCategory() {
 
         Cursor queryCursor = getCategoriesCursor();
         showCategoriesOnScreen(queryCursor);
+
+
+        String currentCategoryName = POIsContract.CategoryEntry.getNameById(getActivity(), Integer.parseInt(backIDs.get(0)));
+        String selectorTitle = getResources().getString(R.string.viewing_category) + currentCategoryName;
+        categorySelectorTitle.setText(selectorTitle);
 
         final List<POI> poisList = getPoisList(Integer.parseInt(backIDs.get(0)));
         if (poisList != null) {
@@ -144,7 +153,7 @@ public class SearchFragment extends Fragment {
                         backIDs.add(0, String.valueOf(itemSelectedID));
                         //this method is call to see AGAIN the categories list. However, the view will
                         //correspond to the categories inside the current category just clicked.
-                        showCategoriesByLevel();
+                        showPoisByCategory();
                     }
                 }
             });
@@ -204,6 +213,8 @@ public class SearchFragment extends Fragment {
         }
 
         Category category = getCategoryByName(currentPlanet);
+        String selectorTitle = getResources().getString(R.string.viewing_category) + category.getName();
+        categorySelectorTitle.setText(selectorTitle);
 
         backIDs.add(String.valueOf(category.getId()));
         Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
@@ -232,6 +243,9 @@ public class SearchFragment extends Fragment {
                 }
 
                 Category category = getCategoryByName(currentPlanet);
+                String selectorTitle = getResources().getString(R.string.viewing_category) + category.getName();
+                categorySelectorTitle.setText(selectorTitle);
+
                 backIDs.add(String.valueOf(category.getId()));
                 Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                 showCategoriesOnScreen(queryCursor);
@@ -247,7 +261,7 @@ public class SearchFragment extends Fragment {
 
 
     private List<POI> getPoisList(int categoryId) {
-        //TODO: Get pois of subcategories that have father_id=categoryId
+
         List<POI> lPois = new ArrayList<>();
 
         try (Cursor allPoisByCategoryCursor = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(categoryId))) {
@@ -261,7 +275,7 @@ public class SearchFragment extends Fragment {
             }
         }
 
-        getPOisFromSubcategories(lPois, categoryId);
+        //  getPOisFromSubcategories(lPois, categoryId);
 
         return lPois;
     }
@@ -325,6 +339,8 @@ public class SearchFragment extends Fragment {
                     searchTask.execute();
                     currentPlanet = "MOON";
                     Category category = getCategoryByName(currentPlanet);
+                    String selectorTitle = getResources().getString(R.string.viewing_category) + category.getName();
+                    categorySelectorTitle.setText(selectorTitle);
 
                     Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
@@ -348,6 +364,8 @@ public class SearchFragment extends Fragment {
                     searchTask.execute();
                     currentPlanet = "MARS";
                     Category category = getCategoryByName(currentPlanet);
+                    String selectorTitle = getResources().getString(R.string.viewing_category) + category.getName();
+                    categorySelectorTitle.setText(selectorTitle);
 
                     Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
@@ -501,8 +519,10 @@ public class SearchFragment extends Fragment {
                 if (dialog != null) {
                     dialog.dismiss();
                 }
-                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return null;
         }
 
         @Override

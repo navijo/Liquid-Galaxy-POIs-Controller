@@ -136,6 +136,8 @@ public class LGTools extends Fragment {
                     LGUtils.setConnectionWithLiquidGalaxy(session, sentence, getActivity());
                 } catch (JSchException e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -179,14 +181,13 @@ public class LGTools extends Fragment {
                         openBluetoothImport();
                     }
                 });
-
                 chooseDialog.show();
             }
         });
     }
 
     private void openBluetoothImport() {
-        ((LGPCAdminActivity) getActivity()).mViewPager.setCurrentItem(4);
+        ((LGPCAdminActivity) getActivity()).mViewPager.setCurrentItem(AdminCollectionPagerAdapter.PAGE_BEACONS);
     }
 
     @Override

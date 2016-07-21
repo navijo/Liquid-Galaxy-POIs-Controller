@@ -14,6 +14,7 @@ import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +120,8 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
             Log.d(TAG, "First send");
         } catch (JSchException e) {
             Log.d(TAG, "Error in connection with Liquid Galaxy.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -131,6 +134,8 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
             Log.d(TAG, "Error in duration of POIs.");
         } catch (JSchException e2) {
             Log.d(TAG, "Error connecting with LG.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

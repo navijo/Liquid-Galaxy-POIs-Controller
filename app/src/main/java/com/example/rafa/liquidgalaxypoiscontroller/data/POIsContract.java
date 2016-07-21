@@ -340,7 +340,7 @@ public class POIsContract {
         }
 
         public static String getNameById(FragmentActivity activity, int categoryId) {
-            try (Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{_ID}, COLUMN_ID + " = ?", new String[]{String.valueOf(categoryId)}, null)) {
+            try (Cursor c = activity.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_NAME}, COLUMN_ID + " = ?", new String[]{String.valueOf(categoryId)}, null)) {
 
                 if (c != null && c.getCount() == 1) {
                     c.moveToNext();
