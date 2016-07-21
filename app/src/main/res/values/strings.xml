@@ -222,6 +222,8 @@
     <string name="readingFile">Reading File…</string>
     <string name="readingFileAndImportingPois">Reading Pois and importing them</string>
     <string name="deletingPoisInCategory">Deleting Pois inside the category</string>
-    <string name="viewing_category">Viewing Category: </string>
+    <string name="viewing_category">Current Category: </string>
+    <string name="viewing">Visualizing</string>
+    <string name="inLG">in Liquid Galaxy</string>
 
 </resources>

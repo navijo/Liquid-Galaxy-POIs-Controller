@@ -112,7 +112,8 @@ public class PoisGridViewAdapter extends BaseAdapter {
             super.onPreExecute();
             if (dialog == null) {
                 dialog = new ProgressDialog(context);
-                dialog.setMessage(context.getResources().getString(R.string.viewing_poi));
+                String message = context.getResources().getString(R.string.viewing) + " " + this.currentPot.getName() + " " + context.getResources().getString(R.string.inLG);
+                dialog.setMessage(message);
                 dialog.setIndeterminate(false);
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 dialog.setCancelable(true);
@@ -139,12 +140,13 @@ public class PoisGridViewAdapter extends BaseAdapter {
             try {
                 LGUtils.setConnectionWithLiquidGalaxy(session, command, activity);
 
-                Thread.sleep(12000);
+                Thread.sleep(13000);
 
                 while (!isCancelled()) {
+                    session.sendKeepAliveMsg();
+
                     for (int i = 0; i < 180; i = i + 90) {
-                        // String commandRotate = "echo 'flytoview=<gx:duration>1</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><gx:horizFov>36.5</gx:horizFov><longitude>" +  this.currentPot.getLongitude() +
-                        String commandRotate = "echo 'flytoview=<gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPot.getLongitude() +
+                        String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPot.getLongitude() +
                                 "</longitude><latitude>" + this.currentPot.getLatitude() +
                                 "</latitude><altitude>" + this.currentPot.getAltitude() +
                                 "</altitude><heading>" + (this.currentPot.getHeading() + i) +
@@ -155,11 +157,11 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                         LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
                         session.sendKeepAliveMsg();
-                        Thread.sleep(6075);
+                        Thread.sleep(6000);
                     }
 
                     for (int i = -180; i <= 0; i = i + 90) {
-                        String commandRotate = "echo 'flytoview=<gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPot.getLongitude() +
+                        String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPot.getLongitude() +
                                 "</longitude><latitude>" + this.currentPot.getLatitude() +
                                 "</latitude><altitude>" + this.currentPot.getAltitude() +
                                 "</altitude><heading>" + (this.currentPot.getHeading() + i) +
@@ -170,10 +172,8 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                         LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
                         session.sendKeepAliveMsg();
-                        Thread.sleep(6075);
+                        Thread.sleep(6000);
                     }
-
-                    session.sendKeepAliveMsg();
                 }
 
                 return "";
