@@ -53,7 +53,7 @@ public class SearchFragment extends Fragment {
     private CategoriesAdapter adapter;
     private TextView categorySelectorTitle;
     private ImageView backIcon, backStartIcon;
-    private List<String> backIDs = new ArrayList<String>();
+    private ArrayList<String> backIDs = new ArrayList<String>();
 
     public SearchFragment() {
         // Required empty public constructor
@@ -85,7 +85,7 @@ public class SearchFragment extends Fragment {
         });
 
         screenSizeTreatment();
-        setSearchInLGButton(rootView);
+        setSearchInLGButton();
         setPlanetsButtonsBehaviour();
 
         poisGridView = (GridView) rootView.findViewById(R.id.POISgridview);
@@ -119,7 +119,6 @@ public class SearchFragment extends Fragment {
         Cursor queryCursor = getCategoriesCursor();
         showCategoriesOnScreen(queryCursor);
 
-
         String currentCategoryName = POIsContract.CategoryEntry.getNameById(getActivity(), Integer.parseInt(backIDs.get(0)));
 
         categorySelectorTitle.setText(currentCategoryName);
@@ -132,9 +131,7 @@ public class SearchFragment extends Fragment {
 
     private Cursor getCategoriesCursor() {
         //we get only the categories that the admin user wants to be shown on the app screen and have father category ID the once of the parameters.
-        Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), backIDs.get(0));
-
-        return queryCursor;
+        return POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), backIDs.get(0));
     }
 
     private void showCategoriesOnScreen(Cursor queryCursor) {
@@ -155,6 +152,7 @@ public class SearchFragment extends Fragment {
                         //correspond to the categories inside the current category just clicked.
                         showPoisByCategory();
                     }
+                    cursor.close();
                 }
             });
         } else {
@@ -201,6 +199,26 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            backIDs = savedInstanceState.getStringArrayList("backIds");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("backIds", backIDs);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showPoisByCategory();
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (currentPlanet.equals("EARTH")) {
@@ -229,35 +247,6 @@ public class SearchFragment extends Fragment {
         Mars();
     }
 
-    private void Earth() {
-        earth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String command = "echo 'planet=earth' > /tmp/query.txt";
-
-                if (!currentPlanet.equals("EARTH")) {
-                    SearchTask searchTask = new SearchTask(command, true);
-                    searchTask.execute();
-                    currentPlanet = "EARTH";
-                }
-
-                Category category = getCategoryByName(currentPlanet);
-                categorySelectorTitle.setText(category.getName());
-
-                backIDs.add(String.valueOf(category.getId()));
-                Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
-                showCategoriesOnScreen(queryCursor);
-
-
-                final List<POI> poisList = getPoisList(category.getId());
-                if (poisList != null) {
-                    poisGridView.setAdapter(new PoisGridViewAdapter(poisList, getActivity(), getActivity()));
-                }
-            }
-        });
-    }
-
-
     private List<POI> getPoisList(int categoryId) {
 
         List<POI> lPois = new ArrayList<>();
@@ -274,7 +263,6 @@ public class SearchFragment extends Fragment {
         }
         return lPois;
     }
-
 
     private POI getPoiData(int poiId) {
         POI poiEntry = new POI();
@@ -295,7 +283,6 @@ public class SearchFragment extends Fragment {
             poiEntry.setTilt(poiCursor.getDouble(poiCursor.getColumnIndex(POIsContract.POIEntry.COLUMN_TILT)));
             poiEntry.setVisited_place(poiCursor.getString(poiCursor.getColumnIndex(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME)));
         }
-
         poiCursor.close();
         return poiEntry;
     }
@@ -314,6 +301,34 @@ public class SearchFragment extends Fragment {
         return category;
     }
 
+    private void Earth() {
+        earth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String command = "echo 'planet=earth' > /tmp/query.txt";
+
+                if (!currentPlanet.equals("EARTH")) {
+                    SearchTask searchTask = new SearchTask(command, true);
+                    searchTask.execute();
+                    currentPlanet = "EARTH";
+                }
+
+                Category category = getCategoryByName(currentPlanet);
+                categorySelectorTitle.setText(category.getName());
+
+                backIDs.add(String.valueOf(category.getId()));
+                Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
+                showCategoriesOnScreen(queryCursor);
+                queryCursor.close();
+
+                final List<POI> poisList = getPoisList(category.getId());
+                if (poisList != null) {
+                    poisGridView.setAdapter(new PoisGridViewAdapter(poisList, getActivity(), getActivity()));
+                }
+            }
+        });
+    }
+
     private void Moon() {
 
         moon.setOnClickListener(new View.OnClickListener() {
@@ -330,7 +345,7 @@ public class SearchFragment extends Fragment {
 
                     Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
-
+                    queryCursor.close();
 
                     final List<POI> poisList = getPoisList(category.getId());
                     poisGridView.setAdapter(new PoisGridViewAdapter(poisList, getActivity(), getActivity()));
@@ -354,7 +369,7 @@ public class SearchFragment extends Fragment {
 
                     Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
-
+                    queryCursor.close();
 
                     final List<POI> poisList = getPoisList(category.getId());
                     poisGridView.setAdapter(new PoisGridViewAdapter(poisList, getActivity(), getActivity()));
@@ -362,7 +377,6 @@ public class SearchFragment extends Fragment {
             }
         });
     }
-
 
     private void screenSizeTreatment() {
         DisplayMetrics metrics = new DisplayMetrics();
@@ -414,7 +428,7 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void setSearchInLGButton(View rootView) {
+    private void setSearchInLGButton() {
 
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -422,7 +436,6 @@ public class SearchFragment extends Fragment {
                 String placeToSearch = editSearch.getText().toString();
                 if (!placeToSearch.equals("") && placeToSearch != null) {
 
-                    //String command = buildSearchCommand(placeToSearch);
                     String command = "echo 'search=" + placeToSearch + "' > /tmp/query.txt";
                     SearchTask searchTask = new SearchTask(command, false);
                     searchTask.execute();
@@ -433,7 +446,6 @@ public class SearchFragment extends Fragment {
             }
         });
     }
-
 
     private String buildSearchCommand(String search) {
         return "echo 'search=" + search + "' > /tmp/query.txt";
@@ -451,7 +463,9 @@ public class SearchFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            session = LGUtils.getSession(getActivity());
+            if (getActivity() != null) {
+                session = LGUtils.getSession(getActivity());
+            }
             return null;
         }
 

@@ -86,7 +86,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
     private String buildCommand(POI poi) {
 
-        return "echo 'flytoview=<LookAt><longitude>" + poi.getLongitude() +
+        return "echo 'flytoview=<gx:duration>9</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + poi.getLongitude() +
                 "</longitude><latitude>" + poi.getLatitude() +
                 "</latitude><altitude>" + poi.getAltitude() +
                 "</altitude><heading>" + poi.getHeading() +
@@ -99,12 +99,12 @@ public class PoisGridViewAdapter extends BaseAdapter {
     private class VisitPoiTask extends AsyncTask<Void, Void, String> {
 
         String command;
-        POI currentPot;
+        POI currentPoi;
         private ProgressDialog dialog;
 
         public VisitPoiTask(String command, POI currentPoi) {
             this.command = command;
-            this.currentPot = currentPoi;
+            this.currentPoi = currentPoi;
         }
 
         @Override
@@ -112,7 +112,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
             super.onPreExecute();
             if (dialog == null) {
                 dialog = new ProgressDialog(context);
-                String message = context.getResources().getString(R.string.viewing) + " " + this.currentPot.getName() + " " + context.getResources().getString(R.string.inLG);
+                String message = context.getResources().getString(R.string.viewing) + " " + this.currentPoi.getName() + " " + context.getResources().getString(R.string.inLG);
                 dialog.setMessage(message);
                 dialog.setIndeterminate(false);
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -140,19 +140,19 @@ public class PoisGridViewAdapter extends BaseAdapter {
             try {
                 LGUtils.setConnectionWithLiquidGalaxy(session, command, activity);
 
-                Thread.sleep(13000);
+                Thread.sleep(14000);
 
                 while (!isCancelled()) {
                     session.sendKeepAliveMsg();
 
                     for (int i = 0; i < 180; i = i + 90) {
-                        String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPot.getLongitude() +
-                                "</longitude><latitude>" + this.currentPot.getLatitude() +
-                                "</latitude><altitude>" + this.currentPot.getAltitude() +
-                                "</altitude><heading>" + (this.currentPot.getHeading() + i) +
-                                "</heading><tilt>" + this.currentPot.getTilt() +
-                                "</tilt><range>" + this.currentPot.getRange() +
-                                "</range><gx:altitudeMode>" + this.currentPot.getAltitudeMode() +
+                        String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
+                                "</longitude><latitude>" + this.currentPoi.getLatitude() +
+                                "</latitude><altitude>" + this.currentPoi.getAltitude() +
+                                "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
+                                "</heading><tilt>" + this.currentPoi.getTilt() +
+                                "</tilt><range>" + this.currentPoi.getRange() +
+                                "</range><gx:altitudeMode>" + this.currentPoi.getAltitudeMode() +
                                 "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
 
                         LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
@@ -161,13 +161,13 @@ public class PoisGridViewAdapter extends BaseAdapter {
                     }
 
                     for (int i = -180; i <= 0; i = i + 90) {
-                        String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPot.getLongitude() +
-                                "</longitude><latitude>" + this.currentPot.getLatitude() +
-                                "</latitude><altitude>" + this.currentPot.getAltitude() +
-                                "</altitude><heading>" + (this.currentPot.getHeading() + i) +
-                                "</heading><tilt>" + this.currentPot.getTilt() +
-                                "</tilt><range>" + this.currentPot.getRange() +
-                                "</range><gx:altitudeMode>" + this.currentPot.getAltitudeMode() +
+                        String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
+                                "</longitude><latitude>" + this.currentPoi.getLatitude() +
+                                "</latitude><altitude>" + this.currentPoi.getAltitude() +
+                                "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
+                                "</heading><tilt>" + this.currentPoi.getTilt() +
+                                "</tilt><range>" + this.currentPoi.getRange() +
+                                "</range><gx:altitudeMode>" + this.currentPoi.getAltitudeMode() +
                                 "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
 
                         LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
@@ -193,7 +193,13 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                 return null;
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, context.getResources().getString(R.string.visualizationCanceled), Toast.LENGTH_LONG).show();
+                    }
+                });
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();

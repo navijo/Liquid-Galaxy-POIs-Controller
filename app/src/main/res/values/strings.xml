@@ -225,5 +225,6 @@
     <string name="viewing_category">Current Category: </string>
     <string name="viewing">Visualizing</string>
     <string name="inLG">in Liquid Galaxy</string>
+    <string name="visualizationCanceled">Visualization Canceled</string>
 
 </resources>
