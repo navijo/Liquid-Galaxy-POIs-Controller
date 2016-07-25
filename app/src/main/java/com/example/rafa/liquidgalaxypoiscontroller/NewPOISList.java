@@ -122,7 +122,7 @@ public class NewPOISList extends Fragment {
             while (childCategories.moveToNext()) {
                 final Category childCategory = getCategoryData(childCategories);
                 int count = POIsContract.POIEntry.countPOIsByCategory(getActivity(), String.valueOf(childCategory.getId()));
-                final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName() + " (" + count + ") ", childCategory.getId(), 0, true));
+                final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName() + " (" + count + " pois inside) ", childCategory.getId(), 0, true));
 //                new Thread(new Runnable() {
 //                    public void run() {
 //                        try {

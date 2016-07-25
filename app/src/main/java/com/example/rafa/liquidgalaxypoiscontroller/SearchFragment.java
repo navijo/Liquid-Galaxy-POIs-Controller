@@ -131,7 +131,7 @@ public class SearchFragment extends Fragment {
 
     private Cursor getCategoriesCursor() {
         //we get only the categories that the admin user wants to be shown on the app screen and have father category ID the once of the parameters.
-        return POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), backIDs.get(0));
+        return POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), backIDs.get(0));
     }
 
     private void showCategoriesOnScreen(Cursor queryCursor) {
@@ -152,7 +152,6 @@ public class SearchFragment extends Fragment {
                         //correspond to the categories inside the current category just clicked.
                         showPoisByCategory();
                     }
-                    cursor.close();
                 }
             });
         } else {
@@ -234,7 +233,7 @@ public class SearchFragment extends Fragment {
         categorySelectorTitle.setText(category.getName());
 
         backIDs.add(String.valueOf(category.getId()));
-        Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
+        Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
         showCategoriesOnScreen(queryCursor);
 
         GetSessionTask getSessionTask = new GetSessionTask();
@@ -317,9 +316,8 @@ public class SearchFragment extends Fragment {
                 categorySelectorTitle.setText(category.getName());
 
                 backIDs.add(String.valueOf(category.getId()));
-                Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
+                Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                 showCategoriesOnScreen(queryCursor);
-                queryCursor.close();
 
                 final List<POI> poisList = getPoisList(category.getId());
                 if (poisList != null) {
@@ -343,9 +341,8 @@ public class SearchFragment extends Fragment {
                     Category category = getCategoryByName(currentPlanet);
                     categorySelectorTitle.setText(category.getName());
 
-                    Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
+                    Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
-                    queryCursor.close();
 
                     final List<POI> poisList = getPoisList(category.getId());
                     poisGridView.setAdapter(new PoisGridViewAdapter(poisList, getActivity(), getActivity()));
@@ -367,9 +364,8 @@ public class SearchFragment extends Fragment {
                     Category category = getCategoryByName(currentPlanet);
                     categorySelectorTitle.setText(category.getName());
 
-                    Cursor queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
+                    Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
-                    queryCursor.close();
 
                     final List<POI> poisList = getPoisList(category.getId());
                     poisGridView.setAdapter(new PoisGridViewAdapter(poisList, getActivity(), getActivity()));

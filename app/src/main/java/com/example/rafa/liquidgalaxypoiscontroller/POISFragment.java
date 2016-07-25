@@ -281,7 +281,7 @@ public class POISFragment extends Fragment {
         Cursor queryCursor;
         if(EDITABLE_TAG.startsWith("USER")){
             //we get only the categories that the admin user wants to be shown on the app screen and have father category ID the once of the parameters.
-            queryCursor = POIsContract.CategoryEntry.getNotHidenCategoriesByFatherID(getActivity(), backIDs.get(0));
+            queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), backIDs.get(0));
         }else {
             //we get the categories that their parent category is the same that the once of the parameters.
             queryCursor = POIsContract.CategoryEntry.getCategoriesByFatherID(getActivity(), backIDs.get(0));
@@ -561,7 +561,7 @@ public class POISFragment extends Fragment {
         Cursor queryCursor;
         //The same behaviour than in categories treatment
         if(EDITABLE_TAG.startsWith("USER")){
-            queryCursor = POIsContract.POIEntry.getNotHidenPOIsByCategory(getActivity(), String.valueOf(categoryID));
+            queryCursor = POIsContract.POIEntry.getNotHiddenPOIsByCategory(getActivity(), String.valueOf(categoryID));
         }else{
             queryCursor = POIsContract.POIEntry.getPOIsByCategory(getActivity(), String.valueOf(categoryID));
         }
@@ -729,7 +729,7 @@ public class POISFragment extends Fragment {
     private void seeAllToursOnScreen(){
         final Cursor queryCursor;
         if(EDITABLE_TAG.startsWith("USER")) {
-            queryCursor = POIsContract.TourEntry.getAllNotHidenTours(getActivity());
+            queryCursor = POIsContract.TourEntry.getAllNotHiddenTours(getActivity());
         }else{//ADMIN
             queryCursor = POIsContract.TourEntry.getAllTours(getActivity());
         }
@@ -758,7 +758,7 @@ public class POISFragment extends Fragment {
                         deleteButtonTreatment(itemSelectedID, TOUR_URI, TOUR_IDselection, "TOUR", null, null, delete, dialog);
                     } else {
 
-                        tour = new LiquidGalaxyTourView();
+                        tour = new LiquidGalaxyTourView(getActivity());
                         tour.setActivity(getActivity());
                         additionLayout.setVisibility(View.VISIBLE);
                         tour.execute(String.valueOf(itemSelectedID));
@@ -788,7 +788,7 @@ public class POISFragment extends Fragment {
     private Cursor seeToursByCategoryOnScreen(int categoryID){
         final Cursor queryCursor;
         if (EDITABLE_TAG.startsWith("USER")) {
-            queryCursor = POIsContract.TourEntry.getNotHidenToursByCategory(getActivity(), String.valueOf(categoryID));
+            queryCursor = POIsContract.TourEntry.getNotHiddenToursByCategory(getActivity(), String.valueOf(categoryID));
         } else {//ADMIN
             queryCursor = POIsContract.TourEntry.getToursByCategory(getActivity(), String.valueOf(categoryID));
         }
@@ -819,7 +819,7 @@ public class POISFragment extends Fragment {
                         String whereClauseForRefreshing = POIsContract.TourEntry.COLUMN_CATEGORY_ID + " = " + String.valueOf(categoryID);
                         deleteButtonTreatment(itemSelectedID, TOUR_URI, TOUR_IDselection, "TOUR", getWhereClauseCategory("CATEGORY LEVEL"), whereClauseForRefreshing, delete, dialog);
                     } else {
-                        tour = new LiquidGalaxyTourView();
+                        tour = new LiquidGalaxyTourView(getActivity());
                         tour.setActivity(getActivity());
                         additionLayout.setVisibility(View.VISIBLE);
                         tour.execute(String.valueOf(itemSelectedID));

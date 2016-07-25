@@ -9,10 +9,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -61,22 +59,14 @@ public class LGUtils {
 
         ChannelExec channelssh = (ChannelExec) session.openChannel("exec");
 
-        InputStream in = new ByteArrayInputStream(command.getBytes());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         channelssh.setOutputStream(baos);
-//        channelssh.setInputStream(in);
 
         channelssh.setCommand(command);
         channelssh.connect();
         channelssh.disconnect();
 
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        channelssh.setOutputStream(baos);
-//
-//        channelssh.setCommand(command);
-//        channelssh.connect();
-//        channelssh.disconnect();
         return baos.toString();
     }
 

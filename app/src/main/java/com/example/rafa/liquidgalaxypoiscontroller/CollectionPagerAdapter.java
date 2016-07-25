@@ -9,6 +9,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final int SEARCH = 0;
     private static final int PAGE_TOURS = 1;
+    private static final int PAGE_NEW_TOURS = 2;
 
 
 
@@ -30,6 +31,9 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 fr = new POISFragment();
                 args.putString("EDITABLE", "USER/TOURS");
                 fr.setArguments(args);
+                return fr;
+            case PAGE_NEW_TOURS:
+                fr = new TourUserFragment();
                 return fr;
 //            case ChannelSftp.SSH_FX_OK /*0*/:
 //                if (POISFragment.getTourState()) {
@@ -55,7 +59,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     public CharSequence getPageTitle(int position) {
@@ -64,6 +68,8 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return "SEARCH";
             case PAGE_TOURS:
                 return "TOURS";
+            case PAGE_NEW_TOURS:
+                return "NEW PAGE TOURS";
 //            case ChannelSftp.SSH_FX_OK /*0*/:
 //                return "SEARCH";
 //            case ChannelSftp.SSH_FX_EOF /*1*/:

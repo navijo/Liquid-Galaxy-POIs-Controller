@@ -31,7 +31,8 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
     Session session;
     private FragmentActivity poisFragmentAct;
 
-    public LiquidGalaxyTourView() {
+    public LiquidGalaxyTourView(FragmentActivity activity) {
+        this.poisFragmentAct = activity;
         session = LGUtils.getSession(this.poisFragmentAct);
     }
 

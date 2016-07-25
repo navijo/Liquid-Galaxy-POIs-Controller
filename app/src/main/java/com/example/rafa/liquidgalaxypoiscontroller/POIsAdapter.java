@@ -8,14 +8,11 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.example.rafa.liquidgalaxypoiscontroller.R;
-
 /**
  * Created by RAFA on 07/06/2015.
  */
 public class POIsAdapter extends CursorAdapter{
 
-    //FIXME: Changed from 3 to 1 in order to display the poi Name
     public static final int POI_COLUMN_VISITED_PLACE_NAME = 1;
 
     public static final int TOUR_COLUMN_NAME = 1;

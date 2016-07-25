@@ -106,7 +106,7 @@ public class POIsContract {
                     COLUMN_ID);
         }
 
-        public static Cursor getNotHidenPOIsByCategory(FragmentActivity fragmentActivity, String categoryID) {
+        public static Cursor getNotHiddenPOIsByCategory(FragmentActivity fragmentActivity, String categoryID) {
             return fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
                     null,
@@ -143,7 +143,7 @@ public class POIsContract {
             return activity.getContentResolver().update(CONTENT_URI, contentValues, POI_IDselection, new String[]{itemSelectedID});
         }
 
-        public static Cursor getAllNotHidenPOIs(FragmentActivity activity) {
+        public static Cursor getAllNotHiddenPOIs(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI,null, COLUMN_HIDE + " = 0", null, null);
         }
 
@@ -216,7 +216,7 @@ public class POIsContract {
                     null);
         }
 
-        public static Cursor getNotHidenCategoriesByFatherID(FragmentActivity fragmentActivity, String fatherID) {
+        public static Cursor getNotHiddenCategoriesByFatherID(FragmentActivity fragmentActivity, String fatherID) {
             return fragmentActivity.getContentResolver().query(
                     CONTENT_URI,
                     null,
@@ -293,8 +293,6 @@ public class POIsContract {
             return activity.getContentResolver().update(CONTENT_URI, contentValues, Category_IDselection, new String[]{itemSelectedID});
         }
 
-
-
         public static String getShownNameByID(FragmentActivity fragmentActivity, int categoryID) {
             try (Cursor c = fragmentActivity.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_SHOWN_NAME},
                     _ID + " = ?", new String[]{String.valueOf(categoryID)}, null)) {
@@ -308,7 +306,7 @@ public class POIsContract {
             }
         }
 
-        public static Cursor getAllNotHidenCategories(FragmentActivity activity) {
+        public static Cursor getAllNotHiddenCategories(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI,null, COLUMN_HIDE + " = 0", null, null);
         }
 
@@ -403,17 +401,21 @@ public class POIsContract {
         public static Uri buildTourUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
         public static Uri createNewTOUR(FragmentActivity activity, ContentValues contentValues) {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
         }
+
         public static Cursor getAllTours(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI, null, null, null, null);
         }
+
         public static int getIdByUri(Uri insertedUri) {
             String uri = insertedUri.toString();
             String[] uriSplit = uri.split("/");
             return Integer.parseInt(uriSplit[uriSplit.length - 1]);
         }
+
         public static int updateByID(FragmentActivity activity, ContentValues contentValues, String itemSelectedID) {
             String Tour_IDselection = _ID + " = ?";
             return activity.getContentResolver().update(CONTENT_URI, contentValues, Tour_IDselection, new String[]{itemSelectedID});
@@ -428,7 +430,7 @@ public class POIsContract {
                     null);
         }
 
-        public static Cursor getNotHidenToursByCategory(FragmentActivity activity, String category) {
+        public static Cursor getNotHiddenToursByCategory(FragmentActivity activity, String category) {
             return activity.getContentResolver().query(
                     CONTENT_URI,
                     null,
@@ -437,7 +439,7 @@ public class POIsContract {
                     null);
         }
 
-        public static Cursor getAllNotHidenTours(FragmentActivity activity) {
+        public static Cursor getAllNotHiddenTours(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI, null, COLUMN_HIDE + " = 0", null, null);
         }
 
@@ -447,6 +449,15 @@ public class POIsContract {
                     null,
                     COLUMN_ID + " = ?",
                     new String[]{String.valueOf(tourId)},
+                    null);
+        }
+
+        public static Cursor getNotCategorizedTours(FragmentActivity activity) {
+            return activity.getContentResolver().query(
+                    CONTENT_URI,
+                    null,
+                    COLUMN_CATEGORY_ID + " = 0 AND " + COLUMN_HIDE + " = 0",
+                    null,
                     null);
         }
     }
@@ -542,11 +553,11 @@ public class POIsContract {
             return POIsProvider.queryByTaskId(itemSelectedID);
         }
 
-
         public static int updateByTaskId(FragmentActivity activity, ContentValues contentValues,String taskId) {
             String Task_IDselection = COLUMN_LG_TASK_ID + " = ?";
             return activity.getContentResolver().update(CONTENT_URI, contentValues, Task_IDselection, new String[]{taskId});
         }
+
         public static int deleteByTaskID(FragmentActivity activity, String taskId) {
             String whereClause = COLUMN_LG_TASK_ID + " = ?";
             return activity.getContentResolver().delete(CONTENT_URI, whereClause, new String[]{taskId});
@@ -555,7 +566,5 @@ public class POIsContract {
         public static Cursor getAllLGTasks(FragmentActivity activity) {
             return activity.getContentResolver().query(CONTENT_URI, null,null, null, null);
         }
-
     }
-
 }
