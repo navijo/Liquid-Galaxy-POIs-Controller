@@ -2,43 +2,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     tools:context="com.example.rafa.liquidgalaxypoiscontroller.SearchFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
         android:layout_marginTop="20dp"
+        android:layout_weight="2"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_marginEnd="50dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_weight="1"
-            android:background="@color/grey"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/viewing_category_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@string/viewing_category"
-                android:textSize="20sp" />
-
-
-            <TextView
-                android:id="@+id/current_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:textSize="30sp"
-                android:textStyle="bold|italic|normal" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -68,7 +50,33 @@
                     android:contentDescription="@string/back"
                     android:focusable="false"
                     android:src="@drawable/ic_reply_black_36dp" />
+
+                <Button
+                    android:id="@+id/show_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/button_rounded_blue"
+                    android:text="@string/show_all"
+                    android:textSize="20sp" />
+
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/viewing_category_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/viewing_category"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/current_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="30sp"
+                android:textStyle="bold|italic|normal" />
 
 
             <ListView
@@ -86,8 +94,20 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center">
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/toursTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="10dp"
+            android:text="Tours"
+            android:textSize="30sp"
+            android:textStyle="bold|italic|normal" />
 
         <GridView
             android:id="@+id/TOURSgridview"
@@ -97,7 +117,7 @@
             android:columnWidth="30dp"
             android:gravity="center"
             android:horizontalSpacing="10dp"
-            android:numColumns="4"
+            android:numColumns="3"
             android:scrollbars="vertical"
             android:stretchMode="columnWidth"
             android:verticalSpacing="15dp" />

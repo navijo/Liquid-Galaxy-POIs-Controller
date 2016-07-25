@@ -24,23 +24,6 @@
             android:background="@color/grey"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/viewing_category_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@string/viewing_category"
-                android:textSize="20sp" />
-
-
-            <TextView
-                android:id="@+id/current_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:textSize="30sp"
-                android:textStyle="bold|italic|normal" />
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,6 +53,25 @@
                     android:focusable="false"
                     android:src="@drawable/ic_reply_black_36dp" />
             </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/viewing_category_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/viewing_category"
+                android:textSize="20sp" />
+
+
+            <TextView
+                android:id="@+id/current_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="30sp"
+                android:textStyle="bold|italic|normal" />
+
 
 
             <ListView

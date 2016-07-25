@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,7 +29,8 @@ public class TourUserFragment extends Fragment {
     View rootView;
     GridView toursGridView;
     private ListView categoriesListView;
-    private TextView categorySelectorTitle;
+    private TextView categorySelectorTitle, currentCategoryText;
+    private Button show_all;
     private ImageView backIcon, backStartIcon;
     private CategoriesAdapter adapter;
     private ArrayList<String> backIDs = new ArrayList<String>();
@@ -44,6 +46,8 @@ public class TourUserFragment extends Fragment {
         backIcon = (ImageView) rootView.findViewById(R.id.back_icon);
         backStartIcon = (ImageView) rootView.findViewById(R.id.back_start_icon);
         categorySelectorTitle = (TextView) rootView.findViewById(R.id.current_category);
+        currentCategoryText = (TextView) rootView.findViewById(R.id.viewing_category_text);
+        show_all = (Button) rootView.findViewById(R.id.show_all);
 
         backStartIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,9 +64,26 @@ public class TourUserFragment extends Fragment {
                     backIDs.remove(0);
                     Cursor queryCursor = getCategoriesCursor();
                     showCategoriesOnScreen(queryCursor);
-
                 } else {
                     showAllBaseCategories();
+                }
+            }
+        });
+
+        show_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (show_all.getText().toString().equalsIgnoreCase(getResources().getString(R.string.show_all))) {
+                    showAllTours();
+                    categoriesListView.setVisibility(View.INVISIBLE);
+                    backIcon.setVisibility(View.GONE);
+                    backStartIcon.setVisibility(View.GONE);
+                } else {
+                    show_all.setText(getResources().getString(R.string.show_all));
+                    categoriesListView.setVisibility(View.VISIBLE);
+                    backIcon.setVisibility(View.VISIBLE);
+                    backStartIcon.setVisibility(View.VISIBLE);
+                    showToursByCat();
                 }
             }
         });
@@ -70,18 +91,25 @@ public class TourUserFragment extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    private void showToursByCat() {
         final List<Tour> toursList;
         if (backIDs.size() > 0) {
             toursList = getTours(Integer.parseInt(backIDs.get(0)));
         } else {
             toursList = getNotCategorizedTours();
+            categorySelectorTitle.setVisibility(View.GONE);
+            currentCategoryText.setVisibility(View.GONE);
         }
         toursGridView.setAdapter(new ToursGridViewAdapter(toursList, getActivity(), getActivity()));
 
         Cursor queryCursor = getCategoriesCursor();
         showCategoriesOnScreen(queryCursor);
+    }
+
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        showToursByCat();
     }
 
     private void showCategoriesOnScreen(Cursor queryCursor) {
@@ -92,7 +120,8 @@ public class TourUserFragment extends Fragment {
 
             if (backIDs.size() > 0) {
                 String currentCategoryName = POIsContract.CategoryEntry.getNameById(getActivity(), Integer.parseInt(backIDs.get(0)));
-
+                categorySelectorTitle.setVisibility(View.VISIBLE);
+                currentCategoryText.setVisibility(View.VISIBLE);
                 categorySelectorTitle.setText(currentCategoryName);
             }
 
@@ -114,11 +143,36 @@ public class TourUserFragment extends Fragment {
         }
     }
 
+    private void showAllTours() {
+        final List<Tour> toursList = getAllTours();
+        toursGridView.setAdapter(new ToursGridViewAdapter(toursList, getActivity(), getActivity()));
+        show_all.setText(getResources().getString(R.string.showByCategories));
+        categorySelectorTitle.setVisibility(View.GONE);
+        currentCategoryText.setVisibility(View.GONE);
+    }
+    
     private List<Tour> getTours(int categoryId) {
 
         List<Tour> lTours = new ArrayList<>();
 
         try (Cursor allVisibleToursCursor = POIsContract.TourEntry.getNotHiddenToursByCategory(getActivity(), String.valueOf(categoryId))) {
+
+            while (allVisibleToursCursor.moveToNext()) {
+
+                int tourId = allVisibleToursCursor.getInt(0);
+
+                Tour tourEntry = getTourData(tourId);
+                lTours.add(tourEntry);
+            }
+        }
+        return lTours;
+    }
+
+    private List<Tour> getAllTours() {
+
+        List<Tour> lTours = new ArrayList<>();
+
+        try (Cursor allVisibleToursCursor = POIsContract.TourEntry.getAllNotHiddenTours(getActivity())) {
 
             while (allVisibleToursCursor.moveToNext()) {
 
@@ -155,7 +209,8 @@ public class TourUserFragment extends Fragment {
 
     private void showNotCategorizedTours() {
 
-        categorySelectorTitle.setText("");
+        categorySelectorTitle.setVisibility(View.GONE);
+        currentCategoryText.setVisibility(View.GONE);
 
         final List<Tour> toursList = getNotCategorizedTours();
         if (toursList != null) {
@@ -168,9 +223,13 @@ public class TourUserFragment extends Fragment {
         Cursor queryCursor = getCategoriesCursor();
         showCategoriesOnScreen(queryCursor);
 
+        categorySelectorTitle.setVisibility(View.VISIBLE);
+        currentCategoryText.setVisibility(View.VISIBLE);
+
         String currentCategoryName = POIsContract.CategoryEntry.getNameById(getActivity(), Integer.parseInt(backIDs.get(0)));
 
         categorySelectorTitle.setText(currentCategoryName);
+
 
         final List<Tour> toursList = getTours(Integer.parseInt(backIDs.get(0)));
         if (toursList != null) {

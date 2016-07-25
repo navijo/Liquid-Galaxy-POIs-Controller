@@ -69,7 +69,7 @@ public class ToursGridViewAdapter extends BaseAdapter {
         String displayName = currentTour.getName();
         button.setText(displayName);
 
-        Drawable top = context.getResources().getDrawable(R.drawable.ic_navigation_black_24dp);
+        Drawable top = context.getResources().getDrawable(R.drawable.politour48);
         button.setCompoundDrawablesWithIntrinsicBounds(top, null, null, null);
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
