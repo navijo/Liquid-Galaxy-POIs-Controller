@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Created by lgwork on 30/06/16.
+ * Created by Ivan Josa on 30/06/16.
  */
 public class AdvancedToolsFragment extends Fragment {
 

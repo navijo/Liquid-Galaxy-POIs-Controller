@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by lgwork on 18/07/16.
+ * Created by Ivan Josa on 18/07/16.
  */
 public class ImportTourDialogFragment extends DialogFragment {
 

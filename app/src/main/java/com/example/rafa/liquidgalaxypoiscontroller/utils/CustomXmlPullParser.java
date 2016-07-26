@@ -16,14 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by lgwork on 26/05/16.
+ * Created by Ivan Josa on 26/05/16.
  */
 public class CustomXmlPullParser {
 
     private static final String ns = null;
-
-    // We don't use namespaces
-
 
     public List<POI> parse(InputStream in, Activity activity) throws IOException {
         try {

@@ -1,7 +1,7 @@
 package com.example.rafa.liquidgalaxypoiscontroller.PW.model;
 
 /**
- * Created by lgwork on 27/05/16.
+ * Created by Ivan Josa on 27/05/16.
  */
 public class Point {
 

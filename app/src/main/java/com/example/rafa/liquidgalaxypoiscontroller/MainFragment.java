@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Created by lgwork on 31/05/16.
+ * Created by Ivan Josa on 31/05/16.
  */
 public class MainFragment extends Fragment {
 

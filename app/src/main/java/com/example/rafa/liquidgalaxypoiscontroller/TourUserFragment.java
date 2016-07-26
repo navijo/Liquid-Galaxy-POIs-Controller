@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by lgwork on 22/07/16.
+ * Created by Ivan Josa on 22/07/16.
  */
 public class TourUserFragment extends Fragment {
 

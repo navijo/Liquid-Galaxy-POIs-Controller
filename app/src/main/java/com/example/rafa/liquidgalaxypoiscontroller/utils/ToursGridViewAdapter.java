@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by lgwork on 7/07/16.
+ * Created by Ivan Josa on 7/07/16.
  */
 public class ToursGridViewAdapter extends BaseAdapter {
 

@@ -883,6 +883,7 @@ public class POISFragment extends Fragment {
     private void invalidateOtherClickableElements() {
         tourIsWorking = true;
     }
+
     private void showAlert(final android.support.design.widget.FloatingActionButton stopButton, final LiquidGalaxyTourView tour){
         // prepare the alert box
         AlertDialog.Builder alertbox = new AlertDialog.Builder(getActivity());
@@ -925,7 +926,6 @@ public class POISFragment extends Fragment {
         });
     }
     private void editButtonTreatment(final String itemSelectedId, final String type, android.support.design.widget.FloatingActionButton edit, final Dialog dialog){
-        //FIXME: IVAN
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

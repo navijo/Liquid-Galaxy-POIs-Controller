@@ -38,7 +38,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 
 /**
- * Created by lgwork on 25/05/16.
+ * Created by Ivan Josa on 25/05/16.
  */
 public class CreateTaskFragment extends DialogFragment {
 

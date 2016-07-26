@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Created by lgwork on 7/07/16.
+ * Created by Ivan Josa on 7/07/16.
  */
 public class LGUtils {
 

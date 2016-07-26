@@ -16,7 +16,7 @@ import com.example.rafa.liquidgalaxypoiscontroller.utils.CustomAndroidTreeView;
 import com.unnamed.b.atv.model.TreeNode;
 
 /**
- * Created by lgwork on 13/07/16.
+ * Created by Ivan Josa on 13/07/16.
  */
 public class NewPOISList extends Fragment {
 

@@ -1,7 +1,7 @@
 package com.example.rafa.liquidgalaxypoiscontroller.beans;
 
 /**
- * Created by lgwork on 18/07/16.
+ * Created by Ivan Josa on 18/07/16.
  */
 public class Tour {
     private int id;

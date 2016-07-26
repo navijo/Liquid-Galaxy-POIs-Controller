@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by lgwork on 18/07/16.
+ * Created by Ivan Josa on 18/07/16.
  */
 public class CustomAndroidTreeView extends AndroidTreeView {
     private static final String NODES_PATH_SEPARATOR = ";";

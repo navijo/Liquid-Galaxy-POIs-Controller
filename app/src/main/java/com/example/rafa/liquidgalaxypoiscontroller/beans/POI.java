@@ -1,7 +1,7 @@
 package com.example.rafa.liquidgalaxypoiscontroller.beans;
 
 /**
- * Created by lgwork on 7/07/16.
+ * Created by Ivan Josa on 7/07/16.
  */
 public class POI {
 
