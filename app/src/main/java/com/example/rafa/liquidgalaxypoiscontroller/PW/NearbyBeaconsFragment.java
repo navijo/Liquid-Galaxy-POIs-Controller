@@ -419,6 +419,49 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         }
     }
 
+    private String getFileName(HttpURLConnection urlConnection) {
+        try {
+            String fileName = "";
+            String raw = urlConnection.getHeaderField("Content-Disposition");
+            // raw = "attachment; filename=abc.jpg"
+            if (raw != null && raw.contains("=")) {
+                fileName = raw.split("=")[1]; //getting value after '='
+                fileName = fileName.split(";")[0];
+            } else {
+                // fall back to random generated file name?
+            }
+            return fileName.replaceAll("\"", "");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "unknowFileName";
+        }
+    }
+
+    private int getImportingFolder(String fileName) {
+        int importedCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), "PW Beacon Imported");
+
+        int importedSubCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), fileName);
+        if (importedSubCategoryId > 0) {
+            //It exist a category with the same name
+            return importedSubCategoryId;
+        } else {
+            //We create a category for the new folders
+
+            String shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), importedCategoryId);
+
+            ContentValues newCategory = new ContentValues();
+            newCategory.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, importedCategoryId);
+            newCategory.put(POIsContract.CategoryEntry.COLUMN_NAME, fileName);
+            newCategory.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
+            newCategory.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, shownName + fileName.trim() + "/");
+
+            Uri categoryUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), newCategory);
+            importedCategoryId = POIsContract.CategoryEntry.getIdByUri(categoryUri);
+        }
+
+        return importedCategoryId;
+    }
+
     /**
      * The connection to the service that discovers urls.
      */
@@ -681,23 +724,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             }
         }
 
-        private String getFileName(HttpURLConnection urlConnection) {
-            try {
-                String fileName = "";
-                String raw = urlConnection.getHeaderField("Content-Disposition");
-                // raw = "attachment; filename=abc.jpg"
-                if (raw != null && raw.contains("=")) {
-                    fileName = raw.split("=")[1]; //getting value after '='
-                    fileName = fileName.split(";")[0];
-                } else {
-                    // fall back to random generated file name?
-                }
-                return fileName.replaceAll("\"", "");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "unknowFileName";
-            }
-        }
+
 
 
         private boolean createPOIS(String fileName, List<POI> poisList) {
@@ -724,31 +751,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 }
                 return true;
          }
-
-        private int getImportingFolder(String fileName) {
-            int importedCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), "PW Beacon Imported");
-
-            int importedSubCategoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), fileName);
-            if (importedSubCategoryId > 0) {
-                //It exist a category with the same name
-                return importedSubCategoryId;
-            } else {
-                //We create a category for the new folders
-
-                String shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), importedCategoryId);
-
-                ContentValues newCategory = new ContentValues();
-                newCategory.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, importedCategoryId);
-                newCategory.put(POIsContract.CategoryEntry.COLUMN_NAME, fileName);
-                newCategory.put(POIsContract.CategoryEntry.COLUMN_HIDE, 0);
-                newCategory.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, shownName + fileName.trim() + "/");
-
-                Uri categoryUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), newCategory);
-                importedCategoryId = POIsContract.CategoryEntry.getIdByUri(categoryUri);
-            }
-
-            return importedCategoryId;
-        }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
@@ -795,34 +797,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 Toast.makeText(getActivity(),getResources().getString(R.string.something_wrong),Toast.LENGTH_LONG);
             }
         }
-
-
-        private void createTourGalaxyDocument(List<POI> poisList) {
-            StringBuilder categoryStrB = new StringBuilder("importTest");
-            StringBuilder finalQueriesStrB = new StringBuilder();
-
-            for (POI poi : poisList) {
-                finalQueriesStrB.append(categoryStrB);
-                finalQueriesStrB.append("@");
-                finalQueriesStrB.append(poi.getName());
-                finalQueriesStrB.append("@");
-                finalQueriesStrB.append("flytoview=<LookAt><longitude>");
-                finalQueriesStrB.append(poi.getPoint().getLongitude());
-                finalQueriesStrB.append("</longitude><latitude>");
-                finalQueriesStrB.append(poi.getPoint().getLatitude());
-                finalQueriesStrB.append("</latitude>");
-                finalQueriesStrB.append("<altitude>0</altitude>");
-                finalQueriesStrB.append("<heading>78.8295920519042</heading>");
-                finalQueriesStrB.append("<tilt>61.91707350294211</tilt>");
-                finalQueriesStrB.append("<range>338.9856138972227</range>");
-                finalQueriesStrB.append("<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode></LookAt>");
-                finalQueriesStrB.append("\n");
-            }
-            queriesString = finalQueriesStrB.toString();
-        }
-
     }
-
 
     private class ImportAsTourTask extends AsyncTask<Void, Integer, Boolean> {
 
@@ -880,10 +855,11 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
+                String fileName = getFileName(urlConnection);
 
                 CustomXmlPullParser customXmlPullParser = new CustomXmlPullParser();
                 List<POI> poisList = customXmlPullParser.parse(in, getActivity());
-                createPOISAndAddToTour(poisList, this.tourId);
+                createPOISAndAddToTour(poisList, this.tourId, fileName);
 
 
                 return success;
@@ -896,7 +872,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             }
         }
 
-        private boolean createPOISAndAddToTour(List<POI> poisList, int tourId) {
+        private boolean createPOISAndAddToTour(List<POI> poisList, int tourId, String fileName) {
             Looper.prepare();
 
             long total = 0;
@@ -906,10 +882,11 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 tour = getTourFromCursor(tourCursor);
             }
 
-            int earthCategory = POIsContract.CategoryEntry.getIdByShownName(getActivity(), "EARTH" + "/");
+            int importedCategoryId = getImportingFolder(fileName);
+
             for (POI poiImported : poisList) {
                 total++;
-                ContentValues poi = getFromImportedPOI(poiImported, earthCategory);
+                ContentValues poi = getFromImportedPOI(poiImported, importedCategoryId);
 
                 try {
 
