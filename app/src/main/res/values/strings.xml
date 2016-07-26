@@ -202,7 +202,6 @@
     <string name="bluetoothNotAvailable">The device does not support bluetooth</string>
 
     <!--TreeView-->
-
     <string name="ic_folder">&#xe09d;</string>
     <string name="ic_keyboard_arrow_down">&#xe0c5;</string>
     <string name="ic_keyboard_arrow_right">&#xe0c7;</string>
@@ -226,7 +225,16 @@
     <string name="viewing">Visualizing</string>
     <string name="inLG">in Liquid Galaxy</string>
     <string name="visualizationCanceled">Visualization Canceled</string>
+
     <string name="show_all">Show All</string>
     <string name="showByCategories">Show by categories</string>
+
+    <!--About dialog-->
+    <string name="about">About</string>
+    <string name="close">Close</string>
+    <string name="aboutDocText1">This app has been developed thanks to GSOC 2016 Program as a continuation of a GSOC 2015 Project</string>
+    <string name="aboutDocText2">developed originally by Rafa Durán Sàez(rafaduransaez@gmail.com) and continued by Ivan Josa Llovera (ivanjosallovera@gmail.com)</string>
+    <string name="aboutDocText3">https://github.com/LiquidGalaxyLAB/Liquid-Galaxy-POIs-Controller.git</string>
+    <string name="about_Controller_message">About Liquid Galaxy Controller</string>
 
 </resources>

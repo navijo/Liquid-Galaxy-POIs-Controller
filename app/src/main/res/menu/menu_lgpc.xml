@@ -3,11 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.rafa.liquidgalaxypoiscontroller.LGPC">
 
+    <item
+        android:id="@+id/action_admin"
+        android:title="@string/administration_tools"
+        app:showAsAction="never" />
     <item android:id="@+id/action_information_help"
-        android:orderInCategory="100"
         android:title="@string/help"
         app:showAsAction="never" />
-    <item android:id="@+id/action_admin"
-        android:title="@string/administration_tools"
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/about"
         app:showAsAction="never" />
 </menu>

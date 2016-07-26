@@ -1,6 +1,7 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -20,6 +21,8 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsDbHelper;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsProvider;
@@ -49,7 +52,7 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
             actionBar.addTab(actionBar.newTab().setText(this.mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
         }
 
-       intent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(getIntent()), PendingIntent.FLAG_ONE_SHOT);
+        intent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(getIntent()), PendingIntent.FLAG_ONE_SHOT);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -77,8 +80,7 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        }
-        else if (id == R.id.reset_db) {
+        } else if (id == R.id.reset_db) {
             final AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle(getResources().getString(R.string.are_you_sure_delete_database));
 
@@ -100,9 +102,11 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
         } else if (id == R.id.export_db) {
             exportDatabase();
             return true;
-        }
-        else if (id == R.id.action_information_help) {
+        } else if (id == R.id.action_information_help) {
             startActivity(new Intent(this, Help.class));
+            return true;
+        } else if (id == R.id.action_about) {
+            showAboutDialog();
             return true;
         } else if (id != R.id.log_out) {
             return super.onOptionsItemSelected(item);
@@ -110,6 +114,21 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
             startActivity(new Intent(this, LGPC.class));
             return true;
         }
+    }
+
+    private void showAboutDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.about_dialog);
+        dialog.setTitle(getResources().getString(R.string.about_Controller_message));
+
+        Button dialogButton = (Button) dialog.findViewById(R.id.aboutDialogButtonOK);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     private void exportDatabase() {

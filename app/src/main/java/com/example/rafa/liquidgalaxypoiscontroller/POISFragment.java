@@ -616,11 +616,10 @@ public class POISFragment extends Fragment {
             HashMap<String, String> poi = getPOIData(itemSelectedID);//we get the POI data to be shown on LG
             String command = buildCommand(poi); //we build the sentence to send to LG system
 
-                //FIXME: NertWork on Main thread forced us to create an AsyncTask
+            //Network on Main thread forced us to create an AsyncTask
                 VisitPoiTask visitPoiTask = new VisitPoiTask(command);
                 visitPoiTask.execute();
                // setConnectionWithLiquidGalaxy(command); //we set connection with LG and send the sentence to watch the wished on the LG.
-
         } catch (Exception ex) {
             Toast.makeText(getActivity(), "Error. " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
         }

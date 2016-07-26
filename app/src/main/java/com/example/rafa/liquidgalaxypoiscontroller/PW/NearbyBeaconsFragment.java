@@ -656,7 +656,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         private ProgressDialog importingDialog;
 
 
-        public ImportPOISTask(String fileUrl) {
+        ImportPOISTask(String fileUrl) {
             String[] urlSplitted = fileUrl.split("/");
             this.fileId = urlSplitted[5];
 
@@ -698,7 +698,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
 
         private boolean importPOIS() throws IOException {
-            URL url = null;
+            URL url;
             boolean success= false;
             HttpURLConnection urlConnection = null;
             try {
@@ -794,19 +794,19 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 }
 
             if (!success) {
-                Toast.makeText(getActivity(),getResources().getString(R.string.something_wrong),Toast.LENGTH_LONG);
+                Toast.makeText(getActivity(), getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private class ImportAsTourTask extends AsyncTask<Void, Integer, Boolean> {
+    private class ImportAsTourTask extends AsyncTask<Void, Integer, Void> {
 
         String fileId;
         String downloadUrl = "";
         int tourId;
         private ProgressDialog importingDialog;
 
-        public ImportAsTourTask(String fileUrl, int tourId) {
+        ImportAsTourTask(String fileUrl, int tourId) {
             String[] urlSplitted = fileUrl.split("/");
             this.fileId = urlSplitted[5];
             this.tourId = tourId;
@@ -836,19 +836,19 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             try {
-                return importAsVisit();
+                importAsVisit();
             } catch (Exception e) {
                 cancel(true);
                 return null;
             }
+            return null;
         }
 
 
-        private boolean importAsVisit() throws IOException {
-            URL url = null;
-            boolean success = false;
+        private void importAsVisit() throws IOException {
+            URL url;
             HttpURLConnection urlConnection = null;
             try {
                 url = new URL(this.downloadUrl);
@@ -861,14 +861,12 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
                 List<POI> poisList = customXmlPullParser.parse(in, getActivity());
                 createPOISAndAddToTour(poisList, this.tourId, fileName);
 
-
-                return success;
-
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                urlConnection.disconnect();
-                return success;
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
             }
         }
 
@@ -895,8 +893,8 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
 
                     ContentValues tourPoiValues = new ContentValues();
                     tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, newPoiId);
-                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, tour.getId());
-                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, tour.getDuration());
+                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, tour != null ? tour.getId() : 0);
+                    tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, tour != null ? tour.getDuration() : 10);
                     tourPoiValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, total);
 
                     POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), tourPoiValues);
@@ -934,7 +932,6 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             ContentValues poi = new ContentValues();
 
             String name = poiImported.getName();
-            String visited_place = name;
             String longitude = poiImported.getPoint().getLongitude();
             String latitude = poiImported.getPoint().getLatitude();
             String altitude = "0";
@@ -944,7 +941,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             String altitudeMode = "relativeToSeaFloor";
 
             poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
-            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
+            poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, name);
             poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
             poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
             poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
@@ -959,7 +956,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
         }
 
         @Override
-        protected void onPostExecute(Boolean success) {
+        protected void onPostExecute(Void success) {
             super.onPostExecute(success);
             if (importingDialog != null) {
                 importingDialog.dismiss();
