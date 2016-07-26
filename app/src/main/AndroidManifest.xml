@@ -35,7 +35,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <uses-sdk android:minSdkVersion="21" />
+
 
         <activity
             android:name=".CreateItemActivity"
@@ -48,11 +48,11 @@
             android:windowSoftInputMode="adjustPan" >
         </activity>
 
-        <intent-filter>
-            <action android:name="android.intent.action.GET_CONTENT" />
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.GET_CONTENT" />-->
 
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--</intent-filter>-->
 
         <activity
             android:name=".SettingsActivity"

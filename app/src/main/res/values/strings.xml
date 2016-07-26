@@ -236,5 +236,9 @@
     <string name="aboutDocText2">developed originally by Rafa Durán Sàez(rafaduransaez@gmail.com) and continued by Ivan Josa Llovera (ivanjosallovera@gmail.com)</string>
     <string name="aboutDocText3">https://github.com/LiquidGalaxyLAB/Liquid-Galaxy-POIs-Controller.git</string>
     <string name="about_Controller_message">About Liquid Galaxy Controller</string>
+    <string name="hidden">Hidden</string>
+    <string name="visible">Visible</string>
+    <string name="tours">Tours</string>
+    <string name="NO_ROUTE">NO ROUTE</string>
 
 </resources>

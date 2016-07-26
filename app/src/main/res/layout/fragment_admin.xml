@@ -47,7 +47,7 @@
         android:id="@+id/new_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/categories_management"
+        android:layout_toEndOf="@+id/categories_management"
         android:text="@string/new_category"
         android:visibility="gone"/>
     <Button

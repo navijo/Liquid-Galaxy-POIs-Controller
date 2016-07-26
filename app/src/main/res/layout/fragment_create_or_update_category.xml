@@ -41,8 +41,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/visibility"
-                android:textOff="Hidden"
-                android:textOn="Visible" />
+                android:textOff="@string/hidden"
+                android:textOn="@string/visible" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/cancel_come_back"
+        android:layout_toStartOf="@+id/cancel_come_back"
         android:src="@drawable/ic_check_white_24dp"
         android:text="@string/create_category"
         app:backgroundTint="@color/green" />
@@ -75,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/cancel_come_back"
+        android:layout_toStartOf="@+id/cancel_come_back"
         android:src="@drawable/ic_check_white_24dp"
         android:text="@string/update_category"
         android:visibility="gone"
@@ -86,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:src="@drawable/ic_close_white_24dp"
         android:text="@string/cancel"
         app:backgroundTint="@color/red" />

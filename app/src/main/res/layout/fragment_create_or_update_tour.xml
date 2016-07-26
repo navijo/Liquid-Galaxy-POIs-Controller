@@ -52,8 +52,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/visibility"
-                    android:textOff="Hidden"
-                    android:textOn="Visible" />
+                    android:textOff="@string/hidden"
+                    android:textOn="@string/visible" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
@@ -146,7 +146,7 @@
             android:id="@+id/cancel_come_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             android:gravity="bottom"
             android:src="@drawable/ic_close_white_24dp"
             android:text="@string/cancel"
@@ -158,7 +158,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="false"
             android:layout_alignParentStart="false"
-            android:layout_toRightOf="@+id/cancel_come_back"
+            android:layout_toEndOf="@+id/cancel_come_back"
             android:gravity="bottom"
             android:src="@drawable/ic_check_white_24dp"
             android:text="@string/create_tour"
@@ -168,7 +168,7 @@
             android:id="@+id/update_tour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/cancel_come_back"
+            android:layout_toEndOf="@+id/cancel_come_back"
             android:gravity="bottom"
             android:src="@drawable/ic_check_white_24dp"
             android:text="@string/update_tour"
