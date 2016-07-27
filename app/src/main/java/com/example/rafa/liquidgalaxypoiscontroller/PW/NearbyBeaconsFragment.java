@@ -937,7 +937,7 @@ public class NearbyBeaconsFragment extends ListFragment implements UrlDeviceDisc
             String altitude = "0";
             String heading = "79";
             String tilt = "62";
-            String range = "339";
+            String range = "500";
             String altitudeMode = "relativeToSeaFloor";
 
             poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
