@@ -68,17 +68,8 @@ public class NewPOISList extends Fragment {
 
                 final TreeNode parent = new TreeNode(parentNode).setViewHolder(new TreeItemHolder(getActivity()));
 
-//                new Thread(new Runnable() {
-//                    public void run() {
-//                        Looper.prepare();
-//                        try {
-                            getChildCategories(rootCategory, parent);
-                            getPois(rootCategory, parent);
-//                        } catch (Exception e) {
-//                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                }).start();
+                getChildCategories(rootCategory, parent);
+                getPois(rootCategory, parent);
 
                 categoriesRoot.addChild(parent);
             }
@@ -89,7 +80,6 @@ public class NewPOISList extends Fragment {
 
         tView = new CustomAndroidTreeView(getActivity(), root);
         tView.setDefaultAnimation(false);
-//        tView.setUseAutoToggle(false);
         tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
         tView.setDefaultViewHolder(TreeItemHolder.class);
 
@@ -123,16 +113,10 @@ public class NewPOISList extends Fragment {
                 final Category childCategory = getCategoryData(childCategories);
                 int count = POIsContract.POIEntry.countPOIsByCategory(getActivity(), String.valueOf(childCategory.getId()));
                 final TreeNode childCategoryNode = new TreeNode(new TreeItemHolder.IconTreeItem(R.drawable.ic_folder_black_24dp, childCategory.getName() + " (" + count + " pois inside) ", childCategory.getId(), 0, true));
-//                new Thread(new Runnable() {
-//                    public void run() {
-//                        try {
-                            getChildCategories(childCategory, childCategoryNode);
-                            getPois(childCategory, childCategoryNode);
-//                        } catch (Exception e) {
-//                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                }).start();
+
+                getChildCategories(childCategory, childCategoryNode);
+                getPois(childCategory, childCategoryNode);
+
                 parent.addChild(childCategoryNode);
             }
             childCategories.close();

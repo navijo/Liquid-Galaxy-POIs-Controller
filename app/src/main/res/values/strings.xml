@@ -241,4 +241,12 @@
     <string name="tours">Tours</string>
     <string name="NO_ROUTE">NO ROUTE</string>
 
+
+    <string name="speedx2">x2</string>
+    <string name="speedx4">x4</string>
+
+    <string name="speeddiv2">x/2</string>
+    <string name="speeddiv4">x/4</string>
+    <string name="lessSpeed">Less Rotation Speed</string>
+
 </resources>

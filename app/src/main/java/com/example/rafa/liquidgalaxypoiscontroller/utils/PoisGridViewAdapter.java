@@ -163,14 +163,14 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
     private String buildCommand(POI poi) {
 
-        return "echo 'flytoview=<gx:duration>9</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + poi.getLongitude() +
-                "</longitude><latitude>" + poi.getLatitude() +
-                "</latitude><altitude>" + poi.getAltitude() +
-                "</altitude><heading>" + poi.getHeading() +
-                "</heading><tilt>" + poi.getTilt() +
-                "</tilt><range>" + poi.getRange() +
-                "</range><gx:altitudeMode>" + poi.getAltitudeMode() +
-                "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+        return "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + poi.getLongitude() + "</longitude>" +
+                "<latitude>" + poi.getLatitude() + "</latitude>" +
+                "<altitude>" + poi.getAltitude() + "</altitude>" +
+                "<heading>" + poi.getHeading() + "</heading>" +
+                "<tilt>" + poi.getTilt() + "</tilt>" +
+                "<range>" + poi.getRange() + "</range>" +
+                "<gx:altitudeMode>" + poi.getAltitudeMode() + "</gx:altitudeMode>" +
+                "</LookAt>' > /tmp/query.txt";
     }
 
 
@@ -180,6 +180,8 @@ public class PoisGridViewAdapter extends BaseAdapter {
         POI currentPoi;
         boolean rotate;
         int rotationAngle = 20;
+        int rotationFactor = 1;
+        boolean changeVelocity = false;
         private ProgressDialog dialog;
 
         public VisitPoiTask(String command, POI currentPoi, boolean rotate) {
@@ -199,18 +201,21 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 dialog.setCancelable(false);
 
+
+                //Buton positive => more speed
+                //Button neutral => less speed
                 if (this.rotate) {
-                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, "More Velocity", new DialogInterface.OnClickListener() {
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.speedx2), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            rotationAngle = (rotationAngle<159)?rotationAngle+=20:rotationAngle;
+                            //Do nothing, we after define the onclick
                         }
                     });
 
-                    dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Less Velocity", new DialogInterface.OnClickListener() {
+                    dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getResources().getString(R.string.speeddiv2), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            rotationAngle = (rotationAngle>30)?rotationAngle-=20:rotationAngle;
+                            //Do nothing, we after define the onclick
                         }
                     });
                 }
@@ -231,17 +236,22 @@ public class PoisGridViewAdapter extends BaseAdapter {
                     }
                 });
 
+
                 dialog.show();
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_forward_black_36dp, 0, 0);
                 dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_rewind_black_36dp, 0, 0);
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (rotationAngle <= 100) {
-                            rotationAngle += 20;
+                        changeVelocity = true;
+                        rotationFactor = rotationFactor * 2;
+
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(context.getResources().getString(R.string.speedx4));
+                        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(context.getResources().getString(R.string.speeddiv2));
                             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(true);
                             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_rewind_black_36dp, 0, 0);
-                        } else {
+
+                        if (rotationFactor == 4) {
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                         }
@@ -250,13 +260,17 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (rotationAngle > 30) {
-                            rotationAngle -= 20;
+                        changeVelocity = true;
+                        rotationFactor = rotationFactor / 2;
+
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(context.getResources().getString(R.string.speedx2));
+                        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(context.getResources().getString(R.string.speeddiv4));
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_forward_black_36dp, 0, 0);
-                        } else {
-                            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(false);
+
+                        if (rotationFactor == 1) {
                             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+                            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(false);
                         }
                     }
                 });
@@ -269,16 +283,18 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                 session = LGUtils.getSession(activity);
 
+                //We fly to the point
                 LGUtils.setConnectionWithLiquidGalaxy(session, command, activity);
 
+                //If rotation button is pressed, we start the rotation
                 if (this.rotate) {
-                    Thread.sleep(14000);
+                    Thread.sleep(16000);
 
-                    while (!isCancelled()) {
-                        session.sendKeepAliveMsg();
+//                    while (!isCancelled()) {
+//                        session.sendKeepAliveMsg();
 
-//                        for (int i = 0; i < 180; i = i + rotationAngle) {
-//                            String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
+//                        for (int i = 0; i < 180; i = i + (rotationAngle*rotationFactor)) {
+//                            String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
 //                                    "</longitude><latitude>" + this.currentPoi.getLatitude() +
 //                                    "</latitude><altitude>" + this.currentPoi.getAltitude() +
 //                                    "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
@@ -292,8 +308,8 @@ public class PoisGridViewAdapter extends BaseAdapter {
 //                            Thread.sleep(4000);
 //                        }
 //
-//                        for (int i = -180; i <= 0; i = i + rotationAngle) {
-//                            String commandRotate = "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
+//                        for (int i = -180; i <= 0; i = i + (rotationAngle*rotationFactor)) {
+//                            String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
 //                                    "</longitude><latitude>" + this.currentPoi.getLatitude() +
 //                                    "</latitude><altitude>" + this.currentPoi.getAltitude() +
 //                                    "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
@@ -307,21 +323,25 @@ public class PoisGridViewAdapter extends BaseAdapter {
 //                            Thread.sleep(4000);
 //                        }
 
-                        for (int i = 0; i <= 360; i = i + rotationAngle) {
-                            String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
-                                    "</longitude><latitude>" + this.currentPoi.getLatitude() +
-                                    "</latitude><altitude>" + this.currentPoi.getAltitude() +
-                                    "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
-                                    "</heading><tilt>" + this.currentPoi.getTilt() +
-                                    "</tilt><range>" + this.currentPoi.getRange() +
-                                    "</range><gx:altitudeMode>" + this.currentPoi.getAltitudeMode() +
-                                    "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
+                    for (int i = (rotationAngle * rotationFactor); !isCancelled(); i = ((i + (rotationAngle * rotationFactor)) % 360)) {
+
+                        String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt>" +
+                                "<longitude>" + this.currentPoi.getLongitude() + "</longitude>" +
+                                "<latitude>" + this.currentPoi.getLatitude() + "</latitude>" +
+                                "<altitude>" + this.currentPoi.getAltitude() + "</altitude>" +
+                                "<heading>" + (this.currentPoi.getHeading() + i) + "</heading>" +
+                                "<tilt>" + this.currentPoi.getTilt() + "</tilt>" +
+                                "<range>" + this.currentPoi.getRange() + "</range>" +
+                                "<gx:altitudeMode>" + this.currentPoi.getAltitudeMode() + "</gx:altitudeMode>" +
+                                "</LookAt>' > /tmp/query.txt";
+
 
                             LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
                             session.sendKeepAliveMsg();
+
                             Thread.sleep(4000);
                         }
-                    }
+//                    }
                 }
 
                 return "";

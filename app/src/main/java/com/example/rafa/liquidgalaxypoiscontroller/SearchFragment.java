@@ -429,6 +429,10 @@ public class SearchFragment extends Fragment {
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                GetSessionTask getSessionTask = new GetSessionTask();
+                getSessionTask.execute();
+
                 String placeToSearch = editSearch.getText().toString();
                 if (!placeToSearch.equals("") && placeToSearch != null) {
 
