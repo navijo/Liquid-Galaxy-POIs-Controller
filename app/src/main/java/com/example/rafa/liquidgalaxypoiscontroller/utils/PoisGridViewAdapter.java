@@ -179,7 +179,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
         String command;
         POI currentPoi;
         boolean rotate;
-        int rotationAngle = 20;
+        int rotationAngle = 10;
         int rotationFactor = 1;
         boolean changeVelocity = false;
         private ProgressDialog dialog;
@@ -248,8 +248,8 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(context.getResources().getString(R.string.speedx4));
                         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(context.getResources().getString(R.string.speeddiv2));
-                            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(true);
-                            dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_rewind_black_36dp, 0, 0);
+                        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(true);
+                        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_rewind_black_36dp, 0, 0);
 
                         if (rotationFactor == 4) {
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
@@ -265,8 +265,8 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(context.getResources().getString(R.string.speedx2));
                         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(context.getResources().getString(R.string.speeddiv4));
-                            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_forward_black_36dp, 0, 0);
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_fast_forward_black_36dp, 0, 0);
 
                         if (rotationFactor == 1) {
                             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
@@ -286,62 +286,40 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 //We fly to the point
                 LGUtils.setConnectionWithLiquidGalaxy(session, command, activity);
 
+
                 //If rotation button is pressed, we start the rotation
                 if (this.rotate) {
-                    Thread.sleep(16000);
+                    Thread.sleep(14000);
 
-//                    while (!isCancelled()) {
-//                        session.sendKeepAliveMsg();
+                    boolean isFirst = true;
 
-//                        for (int i = 0; i < 180; i = i + (rotationAngle*rotationFactor)) {
-//                            String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
-//                                    "</longitude><latitude>" + this.currentPoi.getLatitude() +
-//                                    "</latitude><altitude>" + this.currentPoi.getAltitude() +
-//                                    "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
-//                                    "</heading><tilt>" + this.currentPoi.getTilt() +
-//                                    "</tilt><range>" + this.currentPoi.getRange() +
-//                                    "</range><gx:altitudeMode>" + this.currentPoi.getAltitudeMode() +
-//                                    "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
-//
-//                            LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
-//                            session.sendKeepAliveMsg();
-//                            Thread.sleep(4000);
-//                        }
-//
-//                        for (int i = -180; i <= 0; i = i + (rotationAngle*rotationFactor)) {
-//                            String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + this.currentPoi.getLongitude() +
-//                                    "</longitude><latitude>" + this.currentPoi.getLatitude() +
-//                                    "</latitude><altitude>" + this.currentPoi.getAltitude() +
-//                                    "</altitude><heading>" + (this.currentPoi.getHeading() + i) +
-//                                    "</heading><tilt>" + this.currentPoi.getTilt() +
-//                                    "</tilt><range>" + this.currentPoi.getRange() +
-//                                    "</range><gx:altitudeMode>" + this.currentPoi.getAltitudeMode() +
-//                                    "</gx:altitudeMode></LookAt>' > /tmp/query.txt";
-//
-//                            LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
-//                            session.sendKeepAliveMsg();
-//                            Thread.sleep(4000);
-//                        }
+                    while (!isCancelled()) {
+                        session.sendKeepAliveMsg();
 
-                    for (int i = (rotationAngle * rotationFactor); !isCancelled(); i = ((i + (rotationAngle * rotationFactor)) % 360)) {
+                        for (int i = 0; i <= (360 - this.currentPoi.getHeading()); i += (this.rotationAngle * this.rotationFactor)) {
 
-                        String commandRotate = "echo 'flytoview=<gx:duration>10</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt>" +
-                                "<longitude>" + this.currentPoi.getLongitude() + "</longitude>" +
-                                "<latitude>" + this.currentPoi.getLatitude() + "</latitude>" +
-                                "<altitude>" + this.currentPoi.getAltitude() + "</altitude>" +
-                                "<heading>" + (this.currentPoi.getHeading() + i) + "</heading>" +
-                                "<tilt>" + this.currentPoi.getTilt() + "</tilt>" +
-                                "<range>" + this.currentPoi.getRange() + "</range>" +
-                                "<gx:altitudeMode>" + this.currentPoi.getAltitudeMode() + "</gx:altitudeMode>" +
-                                "</LookAt>' > /tmp/query.txt";
+                            String commandRotate = "echo 'flytoview=<gx:duration>3</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt>" +
+                                    "<longitude>" + this.currentPoi.getLongitude() + "</longitude>" +
+                                    "<latitude>" + this.currentPoi.getLatitude() + "</latitude>" +
+                                    "<altitude>" + this.currentPoi.getAltitude() + "</altitude>" +
+                                    "<heading>" + (this.currentPoi.getHeading() + i) + "</heading>" +
+                                    "<tilt>" + this.currentPoi.getTilt() + "</tilt>" +
+                                    "<range>" + this.currentPoi.getRange() + "</range>" +
+                                    "<gx:altitudeMode>" + this.currentPoi.getAltitudeMode() + "</gx:altitudeMode>" +
+                                    "</LookAt>' > /tmp/query.txt";
 
 
                             LGUtils.setConnectionWithLiquidGalaxy(session, commandRotate, activity);
                             session.sendKeepAliveMsg();
 
-                            Thread.sleep(4000);
+                            if (isFirst) {
+                                isFirst = false;
+                                Thread.sleep(6000);
+                            } else {
+                                Thread.sleep(4000);
+                            }
                         }
-//                    }
+                    }
                 }
 
                 return "";
