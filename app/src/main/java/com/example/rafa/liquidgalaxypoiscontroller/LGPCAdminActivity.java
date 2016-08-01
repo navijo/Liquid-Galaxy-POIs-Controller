@@ -142,11 +142,14 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
 
                 String currentDBPath = "/data/" + this.getPackageName() + "/databases/" + POIsDbHelper.DATABASE_NAME;
                 String backupDBPath = "DB_" + dayAndMonth + ".sqlite";
+
+
                 File currentDB = new File(data, currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
                 if (currentDB.exists()) {
                     FileChannel src = new FileInputStream(currentDB).getChannel();
                     FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    Log.i("INFO", backupDB.getAbsolutePath());
                     dst.transferFrom(src, 0, src.size());
                     src.close();
                     dst.close();

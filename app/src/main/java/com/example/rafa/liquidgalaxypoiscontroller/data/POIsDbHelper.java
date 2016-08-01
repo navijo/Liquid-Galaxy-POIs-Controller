@@ -25,8 +25,16 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     private void createDefaultLgTasks(SQLiteDatabase db) {
         String sqlLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh','',0)";
         db.execSQL(sqlLG);
+
         String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('LG-Potree','Launch LG-Potree Task','./asherat666-lg-potree/scripts/lg-potree','./asherat666-lg-potree/scripts/lg-potree-stop',0)";
         db.execSQL(sqlPotree);
+
+        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/DLP/start-dlp 10.160.101.109 10.160.102.14:8000','bash /home/lg/Desktop/DLP/exitdlp','10.160.102.14','lg','lq',0)";
+        db.execSQL(sqlDLP);
+
+        String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('PILT','','/home/lg/Escritorio/pilt','','10.160.102.14','lg','lq',0)";
+        db.execSQL(sqlDLP);
+
     }
 
     private void createBaseCategories(SQLiteDatabase db) {
