@@ -58,7 +58,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int i, View view, final ViewGroup viewGroup) {
         final POI currentPoi = this.poiList.get(i);
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT);
@@ -66,6 +66,26 @@ public class PoisGridViewAdapter extends BaseAdapter {
         RelativeLayout layout = new RelativeLayout(context);
         layout.setBackground(context.getResources().getDrawable(R.drawable.button_rounded_grey));
         layout.setLayoutParams(params);
+
+        //Rotation Button
+        RelativeLayout.LayoutParams paramsRotate = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        final ImageButton rotatePoiButton = new ImageButton(context);
+//        rotatePoiButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_autorenew_black_36dp));
+        rotatePoiButton.setBackground(context.getResources().getDrawable(R.drawable.button_rounded_grey));
+        paramsRotate.addRule(RelativeLayout.ALIGN_PARENT_END);
+
+        rotatePoiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String command = buildCommand(currentPoi);
+                VisitPoiTask visitPoiTask = new VisitPoiTask(command, currentPoi, true);
+                visitPoiTask.execute();
+            }
+        });
+
+        rotatePoiButton.setEnabled(false);
+        rotatePoiButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_autorenew_white_36dp));
+
 
         //View POI
         RelativeLayout.LayoutParams paramsView = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -81,8 +101,20 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 String command = buildCommand(currentPoi);
                 VisitPoiTask visitPoiTask = new VisitPoiTask(command, currentPoi, false);
                 visitPoiTask.execute();
+
+                disableOtherRotateButtons(viewGroup);
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                rotatePoiButton.setEnabled(true);
+                rotatePoiButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_autorenew_black_36dp));
             }
         });
+
         layout.addView(viewPoiButton);
 
         int maxLengthPoiName = getMaxLength();
@@ -107,32 +139,39 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 String command = buildCommand(currentPoi);
                 VisitPoiTask visitPoiTask = new VisitPoiTask(command, currentPoi, false);
                 visitPoiTask.execute();
+
+                disableOtherRotateButtons(viewGroup);
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                rotatePoiButton.setEnabled(true);
+                rotatePoiButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_autorenew_black_36dp));
             }
         });
 
         layout.addView(poiName);
         poiName.setLayoutParams(paramsText);
 
-        //Rotation Button
-        RelativeLayout.LayoutParams paramsRotate = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        ImageButton rotatePoiButton = new ImageButton(context);
-        rotatePoiButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_autorenew_black_36dp));
-        rotatePoiButton.setBackground(context.getResources().getDrawable(R.drawable.button_rounded_grey));
-        paramsRotate.addRule(RelativeLayout.ALIGN_PARENT_END);
-
-        rotatePoiButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String command = buildCommand(currentPoi);
-                VisitPoiTask visitPoiTask = new VisitPoiTask(command, currentPoi, true);
-                visitPoiTask.execute();
-            }
-        });
 
         layout.addView(rotatePoiButton);
         rotatePoiButton.setLayoutParams(paramsRotate);
 
         return layout;
+    }
+
+    private void disableOtherRotateButtons(ViewGroup viewGroup) {
+
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            RelativeLayout poiItem = (RelativeLayout) viewGroup.getChildAt(i);
+            ImageButton rotateButton = (ImageButton) poiItem.getChildAt(2);
+
+            rotateButton.setEnabled(false);
+            rotateButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_autorenew_white_36dp));
+
+        }
     }
 
     private int getMaxLength() {
@@ -160,7 +199,6 @@ public class PoisGridViewAdapter extends BaseAdapter {
         }
     }
 
-
     private String buildCommand(POI poi) {
 
         return "echo 'flytoview=<gx:duration>3</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + poi.getLongitude() + "</longitude>" +
@@ -172,7 +210,6 @@ public class PoisGridViewAdapter extends BaseAdapter {
                 "<gx:altitudeMode>" + poi.getAltitudeMode() + "</gx:altitudeMode>" +
                 "</LookAt>' > /tmp/query.txt";
     }
-
 
     private class VisitPoiTask extends AsyncTask<Void, Void, String> {
 
@@ -289,7 +326,6 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                 //If rotation button is pressed, we start the rotation
                 if (this.rotate) {
-              //      Thread.sleep(9000);
 
                     boolean isFirst = true;
 

@@ -33,7 +33,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(sqlDLP);
 
         String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('PILT','','/home/lg/Escritorio/pilt','','10.160.102.14','lg','lq',0)";
-        db.execSQL(sqlDLP);
+        db.execSQL(sqlPILT);
 
     }
 
