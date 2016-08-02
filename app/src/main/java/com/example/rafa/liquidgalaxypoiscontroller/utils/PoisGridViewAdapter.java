@@ -98,6 +98,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
         viewPoiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String command = buildCommand(currentPoi);
                 VisitPoiTask visitPoiTask = new VisitPoiTask(command, currentPoi, false);
                 visitPoiTask.execute();
@@ -136,11 +137,13 @@ public class PoisGridViewAdapter extends BaseAdapter {
         poiName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String command = buildCommand(currentPoi);
                 VisitPoiTask visitPoiTask = new VisitPoiTask(command, currentPoi, false);
                 visitPoiTask.execute();
 
                 disableOtherRotateButtons(viewGroup);
+
 
                 try {
                     Thread.sleep(10000);
@@ -332,7 +335,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
                     while (!isCancelled()) {
                         session.sendKeepAliveMsg();
 
-                        for (int i = 0; i <= (360 - this.currentPoi.getHeading()); i += (this.rotationAngle * this.rotationFactor)) {
+                        for (int i = this.rotationAngle; i <= (360 - this.currentPoi.getHeading()); i += (this.rotationAngle * this.rotationFactor)) {
 
                             String commandRotate = "echo 'flytoview=<gx:duration>3</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt>" +
                                     "<longitude>" + this.currentPoi.getLongitude() + "</longitude>" +
@@ -350,7 +353,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                             if (isFirst) {
                                 isFirst = false;
-                                Thread.sleep(8000);
+                                Thread.sleep(7000);
                             } else {
                                 Thread.sleep(4000);
                             }
