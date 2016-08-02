@@ -17,9 +17,14 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <!--Required for the kiosk mode-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
 
     <application
+        android:name=".utils.kioskModeUtils.AppContext"
         android:allowBackup="true"
         android:icon="@drawable/lg"
         android:label="@string/app_name"
@@ -113,6 +118,17 @@
 
         <!-- This is required for the scan library. -->
         <receiver android:name="org.uribeacon.scan.compat.ScanWakefulBroadcastReceiver"/>
+
+        <!-- This is required for the kiosk mode. -->
+        <receiver android:name=".utils.kioskModeUtils.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".utils.kioskModeUtils.KioskService"
+            android:exported="false" />
 
     </application>
 

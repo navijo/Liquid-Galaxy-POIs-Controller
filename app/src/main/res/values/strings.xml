@@ -248,5 +248,8 @@
     <string name="speeddiv2">x/2</string>
     <string name="speeddiv4">x/4</string>
     <string name="lessSpeed">Less Rotation Speed</string>
+    <string name="pref_header_general">General Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
 
 </resources>

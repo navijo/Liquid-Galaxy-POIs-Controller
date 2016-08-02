@@ -163,7 +163,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
     private String buildCommand(POI poi) {
 
-        return "echo 'flytoview=<gx:duration>6</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + poi.getLongitude() + "</longitude>" +
+        return "echo 'flytoview=<gx:duration>3</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt><longitude>" + poi.getLongitude() + "</longitude>" +
                 "<latitude>" + poi.getLatitude() + "</latitude>" +
                 "<altitude>" + poi.getAltitude() + "</altitude>" +
                 "<heading>" + poi.getHeading() + "</heading>" +
@@ -289,7 +289,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                 //If rotation button is pressed, we start the rotation
                 if (this.rotate) {
-                    Thread.sleep(14000);
+                    Thread.sleep(9000);
 
                     boolean isFirst = true;
 
@@ -314,7 +314,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                             if (isFirst) {
                                 isFirst = false;
-                                Thread.sleep(6000);
+                                Thread.sleep(8000);
                             } else {
                                 Thread.sleep(4000);
                             }

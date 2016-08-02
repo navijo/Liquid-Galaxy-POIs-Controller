@@ -36,4 +36,9 @@
         android:singleLine="true"
         android:title="Administration Password" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_kiosk_mode"
+        android:title="Kiosk Mode" />
+
 </PreferenceScreen>
