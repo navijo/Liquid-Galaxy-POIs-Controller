@@ -289,7 +289,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
 
                 //If rotation button is pressed, we start the rotation
                 if (this.rotate) {
-//                    Thread.sleep(9000);
+                    Thread.sleep(9000);
 
                     boolean isFirst = true;
 
