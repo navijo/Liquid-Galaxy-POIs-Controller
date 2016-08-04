@@ -29,11 +29,17 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('LG-Potree','Launch LG-Potree Task','./asherat666-lg-potree/scripts/lg-potree','./asherat666-lg-potree/scripts/lg-potree-stop',0)";
         db.execSQL(sqlPotree);
 
-        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/DLP/start-dlp 10.160.101.109 10.160.102.14:8000','bash /home/lg/Desktop/DLP/exitdlp','10.160.102.14','lg','lq',0)";
+        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/DLP/start-dlp 10.160.101.109 10.160.102.14:8000','bash /home/lg/Desktop/DLP/exitdlp','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
         db.execSQL(sqlDLP);
 
-        String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('PILT','','/home/lg/Escritorio/pilt','','10.160.102.14','lg','lq',0)";
+        String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PILT','Panoramic Interactive Live Tracker','/home/lg/Desktop/lglab/gsoc16/PILT/pilt-start 10.160.100.242','/home/lg/Desktop/lglab/python-end','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
         db.execSQL(sqlPILT);
+
+        String sqlFAED = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FAED','Flying Automated External Defibrilator','/home/lg/Desktop/lglab/gsoc15/FAED/faed-start 10.160.100.242','/home/lg/Desktop/lglab/python-end','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
+        db.execSQL(sqlFAED);
+
+        String sqlVYD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('VYD','View Your Data','/home/lg/Desktop/lglab/gsoc15/VYD/vyd-start 10.160.100.242','/home/lg/Desktop/lglab/python-end','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
+        db.execSQL(sqlVYD);
 
     }
 

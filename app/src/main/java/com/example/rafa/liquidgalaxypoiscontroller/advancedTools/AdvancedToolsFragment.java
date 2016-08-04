@@ -476,8 +476,9 @@ public class AdvancedToolsFragment extends Fragment {
 
             channelExec.setOutputStream(baos);
 
+            //command = "export GSOC=\\\"/home/lg/Desktop/lglab\\\"  && "+command;
+
             //We need to redirect the output to a log file
-            //channelExec.setCommand(command + " >> " + "LGControllerLogs/log"+ System.currentTimeMillis()+".txt");
             channelExec.setCommand(command + " >> " + "LGControllerLog.txt");
 
             channelExec.connect();
