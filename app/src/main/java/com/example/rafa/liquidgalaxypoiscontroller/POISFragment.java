@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rafa.liquidgalaxypoiscontroller.beans.TourPOI;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.example.rafa.liquidgalaxypoiscontroller.utils.LGUtils;
 import com.jcraft.jsch.JSchException;
@@ -851,16 +852,19 @@ public class POISFragment extends Fragment {
 
     //When one POI is added inside one Tour when this is being created.
     private void addTourPOIsButtonTreatment(final int itemSelectedID, final String completeName, FloatingActionButton add){
+        final TourPOI tourPOI = new TourPOI();
+        tourPOI.setPoiName(completeName);
+        tourPOI.setPoiID(itemSelectedID);
 
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (createORupdate.equals("update")) {
-                    UpdateItemFragment.setPOItoTourPOIsList(String.valueOf(itemSelectedID), completeName);
+                    UpdateItemFragment.setPOItoTourPOIsList(tourPOI);
                     dialog.dismiss();
                 } else {
                     try {
-                        CreateItemFragment.setPOItoTourPOIsList(String.valueOf(itemSelectedID), completeName);
+                        CreateItemFragment.setPOItoTourPOIsList(tourPOI);
                     } catch (Exception e) {
                         Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }

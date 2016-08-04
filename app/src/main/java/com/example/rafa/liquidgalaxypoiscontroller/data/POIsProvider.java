@@ -76,8 +76,10 @@ public class POIsProvider extends ContentProvider {
     }
 
     public static Cursor queryByPoiJOINTourPois(String itemSelectedID) {
-        String sql = "SELECT t.POI, p.Name, t.POI_Duration FROM poi p INNER JOIN Tour_POIs t ON p._id = t.POI WHERE t.Tour = ? ORDER BY t.POI_Order ASC";
-        return mOpenHelper.getReadableDatabase().rawQuery("SELECT t.POI, p.Name, t.POI_Duration FROM poi p INNER JOIN Tour_POIs t ON p._id = t.POI WHERE t.Tour = ? ORDER BY t.POI_Order ASC", new String[]{itemSelectedID});
+        String sql = "SELECT t.POI, p.Name, t.POI_Duration FROM poi p " +
+                "INNER JOIN Tour_POIs t ON p._id = t.POI " +
+                "WHERE t.Tour = ? ORDER BY t.POI_Order ASC";
+        return mOpenHelper.getReadableDatabase().rawQuery(sql, new String[]{itemSelectedID});
     }
 
     public static Cursor queryPOIById(int poiId) {

@@ -160,9 +160,19 @@ public class SearchFragment extends Fragment {
     }
 
     private void promptSpeechInput() {
+
+        Locale spanish = new Locale("es", "ES");
+        Locale catalan = new Locale("ca", "ES");
+
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, spanish);
+        intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, catalan);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, catalan);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS, catalan);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, spanish);
+        intent.putExtra(RecognizerIntent.EXTRA_RESULTS, spanish);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.speech_prompt));
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);

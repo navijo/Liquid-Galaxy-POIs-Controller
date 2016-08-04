@@ -44,7 +44,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
             return "Error. There's no item selected.";
         }
         try {
-            Cursor c = TourPOIsEntry.getPOIsByTourID(this.poisFragmentAct, params[0]);
+            Cursor c = TourPOIsEntry.getPOIsByTourID(params[0]);
             while (c.moveToNext()) {
                 int poiID = c.getInt(0);
                 poisDuration.add(Integer.valueOf(c.getInt(2)));

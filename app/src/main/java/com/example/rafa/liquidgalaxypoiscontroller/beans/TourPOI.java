@@ -4,11 +4,33 @@ public class TourPOI {
     private int order;
     private int poiID;
     private int tourID;
+    private int duration;
+    private String poiName;
+
+
+    public TourPOI() {
+    }
 
     public TourPOI(int tourID, int poiID, int order) {
         this.tourID = tourID;
         this.poiID = poiID;
         this.order = order;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public String getPoiName() {
+        return poiName;
+    }
+
+    public void setPoiName(String poiName) {
+        this.poiName = poiName;
     }
 
     public int getTourID() {

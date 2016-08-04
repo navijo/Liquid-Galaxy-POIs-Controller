@@ -250,6 +250,7 @@
     <string name="lessSpeed">Less Rotation Speed</string>
     <string name="pref_header_general">General Settings</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="creating_tour">Creating Tour...</string>
 
 
 </resources>

@@ -135,7 +135,7 @@ public class ToursGridViewAdapter extends BaseAdapter {
             List<Integer> poisDuration = new ArrayList<Integer>();
 
             try {
-                Cursor tourPoiCursor = POIsContract.TourPOIsEntry.getPOIsByTourID(activity, String.valueOf(this.currentTour.getId()));
+                Cursor tourPoiCursor = POIsContract.TourPOIsEntry.getPOIsByTourID(String.valueOf(this.currentTour.getId()));
                 while (tourPoiCursor.moveToNext()) {
                     int poiID = tourPoiCursor.getInt(tourPoiCursor.getColumnIndex(POIsContract.TourPOIsEntry.COLUMN_POI_ID));
                     poisDuration.add(tourPoiCursor.getInt(tourPoiCursor.getColumnIndex(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION)));

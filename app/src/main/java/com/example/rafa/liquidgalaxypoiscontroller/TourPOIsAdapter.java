@@ -12,7 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.example.rafa.liquidgalaxypoiscontroller.beans.TourPOI;
+
 import java.util.List;
 
 /**
@@ -20,21 +21,16 @@ import java.util.List;
  */
 public class TourPOIsAdapter extends BaseAdapter {
 
-    private static List<String> pois;
-    private static List<Integer> poisDuration = new ArrayList<Integer>();
+    private static List<TourPOI> pois;
+
     private static FragmentActivity activity;
     private static String type = "creating";
-    private static int global_interval = 0, updated_position, lastPost;
-    private boolean MOVE_TAG = false;
+    private static int global_interval = 0;
 
-    public TourPOIsAdapter(FragmentActivity activity, List<String> tourPOIsNames) {
+
+    public TourPOIsAdapter(FragmentActivity activity, List<TourPOI> tourPOIs) {
         TourPOIsAdapter.activity = activity;
-        pois = tourPOIsNames;
-    }
-
-    public static void setPOIsDuration(List<Integer> durationList) {
-        poisDuration.clear();
-        poisDuration.addAll(durationList);
+        pois = tourPOIs;
     }
 
     public static void setType(String t) {
@@ -47,14 +43,6 @@ public class TourPOIsAdapter extends BaseAdapter {
 
     public static void setGlobalInterval(int globalInterval) {
         global_interval = globalInterval;
-    }
-
-    public static void addToDurationList() {
-        poisDuration.add(global_interval);
-    }
-
-    public static List<Integer> getDurationList() {
-        return poisDuration;
     }
 
     private static void screenSizeTreatment(View view, TextView poi) {
@@ -97,9 +85,9 @@ public class TourPOIsAdapter extends BaseAdapter {
         return true;
     }
 
-    public static void deleteDurationByPosition(int durationIndex) {
-        poisDuration.remove(durationIndex);
-    }
+//    public static void deleteDurationByPosition(int durationIndex) {
+//        poisDuration.remove(durationIndex);
+//    }
 
     /**
      * How many items are in the data set represented by this Adapter.
@@ -162,7 +150,7 @@ public class TourPOIsAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         View view = convertView;
-        String poi = (String) getItem(position);
+        TourPOI tourPOI = (TourPOI) getItem(position);
 
         if(convertView == null){
             LayoutInflater inf = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -171,19 +159,20 @@ public class TourPOIsAdapter extends BaseAdapter {
 
         //we get the poi name
         TextView name = (TextView) view.findViewById(R.id.poi_complete_name);
-        name.setText(poi);
+        name.setText(tourPOI.getPoiName());
 
         //we get the POI field called Seconds and we set its behaviour when user types on it.
-        final EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
-        secondsBehaviour(view, seconds, position);
+        EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
+        seconds.setText(String.valueOf(tourPOI.getDuration()));
+        secondsBehaviour(tourPOI, seconds, position);
 
         setArrowsBehaviour(view, position, name);
-        setDeleteItemButtonBehaviour(view, poi);
+        setDeleteItemButtonBehaviour(view, tourPOI);
 
         return view;
     }
 
-    private void secondsBehaviour(View view, final EditText seconds, final int position){
+    private void secondsBehaviour(final TourPOI tourPOI, final EditText seconds, final int position) {
         seconds.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -192,32 +181,19 @@ public class TourPOIsAdapter extends BaseAdapter {
                     String sec = seconds.getText().toString();
                     if (isNumeric(sec)) {
                         s = Integer.parseInt(sec);
-                        if (s != poisDuration.get(position)) {
-                            if (MOVE_TAG == false) {
-                                poisDuration.remove(position);
-                                poisDuration.add(position, s);
-                            } else {
-                                MOVE_TAG = false;
-                            }
-                        }
+
+                        tourPOI.setDuration(s);
                     }
                 }
             }
         });
-
-        int poi_interval = poisDuration.get(position);
-        if(global_interval == poi_interval){
-            seconds.setText("");
-        }else {
-            seconds.setText(String.valueOf(poi_interval));
-        }
     }
 
-    private void setDeleteItemButtonBehaviour(View view, String name) {
+    private void setDeleteItemButtonBehaviour(View view, TourPOI tourPOI) {
         if(type.equals("creating")) {
-            CreateItemFragment.deleteButtonTreatment(view, name);
+            CreateItemFragment.deleteButtonTreatment(view, tourPOI);
         }else{
-            UpdateItemFragment.deleteButtonTreatment(view, name);
+            UpdateItemFragment.deleteButtonTreatment(view, tourPOI);
         }
     }
 
@@ -240,25 +216,17 @@ public class TourPOIsAdapter extends BaseAdapter {
     }
 
     private void moveUp(int position){
-        String toMoveUp = "";
-        String toMoveDown = "";
+        TourPOI toMoveUp;
+        TourPOI toMoveDown;
         try {
-            toMoveUp = (String) getItem(position);
-            toMoveDown = (String) getItem(position - 1);
-            if(poisDuration.size() > 0) {
-                int current_item_duration = poisDuration.get(position);
-                int above_item_duration = poisDuration.get(position - 1);
-
-                poisDuration.remove(position);
-                poisDuration.remove(position - 1);
-                poisDuration.add(position - 1, current_item_duration);
-                poisDuration.add(position, above_item_duration);
-            }
+            toMoveUp = (TourPOI) getItem(position);
+            toMoveDown = (TourPOI) getItem(position - 1);
             pois.remove(position);
             pois.remove(position - 1);
+            toMoveUp.setOrder(position - 1);
             pois.add(position - 1, toMoveUp);
+            toMoveDown.setOrder(position);
             pois.add(position, toMoveDown);
-            MOVE_TAG = true;
             notifyDataSetChanged();
         }catch (ArrayIndexOutOfBoundsException ex){
             Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
@@ -268,22 +236,16 @@ public class TourPOIsAdapter extends BaseAdapter {
 
     private void moveDown(int position){
         try {
-            String toMoveDown = (String) getItem(position);
-            String toMoveUp = (String) getItem(position + 1);
-            if (poisDuration.size() > 0) {
-                int current_item_duration = poisDuration.get(position);
-                int below_item_duration = poisDuration.get(position + 1);
+            TourPOI toMoveDown = (TourPOI) getItem(position);
+            TourPOI toMoveUp = (TourPOI) getItem(position + 1);
 
-                poisDuration.remove(position + 1);
-                poisDuration.remove(position);
-                poisDuration.add(position, below_item_duration);
-                poisDuration.add(position + 1, current_item_duration);
-            }
             pois.remove(position + 1);
             pois.remove(position);
+            toMoveUp.setOrder(position);
             pois.add(position, toMoveUp);
+            toMoveDown.setOrder(position + 1);
             pois.add(position + 1, toMoveDown);
-            MOVE_TAG = true;
+
             notifyDataSetChanged();
         }catch (ArrayIndexOutOfBoundsException ex){
             Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();

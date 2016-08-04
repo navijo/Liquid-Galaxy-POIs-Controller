@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.rafa.liquidgalaxypoiscontroller.beans.TourPOI;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,8 +51,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
     private static String itemSelectedID;
     private static ViewHolderTour viewHolderTour;
     private static Map<String, String> spinnerIDsAndShownNames, categoriesOfPOIsSpinner;
-    private static List<String> tourPOIsNames, tourPOIsIDs, tourExistingPOIsNames, tourExistingPOIsIDs;
-    private static HashMap<String, String> namesAndIDs = new HashMap<String, String>();
+    private static List<TourPOI> tourPois, newTourPOIS;
     double latitude;
     double longitude;
     String poiName;
@@ -61,30 +61,23 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
     private ArrayAdapter<String> adapter;
 
     public UpdateItemFragment() {
-        tourPOIsIDs = new ArrayList<String>();
-        tourPOIsNames = new ArrayList<String>();
-        tourExistingPOIsNames = new ArrayList<String>();
-        tourExistingPOIsIDs = new ArrayList<String>();
+        tourPois = new ArrayList<>();
+        newTourPOIS = new ArrayList<>();
     }
 
-    public static void deleteButtonTreatment(View view, final String name) {
+    public static void deleteButtonTreatment(View view, final TourPOI tourPoi) {
         final ImageView delete = (ImageView) view.findViewById(R.id.delete);
         screenSizeTreatment(delete);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = tourPOIsNames.indexOf(name);
-                tourExistingPOIsNames.remove(name);
-                tourPOIsNames.remove(name);
-                String id = namesAndIDs.get(name);
-                tourExistingPOIsIDs.remove(id);
-                tourPOIsIDs.remove(id);
-                namesAndIDs.remove(name);
+
+                String id = String.valueOf(tourPoi.getPoiID());
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
                 POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(activity, itemSelectedID, id);
-                TourPOIsAdapter.deleteDurationByPosition(position);
+
                 TourPOIsAdapter.setType("updating");
-                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
+                TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPois);
                 viewHolderTour.addedPois.setAdapter(adapter);
             }
         });
@@ -112,20 +105,17 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     //when, from POIsFragment, we are updating a TOUR and we want to ADD another POI
-    public static void setPOItoTourPOIsList(String poiSelected, String completeName) {
-        if (!tourPOIsIDs.contains(poiSelected)) {
-            tourPOIsIDs.add(poiSelected);
-            tourPOIsNames.add(completeName);
-            namesAndIDs.put(completeName, poiSelected);
-
+    public static void setPOItoTourPOIsList(TourPOI tourPOI) {
+        if (!tourPois.contains(tourPOI)) {
             TourPOIsAdapter.setType("updating");
-            TourPOIsAdapter.addToDurationList(); //the new POI will initially have a duration of 'general duration' and this method introduces that duration to the list of durations.
+
+            newTourPOIS.add(tourPOI);
 
             FragmentActivity activity = (FragmentActivity) rootView.getContext();
-            TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPOIsNames);
+            TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPois);
             viewHolderTour.addedPois.setAdapter(adapter);
         } else {
-            Toast.makeText(rootView.getContext(), "The POI " + completeName + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
+            Toast.makeText(rootView.getContext(), "The POI " + tourPOI.getPoiName() + " already exists inside this Tour.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -474,27 +464,32 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
     private void updateTourModifications() {
         ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
-        int updatedRows = POIsContract.TourEntry.updateByID(getActivity(), contentValues, itemSelectedID);
+        POIsContract.TourEntry.updateByID(getActivity(), contentValues, itemSelectedID);
     }
 
     private void updateTourPOIsModifications() {
         ContentValues contentValues = new ContentValues();
-        int i = 1;
-        List<Integer> durationList = TourPOIsAdapter.getDurationList();
-        for (String poiName : tourPOIsNames) {
+
+        for (TourPOI tourPoi : tourPois) {
             contentValues.clear();
-            String poiID = namesAndIDs.get(poiName);
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, Integer.parseInt(poiID));
+
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, tourPoi.getPoiID());
             contentValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, itemSelectedID);
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, i);
-            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, durationList.get(i - 1));
-            if (tourExistingPOIsIDs.contains(poiID)) {
-                int updatedRows = POIsContract.TourPOIsEntry.updateByTourIdAndPoiID(getActivity(), contentValues, itemSelectedID, poiID);
-            } else {
-                Uri insertedUri = POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
-            }
-            i++;
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, tourPoi.getOrder());
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, tourPoi.getDuration());
+
+            POIsContract.TourPOIsEntry.updateByTourIdAndPoiID(getActivity(), contentValues, itemSelectedID, String.valueOf(tourPoi.getPoiID()));
         }
+
+        for (TourPOI newTourPoi : newTourPOIS) {
+            contentValues.clear();
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ID, newTourPoi.getPoiID());
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_TOUR_ID, itemSelectedID);
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_ORDER, newTourPoi.getOrder());
+            contentValues.put(POIsContract.TourPOIsEntry.COLUMN_POI_DURATION, newTourPoi.getDuration());
+            POIsContract.TourPOIsEntry.createNewTourPOI(getActivity(), contentValues);
+        }
+
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
         intent.putExtra("comeFrom", "tours");
         startActivity(intent);
@@ -527,33 +522,21 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     private void setDataToTourPOIsLayout(int globalInterval) {
         FragmentActivity fragmentActivity = getActivity();
-        Cursor cursor = POIsContract.TourPOIsEntry.getPOIsByTourID(fragmentActivity, itemSelectedID);
-        String name, id;
-        List<Integer> durationList = new ArrayList<Integer>();
+        Cursor cursor = POIsContract.TourPOIsEntry.getPOIsByTourID(itemSelectedID);
+
         while (cursor.moveToNext()) {
-            name = cursor.getString(1);
-            id = String.valueOf(cursor.getInt(0));
-            durationList.add(cursor.getInt(2));
-            tourPOIsIDs.add(id);
-            tourExistingPOIsIDs.add(id);
-            tourPOIsNames.add(name);
-            tourExistingPOIsNames.add(name);
-            namesAndIDs.put(name, id);
+            TourPOI newTourPoi = new TourPOI();
+            newTourPoi.setPoiName(cursor.getString(1));
+            newTourPoi.setPoiID(cursor.getInt(0));
+            newTourPoi.setDuration(cursor.getInt(2));
+            newTourPoi.setOrder(cursor.getPosition() + 1);
+            tourPois.add(newTourPoi);
         }
 
         TourPOIsAdapter.setGlobalInterval(globalInterval);
         TourPOIsAdapter.setType("updating");
-        TourPOIsAdapter.setPOIsDuration(durationList);
-        TourPOIsAdapter adapter = new TourPOIsAdapter(fragmentActivity, tourPOIsNames);
+        TourPOIsAdapter adapter = new TourPOIsAdapter(fragmentActivity, tourPois);
         viewHolderTour.addedPois.setAdapter(adapter);
-
-//        for (int i = 0; i < viewHolderTour.addedPois.getCount(); i++) {
-//            durationField = (EditText) viewHolderTour.addedPois.getChildAt(i).findViewById(R.id.poi_seconds);
-//            durationField.setText(durationList.get(i));
-//        }
-
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(fragmentActivity, android.R.layout.simple_expandable_list_item_1, tourPOIsNames);
-//        viewHolder.addedPois.setAdapter(adapter);
     }
 
     private ViewHolderTour setTOURLayoutSettings(LayoutInflater inflater, ViewGroup container) {
@@ -619,7 +602,6 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TourPOIsAdapter.getDurationList().clear();
                 Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
                 startActivity(intent);
             }
@@ -628,7 +610,6 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     public static class ViewHolderPoi {
 
-        public int ID = 0;
         public int NAME = 1;
         public int VISITED_PLACE_NAME = 2;
         public int LONGITUDE = 3;
@@ -654,7 +635,6 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         public FloatingActionButton updatePOI;
         public FloatingActionButton cancel;
         public Spinner spinnerAltitudeMode;
-        // public EditText altitudeModeET;
         private Switch switchButtonHide;
 
         public ViewHolderPoi(View rootView) {
@@ -667,7 +647,6 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             headingET = (EditText) rootView.findViewById(R.id.heading);
             tiltET = (EditText) rootView.findViewById(R.id.tilt);
             rangeET = (EditText) rootView.findViewById(R.id.range);
-            //altitudeModeET = (EditText) rootView.findViewById(R.id.altitudeMode);
             spinnerAltitudeMode = (Spinner) rootView.findViewById(R.id.spinnerAltitude);
             switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             categoryID = (Spinner) rootView.findViewById(R.id.categoryID_spinner);
@@ -717,7 +696,6 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         public FloatingActionButton createCategory;
         public FloatingActionButton updateCategory;
         public FloatingActionButton cancel;
-        private int ID = 0;
         private int NAME = 1;
         private int FATHER_ID = 2;
         private int SHOWN_NAME = 3;

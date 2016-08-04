@@ -485,7 +485,8 @@ public class POIsContract {
         public static Uri createNewTourPOI(FragmentActivity activity, ContentValues contentValues) {
             return activity.getContentResolver().insert(CONTENT_URI, contentValues);
         }
-        public static Cursor getPOIsByTourID(FragmentActivity fragmentActivity, String itemSelectedID) {
+
+        public static Cursor getPOIsByTourID(String itemSelectedID) {
             return POIsProvider.queryByPoiJOINTourPois(itemSelectedID);
         }
         public static int updateByID(FragmentActivity activity, ContentValues contentValues, String itemSelectedID) {
