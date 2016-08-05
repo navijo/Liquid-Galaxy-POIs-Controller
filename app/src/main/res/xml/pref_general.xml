@@ -9,8 +9,9 @@
 
     <EditTextPreference
         android:defaultValue="lqgalaxy"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:key="Password"
+        android:password="true"
         android:singleLine="true"
         android:title="Liquid Galaxy connection Password" />
 
@@ -31,8 +32,9 @@
 
     <EditTextPreference
         android:defaultValue="lg"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:key="AdminPassword"
+        android:password="true"
         android:singleLine="true"
         android:title="Administration Password" />
 

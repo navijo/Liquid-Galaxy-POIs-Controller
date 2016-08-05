@@ -4,10 +4,12 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.widget.EditText;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -55,9 +57,17 @@ public class SettingsActivity extends PreferenceActivity
         // current value.
         if (preference.getKey().equals("pref_kiosk_mode")) {
             onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getBoolean(preference.getKey(), false));
+        } else if (preference.getKey().contains("Password")) {
+            onPreferencePasswordChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), ""));
         } else {
             onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), ""));
         }
+    }
+
+    private void onPreferencePasswordChange(Preference preference, String string) {
+        EditText edit = ((EditTextPreference) preference).getEditText();
+        String pref = edit.getTransformationMethod().getTransformation(string, edit).toString();
+        preference.setSummary(pref);
     }
 
     @Override
@@ -72,9 +82,16 @@ public class SettingsActivity extends PreferenceActivity
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
+        } else if (preference.getKey().contains("Password")) {
+            EditText edit = ((EditTextPreference) preference).getEditText();
+            String pref = edit.getTransformationMethod().getTransformation(stringValue, edit).toString();
+            preference.setSummary(pref);
+
         } else {
             // For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
+
+
         }
         return true;
     }
