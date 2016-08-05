@@ -144,7 +144,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     private static boolean isNumeric(String str) {
         try {
-            int d = Integer.parseInt(str);
+            Integer.parseInt(str);
         } catch (NumberFormatException nfe) {
             return false;
         }
@@ -179,7 +179,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
         //When creation button (the once with the arrow's symbol inside, located in POIsFragment) is
         //clicked, this class looks at extras Bundle to know what kind of item it has to create.
-        if(creationType.startsWith("POI")){
+        if (creationType != null && creationType.startsWith("POI")) {
             getActivity().setTitle(getResources().getString(R.string.new_poi));
             //If admin user is creating a POI, first of all layout settings are shown on the screen.
             final ViewHolderPoi viewHolder = setPOILayoutSettings(inflater, container);
@@ -192,8 +192,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
             SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             fragment.getMapAsync(this);
-        }
-        else if(creationType.startsWith("TOUR")){
+        } else if (creationType != null && creationType.startsWith("TOUR")) {
             getActivity().setTitle(getResources().getString(R.string.new_tour));
             setTourLayoutSettings(inflater, container);
             viewHolderTour.createTOUR.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +208,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
                         Toast.makeText(getActivity(), "The duration of each POI must be in seconds (numeric type).", Toast.LENGTH_LONG).show();
                     }catch (Exception e){
                         if(e.getMessage() != null) {
-                            Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -306,14 +305,14 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             //We get the values that user has typed inside input objects.
             ContentValues contentValues = getContentValuesFromDataFromPOIInputForm(viewHolder);
 
-            Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), contentValues);
+            POIsContract.POIEntry.createNewPOI(getActivity(), contentValues);
 
             //After creation, the next view page on screen would be the once corresponding to the
             //admin once.
             Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
             intent.putExtra("comeFrom", "pois");
             startActivity(intent);
-            ;
+
         }catch (NumberFormatException e){
             Toast.makeText(getActivity(), getResources().getString(R.string.poiNumericFields), Toast.LENGTH_LONG).show();
         }
@@ -321,22 +320,19 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     private ContentValues getContentValuesFromDataFromPOIInputForm(ViewHolderPoi viewHolder){
 
-        String completeName = "", visitedPlace = "", altitudeMode = "";
-        float longitude = 0, latitude = 0, altitude = 0, heading = 0, tilt = 0, range = 0;
-        int hide = 0, categoryID = 0;
+        int categoryID;
 
+        String visitedPlace = viewHolder.visitedPlaceET.getText().toString();
+        String completeName = viewHolder.name.getText().toString();
+        float longitude = Float.parseFloat(viewHolder.longitudeET.getText().toString());
+        float latitude = Float.parseFloat(viewHolder.latitudeET.getText().toString());
+        float altitude = Float.parseFloat(viewHolder.altitudeET.getText().toString());
+        float heading = Float.parseFloat(viewHolder.headingET.getText().toString());
+        float tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
+        float range = Float.parseFloat(viewHolder.rangeET.getText().toString());
+        int hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
 
-        visitedPlace = viewHolder.visitedPlaceET.getText().toString();
-        completeName = viewHolder.name.getText().toString();
-        longitude = Float.parseFloat(viewHolder.longitudeET.getText().toString());
-        latitude = Float.parseFloat(viewHolder.latitudeET.getText().toString());
-        altitude = Float.parseFloat(viewHolder.altitudeET.getText().toString());
-        heading = Float.parseFloat(viewHolder.headingET.getText().toString());
-        tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
-        range = Float.parseFloat(viewHolder.rangeET.getText().toString());
-        hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
-
-        altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
+        String altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
 
         //If, in POIsFragment, admin has clicked Creation Here button, the algorythm takes the
         //category ID of the once shown on screen.
@@ -381,11 +377,12 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         if (creationType.endsWith("HERE")) {
             viewHolder.categoryID.setVisibility(View.GONE);
 
-            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(fragment.getActivity(), "EARTH");
-            long earthCategorycategoryId = 0;
+            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(getActivity(), "EARTH");
+            long earthCategorycategoryId;
+
             if (categories != null && categories.moveToFirst()) {
                 //Category Exists, we fetch it
-                earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(fragment.getActivity(), "EARTH/");
+                earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(getActivity(), "EARTH/");
 
                 if (POISFragment.routeID != 0 && earthCategorycategoryId != POISFragment.routeID) {
                     rootView.findViewById(R.id.mapPOILayout).setVisibility(View.GONE);
@@ -399,11 +396,12 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             Bundle extras = getActivity().getIntent().getExtras();
             POISFragment.routeID = Integer.parseInt(extras.getString("CATEGORY_ID"));
 
-            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(fragment.getActivity(), "EARTH");
-            long earthCategorycategoryId = 0;
+            Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(getActivity(), "EARTH");
+            long earthCategorycategoryId;
+
             if (categories != null && categories.moveToFirst()) {
                 //Category Exists, we fetch it
-                earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(fragment.getActivity(), "EARTH/");
+                earthCategorycategoryId = POIsContract.CategoryEntry.getIdByShownName(getActivity(), "EARTH/");
 
                 //We check if category belongs to earth in order to display the map
                 if (categories.getString(categories.getColumnIndex(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME)).toUpperCase().contains("EARTH")) {
@@ -429,7 +427,8 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         ContentValues contentValues = getContentValuesFromDataFromCategoryInputForm(viewHolder);
 
         try{
-            Uri insertedUri = POIsContract.CategoryEntry.createNewCategory(getActivity(), contentValues);
+
+            POIsContract.CategoryEntry.createNewCategory(getActivity(), contentValues);
 
             Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
             intent.putExtra("comeFrom", "categories");
@@ -445,7 +444,8 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         String categoryName = viewHolder.categoryName.getText().toString();
         int hideValue = getHideValueFromInputForm(viewHolder.switchButtonHide);
         int fatherID;
-        String shownName = "";
+        String shownName;
+
         if(creationType.endsWith("HERE")) {
             fatherID = POISFragment.routeID;
             shownName = POIsContract.CategoryEntry.getShownNameByID(getActivity(), fatherID)
@@ -510,28 +510,27 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     private int createTour() throws Exception {
-        int tourID = 0;
 
         ContentValues contentValues = getContentValuesFromDataFromTourInputForm(viewHolderTour);
 
         Uri insertedUri = POIsContract.TourEntry.createNewTOUR(getActivity(), contentValues);
-        tourID = POIsContract.TourEntry.getIdByUri(insertedUri);
 
-        return tourID;
+        return POIsContract.TourEntry.getIdByUri(insertedUri);
     }
 
     private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder) throws Exception {
 
-        String name = "";
-        int hide = 0, categoryID = 0, interval = 0;
-        name = viewHolder.tourName.getText().toString();
+        int categoryID;
+
+        String name = viewHolder.tourName.getText().toString();
         if(name.equals("")){
             throw new Exception(getResources().getString(R.string.TourNameExisting));
         }
 
-        hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
-        interval = Integer.parseInt(viewHolder.globalInterval.getText().toString());
+        int hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
+        int interval = Integer.parseInt(viewHolder.globalInterval.getText().toString());
         TourPOIsAdapter.setGlobalInterval(interval);
+
         if(creationType.endsWith("HERE")) {
             categoryID = POISFragment.routeID;
         }else{
@@ -551,14 +550,12 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
 
 
-
-
     /*OTHER UTILITIES*/
     private void fillCategorySpinner(Spinner spinner){
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add(getResources().getString(R.string.noRouteText));
-        spinnerIDsAndShownNames = new HashMap<String, String>();
+        spinnerIDsAndShownNames = new HashMap<>();
 
         //We get all the categories IDs and ShownNames
         queryCursor = POIsContract.CategoryEntry.getIDsAndShownNamesOfAllCategories(getActivity());
@@ -568,7 +565,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             list.add(queryCursor.getString(1));
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     } //Fill the spinner with all the categories.
@@ -634,7 +631,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
             visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
             longitudeET = (EditText) rootView.findViewById(R.id.longitude);
             latitudeET = (EditText) rootView.findViewById(R.id.latitude);
-            altitudeET = (EditText) rootView.findViewById(R.id.latitude);
+            altitudeET = (EditText) rootView.findViewById(R.id.altitude);
             headingET = (EditText) rootView.findViewById(R.id.heading);
             tiltET = (EditText) rootView.findViewById(R.id.tilt);
             rangeET = (EditText) rootView.findViewById(R.id.range);
@@ -771,9 +768,6 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
                         } else {
                             try {
                                 seconds = sec;
-                                if (seconds == 0) {
-                                    seconds = global_interval;
-                                }
                             } catch (NumberFormatException e) {
                                 Toast.makeText(getActivity(), getResources().getString(R.string.durationIntervalNumeric), Toast.LENGTH_LONG).show();
                             }

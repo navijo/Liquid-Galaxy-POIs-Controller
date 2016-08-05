@@ -491,10 +491,10 @@ public class LGTools extends Fragment {
             String categoryName = line.substring(0, firstArrova);
 
 
-            try (Cursor categories = POIsContract.CategoryEntry.getCategoriesByShownName(getActivity(), categoryName.toUpperCase())) {
+            try (Cursor categories = POIsContract.CategoryEntry.getCategoriesByName(getActivity(), categoryName.toUpperCase())) {
                 if (categories != null && categories.moveToFirst()) {
                     //Category Exists, we fetch it
-                    categoryId = POIsContract.CategoryEntry.getIdByShownName(getActivity(), categoryName.toUpperCase());
+                    categoryId = POIsContract.CategoryEntry.getIdByName(getActivity(), categoryName.toUpperCase());
                 } else {
                     //Category not exist, we need to create it
                     String[] categoryTreeNames = categoryName.split("/");

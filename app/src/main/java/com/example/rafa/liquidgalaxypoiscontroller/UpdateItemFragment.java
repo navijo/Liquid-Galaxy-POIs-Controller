@@ -72,6 +72,12 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             @Override
             public void onClick(View v) {
 
+                if (tourPois.contains(tourPoi)) {
+                    tourPois.remove(tourPoi);
+                } else if (newTourPOIS.contains(tourPoi)) {
+                    newTourPOIS.remove(tourPoi);
+                }
+
                 String id = String.valueOf(tourPoi.getPoiID());
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
                 POIsContract.TourPOIsEntry.deleteByTourIdAndPoiID(activity, itemSelectedID, id);
@@ -110,6 +116,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             TourPOIsAdapter.setType("updating");
 
             newTourPOIS.add(tourPOI);
+            tourPois.add(tourPOI);
 
             FragmentActivity activity = (FragmentActivity) rootView.getContext();
             TourPOIsAdapter adapter = new TourPOIsAdapter(activity, tourPois);
@@ -142,27 +149,33 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             itemSelectedID = extras.getString("ITEM_ID");
         }
 
-        if (updateType.equals("POI")) {
-            getActivity().setTitle(getResources().getString(R.string.update_poi));
-            ViewHolderPoi viewHolder = setPOILayoutSettings(inflater, container);
-            updatePOI(viewHolder);
+        switch (updateType) {
+            case "POI": {
+                getActivity().setTitle(getResources().getString(R.string.update_poi));
+                ViewHolderPoi viewHolder = setPOILayoutSettings(inflater, container);
+                updatePOI(viewHolder);
 
-            SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-            fragment.getMapAsync(this);
+                SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                fragment.getMapAsync(this);
 
-            latitude = Double.parseDouble(viewHolder.latitudeET.getText().toString());
-            longitude = Double.parseDouble(viewHolder.longitudeET.getText().toString());
-            poiName = viewHolder.nameET.getText().toString();
+                latitude = Double.parseDouble(viewHolder.latitudeET.getText().toString());
+                longitude = Double.parseDouble(viewHolder.longitudeET.getText().toString());
+                poiName = viewHolder.nameET.getText().toString();
 
 
-        } else if (updateType.equals("TOUR")) {
-            getActivity().setTitle(getResources().getString(R.string.update_tour));
-            viewHolderTour = setTOURLayoutSettings(inflater, container);
-            updateTOUR(viewHolderTour);
-        } else {//CATEGORY
-            getActivity().setTitle(getResources().getString(R.string.update_category));
-            ViewHolderCategory viewHolder = setCategoryLayoutSettings(inflater, container);
-            updateCategory(viewHolder);
+                break;
+            }
+            case "TOUR":
+                getActivity().setTitle(getResources().getString(R.string.update_tour));
+                viewHolderTour = setTOURLayoutSettings(inflater, container);
+                updateTOUR(viewHolderTour);
+                break;
+            default: {//CATEGORY
+                getActivity().setTitle(getResources().getString(R.string.update_category));
+                ViewHolderCategory viewHolder = setCategoryLayoutSettings(inflater, container);
+                updateCategory(viewHolder);
+                break;
+            }
         }
 
 
@@ -213,10 +226,10 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     private void fillPOIsCategoriesSpinner(Spinner spinner) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("NO ROUTE");
-        spinnerIDsAndShownNames = new HashMap<String, String>();
-        categoriesOfPOIsSpinner = new HashMap<String, String>();
+        spinnerIDsAndShownNames = new HashMap<>();
+        categoriesOfPOIsSpinner = new HashMap<>();
 
         queryCursor = POIsContract.CategoryEntry.getIDsAndShownNamesOfAllCategories(getActivity());
 
@@ -226,7 +239,7 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
             list.add(queryCursor.getString(1));
         }
 
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -260,21 +273,19 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
                 ContentValues contentValues = new ContentValues();
 
-                String completeName = "", visitedPlace = "", altitudeMode = "";
-                float longitude = 0, latitude = 0, altitude = 0, heading = 0, tilt = 0, range = 0;
-                int hide = 0, categoryID = 0;
+                int categoryID;
 
-                visitedPlace = viewHolder.visitedPlaceET.getText().toString();
-                completeName = viewHolder.nameET.getText().toString();
-                longitude = Float.parseFloat(viewHolder.longitudeET.getText().toString());
-                latitude = Float.parseFloat(viewHolder.latitudeET.getText().toString());
-                altitude = Float.parseFloat(viewHolder.altitudeET.getText().toString());
-                heading = Float.parseFloat(viewHolder.headingET.getText().toString());
-                tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
-                range = Float.parseFloat(viewHolder.rangeET.getText().toString());
-                altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
+                String visitedPlace = viewHolder.visitedPlaceET.getText().toString();
+                String completeName = viewHolder.nameET.getText().toString();
+                float longitude = Float.parseFloat(viewHolder.longitudeET.getText().toString());
+                float latitude = Float.parseFloat(viewHolder.latitudeET.getText().toString());
+                float altitude = Float.parseFloat(viewHolder.altitudeET.getText().toString());
+                float heading = Float.parseFloat(viewHolder.headingET.getText().toString());
+                float tilt = Float.parseFloat(viewHolder.tiltET.getText().toString());
+                float range = Float.parseFloat(viewHolder.rangeET.getText().toString());
+                String altitudeMode = viewHolder.spinnerAltitudeMode.getSelectedItem().toString();
 
-                hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
+                int hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
 
                 String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
                 categoryID = getFatherIDValueFromInputForm(shownName);
@@ -293,16 +304,14 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
                 contentValues.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryID);
 
                 int updatedRows = POIsContract.POIEntry.updateByID(getActivity(), contentValues, itemSelectedID);
-                //int updatedRows = getActivity().getContentResolver().update(POIsContract.POIEntry.CONTENT_URI, contentValues, POI_IDselection, new String[]{itemSelectedID});
+
                 if (updatedRows > 0) {
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
-//                    intent.putExtra("comeFrom", "pois");
                     intent.putExtra("comeFrom", "treeView");
                     startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
-//                    intent.putExtra("comeFrom", "pois");
                     intent.putExtra("comeFrom", "treeView");
                     startActivity(intent);
                 }
@@ -343,25 +352,26 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
         int id;
         String shownName;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("NO ROUTE");
-        spinnerIDsAndShownNames = new HashMap<String, String>();
+        spinnerIDsAndShownNames = new HashMap<>();
 
         //We get all the categories IDs and ShownNames
         queryCursor = getActivity().getContentResolver().query(POIsContract.CategoryEntry.CONTENT_URI,
                 new String[]{POIsContract.CategoryEntry._ID, POIsContract.CategoryEntry.COLUMN_SHOWN_NAME}, null, null, null);
 
-        while (queryCursor.moveToNext()) {
-            id = queryCursor.getInt(0);
-            shownName = queryCursor.getString(1);
+        if (queryCursor != null) {
+            while (queryCursor.moveToNext()) {
+                id = queryCursor.getInt(0);
+                shownName = queryCursor.getString(1);
 
-            if (!shownName.contains(itemShownName)) {
-                spinnerIDsAndShownNames.put(shownName, String.valueOf(id));
-                list.add(shownName);
+                if (!shownName.contains(itemShownName)) {
+                    spinnerIDsAndShownNames.put(shownName, String.valueOf(id));
+                    list.add(shownName);
+                }
             }
         }
-
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         viewHolder.fatherID.setAdapter(adapter);
 
@@ -396,12 +406,12 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
                 if (updatedRows <= 0) {
                     Toast.makeText(getActivity(), "ERROR UPDATING", Toast.LENGTH_SHORT).show();
                 }
-                updateSubCategoriesShownName(viewHolder, oldItemShownName);
+                updateSubCategoriesShownName(oldItemShownName);
             }
         });
     }
 
-    private void updateSubCategoriesShownName(ViewHolderCategory viewHolderCategory, String oldItemShownName) {
+    private void updateSubCategoriesShownName(String oldItemShownName) {
 
         String whereClause = POIsContract.CategoryEntry.COLUMN_SHOWN_NAME + " LIKE '" + oldItemShownName + "%'";
 
@@ -411,25 +421,28 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
         ContentValues updatedShownNameValues;
         String currentShownName, finalShownName, itemTreatedID;
-        int updatedRows = 0;
-        while (cursor.moveToNext()) {
 
-            itemTreatedID = String.valueOf(cursor.getInt(0));
-            currentShownName = cursor.getString(1);
-            if (!currentShownName.equals(oldItemShownName)) {
-                //remove the bad shownName
-                String currentWithoutOldPartition = currentShownName.substring(oldItemShownName.length(), currentShownName.length());
-                //write the good one
-                finalShownName = newShownName + currentWithoutOldPartition;
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
 
-                updatedShownNameValues = new ContentValues();
-                updatedShownNameValues.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, finalShownName);
-                updatedRows += getActivity().getContentResolver().update(POIsContract.CategoryEntry.CONTENT_URI, updatedShownNameValues,
-                        Category_IDselection, new String[]{itemTreatedID});
+                itemTreatedID = String.valueOf(cursor.getInt(0));
+                currentShownName = cursor.getString(1);
+                if (!currentShownName.equals(oldItemShownName)) {
+                    //remove the bad shownName
+                    String currentWithoutOldPartition = currentShownName.substring(oldItemShownName.length(), currentShownName.length());
+                    //write the good one
+                    finalShownName = newShownName + currentWithoutOldPartition;
+
+                    updatedShownNameValues = new ContentValues();
+                    updatedShownNameValues.put(POIsContract.CategoryEntry.COLUMN_SHOWN_NAME, finalShownName);
+                    getActivity().getContentResolver().update(POIsContract.CategoryEntry.CONTENT_URI, updatedShownNameValues,
+                            Category_IDselection, new String[]{itemTreatedID});
+                }
             }
+            cursor.close();
         }
+
         Intent intent = new Intent(getActivity(), LGPCAdminActivity.class);
-//        intent.putExtra("comeFrom", "categories");
         intent.putExtra("comeFrom", "treeView");
         startActivity(intent);
     }
@@ -551,12 +564,11 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     private ContentValues getContentValuesFromDataFromTourInputForm(ViewHolderTour viewHolder) {
 
-        String name = "";
-        int hide = 0, categoryID = 0;
-        name = viewHolder.tourName.getText().toString();
-        hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
+
+        String name = viewHolder.tourName.getText().toString();
+        int hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
         String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
-        categoryID = getFatherIDValueFromInputForm(shownName);
+        int categoryID = getFatherIDValueFromInputForm(shownName);
 
         ContentValues contentValues = new ContentValues();
 

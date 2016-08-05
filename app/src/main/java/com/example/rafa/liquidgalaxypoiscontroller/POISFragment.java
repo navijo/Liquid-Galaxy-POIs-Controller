@@ -391,7 +391,6 @@ public class POISFragment extends Fragment {
                     Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                     if (cursor != null) {
                         int itemSelectedID = cursor.getInt(0);
-//                    popupView = createAndShowItemSelectedPopup();
                         dialog.show();
                         cancelButtonTreatment(cancel, dialog);
                         editButtonTreatment(String.valueOf(itemSelectedID), "CATEGORY", edit, dialog);
@@ -683,7 +682,7 @@ public class POISFragment extends Fragment {
         seeingOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (seeingOptions.getText().toString().equals("See elements by category")) { //vull veure-les per categoria
+                if (seeingOptions.getText().toString().equals(getResources().getString(R.string.see_by_category))) { //vull veure-les per categoria
                     toursByCategoriesVisibility();
                     showCategoriesByLevel();
 
@@ -696,7 +695,7 @@ public class POISFragment extends Fragment {
     }
 
     private void allToursButtonsVisibility(){
-        seeingOptions.setText("See elements by category");
+        seeingOptions.setText(getResources().getString(R.string.see_by_category));
         backIDs.clear();
         backIDs.add("0");
         if (EDITABLE_TAG.startsWith("ADMIN")) {
@@ -710,7 +709,7 @@ public class POISFragment extends Fragment {
     private void toursByCategoriesVisibility(){
         poisListViewTittle.setText("Tours");
         seeingOptions.setVisibility(View.VISIBLE);
-        seeingOptions.setText("See all elements");
+        seeingOptions.setText(getResources().getString(R.string.see_all));
         if (EDITABLE_TAG.startsWith("ADMIN")) {
             createTourhere.setVisibility(View.VISIBLE);
         }
@@ -720,10 +719,8 @@ public class POISFragment extends Fragment {
 
     /*Showing all tours*/
     private void showAllTours() {
-
         seeAllToursOnScreen();
         poisListItemClickedBehaviour();
-
     }
 
     private void seeAllToursOnScreen(){
@@ -776,11 +773,8 @@ public class POISFragment extends Fragment {
     /*Showing tours by category*/
     private int showToursByCategory(final int categoryID){
 
-
         Cursor queryCursor = seeToursByCategoryOnScreen(categoryID);
         tourItemClickedBehaviour(categoryID);
-
-
 
         return queryCursor.getCount();
     }
@@ -843,11 +837,6 @@ public class POISFragment extends Fragment {
         dialog.setContentView(v);
 
         return dialog;
-    }
-
-    //When user deletes one POI of the tour.
-    private int deletePOIsOfTours(String itemSelectedID){
-        return POIsContract.TourPOIsEntry.deleteByPoiID(getActivity(), itemSelectedID);
     }
 
     //When one POI is added inside one Tour when this is being created.
@@ -917,11 +906,14 @@ public class POISFragment extends Fragment {
         alertbox.show();
     }
 
+    //When user deletes one POI of the tour.
+    private int deletePOIsOfTours(String itemSelectedID) {
+        return POIsContract.TourPOIsEntry.deleteByPoiID(getActivity(), itemSelectedID);
+    }
 
     /*------------OTHER UTILITIES------------*/
     /*The following four methods works when user decides to Edit or Delete one item or when it cancels these just mentioned operations.*/
     private void cancelButtonTreatment(android.support.design.widget.FloatingActionButton cancel, final Dialog dialog){
-
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -929,6 +921,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void editButtonTreatment(final String itemSelectedId, final String type, android.support.design.widget.FloatingActionButton edit, final Dialog dialog){
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -949,6 +942,7 @@ public class POISFragment extends Fragment {
             }
         });
     }
+
     private void deleteButtonTreatment(final int itemSelectedID, final Uri uri, final String whereClause, final String itemName, final String categoryRefreshListSelection, final String POIorTOURRefreshSelection, FloatingActionButton delete, final Dialog dialog){
 
         delete.setOnClickListener(new View.OnClickListener() {
@@ -968,6 +962,7 @@ public class POISFragment extends Fragment {
         });
 
     }
+
     private void refreshPOIsListView(Uri uri, String itemName, String whereClauseCategory, String whereClausePOIorTOUR){
 
         if(!uri.toString().endsWith("category")) {
