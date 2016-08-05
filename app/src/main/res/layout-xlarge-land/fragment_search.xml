@@ -1,0 +1,184 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.rafa.liquidgalaxypoiscontroller.SearchFragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="@color/grey"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:id="@+id/back_start_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/back_start"
+                    android:focusable="false"
+                    android:src="@drawable/ic_home_black_36dp" />
+
+                <ImageView
+                    android:id="@+id/back_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/back"
+                    android:focusable="false"
+                    android:src="@drawable/ic_reply_black_36dp" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/viewing_category_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/viewing_category"
+                android:textSize="20sp" />
+
+
+            <TextView
+                android:id="@+id/current_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="30sp"
+                android:textStyle="bold|italic|normal" />
+
+
+            <ListView
+                android:id="@+id/categories_listview"
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:divider="@null"
+                android:fadeScrollbars="false"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/earth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:maxHeight="20dp"
+                android:src="@drawable/earth" />
+
+            <ImageView
+                android:id="@+id/moon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:maxHeight="20dp"
+                android:src="@drawable/moon" />
+
+            <ImageView
+                android:id="@+id/mars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:maxHeight="20dp"
+                android:src="@drawable/mars" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/search_edittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:hint="@string/search_some_place" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_search_white_24dp"
+            app:backgroundTint="@color/blue" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnSpeak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_mic_white_24dp"
+            app:backgroundTint="@color/blue" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center">
+
+        <GridView
+            android:id="@+id/POISgridview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:columnWidth="30dp"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="4"
+            android:scrollbars="vertical"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="15dp" />
+
+    </LinearLayout>
+</LinearLayout>
