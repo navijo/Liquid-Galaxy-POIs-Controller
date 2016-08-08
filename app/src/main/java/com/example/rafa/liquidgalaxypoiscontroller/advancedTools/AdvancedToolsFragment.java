@@ -53,6 +53,10 @@ import java.util.Properties;
  */
 public class AdvancedToolsFragment extends Fragment {
 
+    private static String lgIpPattern = "\\$lgIp";
+    private static String serverIpPattern = "\\$serverIp";
+    private static String serverPortPattern = "\\$serverPort";
+
     ImageButton documentListHelpBtn;
     private RecyclerView rv = null;
     private SwipeRefreshLayout refreshLayout;
@@ -202,6 +206,7 @@ public class AdvancedToolsFragment extends Fragment {
             public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<LGTask> parallaxRecyclerAdapter, int i) {
                 LGTask lgTask = parallaxRecyclerAdapter.getData().get(i);
 
+
                 LGTaskHolder taskHolder = (LGTaskHolder) viewHolder;
                 taskHolder.id = lgTask.getId();
                 taskHolder.taskTitle.setText(lgTask.getTitle());
@@ -218,7 +223,6 @@ public class AdvancedToolsFragment extends Fragment {
                 taskHolder.password = lgTask.getPassword();
 
                 Toolbar toolbarCard = (Toolbar) viewHolder.itemView.findViewById(R.id.taskToolbar);
-                //FIXMe: Review
                 if (lgTask.isRunning()) {
                     //We hide the play button
                     toolbarCard.getMenu().getItem(0).setVisible(false);
@@ -425,6 +429,11 @@ public class AdvancedToolsFragment extends Fragment {
                     POIsContract.LGTaskEntry.updateTaskStateById(String.valueOf(taskId), true);
                 }
 
+                if (browserUrl != null) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    browserUrl = browserUrl.replaceAll(serverIpPattern, prefs.getString("ServerIp", "")).replaceAll(lgIpPattern, prefs.getString("HostName", "")).replaceAll(serverPortPattern, prefs.getString("ServerPort", ""));
+                }
+
                 if (browserUrl != null && !browserUrl.equals("")) {
                     if (!browserUrl.startsWith("http://") && !browserUrl.startsWith("https://"))
                         browserUrl = "http://" + browserUrl;
@@ -452,9 +461,12 @@ public class AdvancedToolsFragment extends Fragment {
 
 
         private Boolean sendCommandToLG(String command, String pIp, String pUser, String pPassword) throws Exception {
-
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            String threatedCommand = settingsVariablesSubstitution(command);
+            pIp = pIp.replaceAll(serverIpPattern, prefs.getString("ServerIp", "")).replaceAll(lgIpPattern, prefs.getString("HostName", ""));
+
+
             String user = (pUser != null && !pUser.equals("")) ? pUser : prefs.getString("User", "lg");
             String password = (pPassword != null && !pPassword.equals("")) ? pPassword : prefs.getString("Password", "lqgalaxy");
             String hostname = (pIp != null && !pIp.equals("")) ? pIp : prefs.getString("HostName", "172.26.17.21");
@@ -479,7 +491,8 @@ public class AdvancedToolsFragment extends Fragment {
             //command = "export GSOC=\\\"/home/lg/Desktop/lglab\\\"  && "+command;
 
             //We need to redirect the output to a log file
-            channelExec.setCommand(command + " >> " + "LGControllerLog.txt");
+            channelExec.setCommand(threatedCommand + " >> " + "LGControllerLog.txt");
+
 
             channelExec.connect();
 
@@ -487,6 +500,19 @@ public class AdvancedToolsFragment extends Fragment {
             baos.toString();
             return true;
         }
+
+        private String settingsVariablesSubstitution(String command) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String hostname = prefs.getString("HostName", "172.26.17.21");
+            String serverIp = prefs.getString("ServerIp", "");
+            String serverPort = prefs.getString("ServerPort", "");
+
+            String threatedCommand = command.replaceAll(lgIpPattern, hostname).replaceAll(serverIpPattern, serverIp).replaceAll(serverPortPattern, serverPort);
+
+
+            return threatedCommand;
+        }
+
 
     }
 

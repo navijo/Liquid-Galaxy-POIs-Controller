@@ -207,7 +207,7 @@ public class LGTools extends Fragment {
                     }
 
                     //We read the file and create the POIs described inside it.
-                    ReadImportFileTask readFileImportTask = new ReadImportFileTask();
+                    ReadImportFileTask readFileImportTask = new ReadImportFileTask(filePath);
                     readFileImportTask.execute();
                 }
             }
@@ -344,16 +344,19 @@ public class LGTools extends Fragment {
         }
 
         if (!absolutePath.endsWith("/")) {
-            absolutePath = absolutePath + "/";
+            // absolutePath = absolutePath + "/";
         }
         return absolutePath + path;
     }
 
-    private class ReadImportFileTask extends AsyncTask<Void, Integer, List<ContentValues>> {
+    private class ReadImportFileTask extends AsyncTask<Void, Integer, Void> {
 
         private ProgressDialog importingDialog;
+        private String path;
 
-        public ReadImportFileTask() {
+
+        public ReadImportFileTask(String filePath) {
+            this.path = filePath;
         }
 
         @Override
@@ -378,9 +381,10 @@ public class LGTools extends Fragment {
         }
 
         @Override
-        protected List<ContentValues> doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             try {
-                return readFile();
+                readFile();
+                return null;
             } catch (Exception e) {
                 cancel(true);
                 return null;
@@ -389,7 +393,7 @@ public class LGTools extends Fragment {
 
         private List<ContentValues> readFile() {
             List<ContentValues> poisList = new ArrayList<ContentValues>();
-            File file = new File(filePath);
+            File file = new File(this.path);
             if (file.exists()) {
                 long total = 0;
                 try {
@@ -397,13 +401,13 @@ public class LGTools extends Fragment {
                     inputStream = new FileInputStream(file);
                     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                     String line = "";
-                    int numLines = countLines(filePath);
+                    int numLines = countLines(this.path);
                     while ((line = br.readLine()) != null) {
                         //for each POI described inside the file we read and introduce it inside the database.
                         if (!line.equals("")) {
                             total++;
                             readAndImportPOI(line);
-                            publishProgress((int) (total * 100 / numLines));
+                            publishProgress((int) ((total * 100) / numLines));
                         }
                     }
                     br.close();
@@ -411,7 +415,13 @@ public class LGTools extends Fragment {
                     e.printStackTrace();
                 }
             } else {
-                Toast.makeText(getActivity(), "File couldn't be opened. Try to open it with a different file explorer, for example 'Root Explorer' once.", Toast.LENGTH_LONG).show();
+                getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(getActivity(), "File couldn't be opened. Try to open it with a different file explorer, for example 'Root Explorer' once.", Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                );
             }
             return poisList;
         }
@@ -431,10 +441,8 @@ public class LGTools extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<ContentValues> params) {
-            if (params != null) {
-                super.onPostExecute(params);
-            }
+        protected void onPostExecute(Void params) {
+            super.onPostExecute(params);
             if (importingDialog != null) {
                 importingDialog.dismiss();
             }

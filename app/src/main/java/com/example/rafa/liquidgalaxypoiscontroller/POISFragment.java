@@ -253,14 +253,14 @@ public class POISFragment extends Fragment {
     }
 
     private void allCategoriesElementsVisibility(){
-        seeingOptions.setText("See elements by category");
+        seeingOptions.setText(getResources().getString(R.string.see_by_category));
         backIDs.clear();
         backIDs.add("0");
         createCategoryhere.setVisibility(View.GONE);
     }
 
     private void categoriesByCategoriesElementsVisibility(){
-        seeingOptions.setText("See all elements");
+        seeingOptions.setText(getResources().getString(R.string.see_all));
         createCategoryhere.setVisibility(View.VISIBLE);
         notify = "CATEGORY";
     }
@@ -1110,7 +1110,11 @@ public class POISFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            session = LGUtils.getSession(getActivity());
+            try {
+                session = LGUtils.getSession(getActivity());
+            } catch (Exception e) {
+
+            }
             return null;
         }
 

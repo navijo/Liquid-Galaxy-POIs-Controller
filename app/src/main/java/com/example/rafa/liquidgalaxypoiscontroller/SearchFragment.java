@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +54,7 @@ public class SearchFragment extends Fragment {
     private CategoriesAdapter adapter;
     private TextView categorySelectorTitle;
     private ImageView backIcon, backStartIcon;
-    private ArrayList<String> backIDs = new ArrayList<String>();
+    private ArrayList<String> backIDs = new ArrayList<>();
 
     public SearchFragment() {
         // Required empty public constructor
@@ -167,10 +168,10 @@ public class SearchFragment extends Fragment {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, spanish);
         intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, catalan);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, catalan);
         intent.putExtra(RecognizerIntent.EXTRA_RESULTS, catalan);
+        intent.putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, spanish);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, spanish);
         intent.putExtra(RecognizerIntent.EXTRA_RESULTS, spanish);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.speech_prompt));
@@ -192,7 +193,7 @@ public class SearchFragment extends Fragment {
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
                     String placeToSearch = result.get(0);
-                    if (!placeToSearch.equals("") && placeToSearch != null) {
+                    if (placeToSearch != null && !placeToSearch.equals("")) {
                         editSearch.setText(placeToSearch);
                         String command = buildSearchCommand(placeToSearch);
                         SearchTask searchTask = new SearchTask(command, false);
@@ -399,7 +400,40 @@ public class SearchFragment extends Fragment {
 
         float smallestWidth = Math.min(widthDp, heightDp);
 
-        if (smallestWidth > 720) {
+
+        if (smallestWidth == 800) {
+            //Samsung Tab E => smallestWidth:800
+
+            editSearch.setTextSize(30);
+            earth.getLayoutParams().height = 160;
+            moon.getLayoutParams().height = 160;
+            mars.getLayoutParams().height = 160;
+            earth.getLayoutParams().width = 160;
+            moon.getLayoutParams().width = 160;
+            mars.getLayoutParams().width = 160;
+            earth.requestLayout();
+            moon.requestLayout();
+            mars.requestLayout();
+            categoriesListView.getLayoutParams().width = 350;
+            LinearLayout layoutPlanets = (LinearLayout) rootView.findViewById(R.id.layoutPlanets);
+            LinearLayout.LayoutParams actualParams = (LinearLayout.LayoutParams) layoutPlanets.getLayoutParams();
+            actualParams.setMarginStart(0);
+            layoutPlanets.setLayoutParams(actualParams);
+
+        } else if (smallestWidth == 1032) {
+            //Tablet All In One Big => smallesWidth:1032
+            editSearch.setTextSize(50);
+            earth.getLayoutParams().height = 160;
+            moon.getLayoutParams().height = 160;
+            mars.getLayoutParams().height = 160;
+            earth.getLayoutParams().width = 160;
+            moon.getLayoutParams().width = 160;
+            mars.getLayoutParams().width = 160;
+            earth.requestLayout();
+            moon.requestLayout();
+            mars.requestLayout();
+            categoriesListView.getLayoutParams().width = 350;
+        } else if (smallestWidth > 720) {
             editSearch.setTextSize(50);
             earth.getLayoutParams().height = 160;
             moon.getLayoutParams().height = 160;

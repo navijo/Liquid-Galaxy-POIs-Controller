@@ -14,6 +14,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/layoutCategoriesSearch"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
@@ -73,15 +74,15 @@
                 android:textStyle="bold|italic|normal" />
 
 
-
             <ListView
                 android:id="@+id/categories_listview"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:layout_gravity="start"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:divider="@null"
+                android:fadeScrollbars="false"
                 android:scrollbars="vertical" />
         </LinearLayout>
 
@@ -89,6 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginStart="150dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:orientation="horizontal">
@@ -100,7 +102,6 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:maxHeight="20dp"
                 android:src="@drawable/earth" />
 
             <ImageView
@@ -110,7 +111,6 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:maxHeight="20dp"
                 android:src="@drawable/moon" />
 
             <ImageView
@@ -120,7 +120,6 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:maxHeight="20dp"
                 android:src="@drawable/mars" />
         </LinearLayout>
     </LinearLayout>
@@ -158,7 +157,6 @@
             android:layout_weight="1"
             android:src="@drawable/ic_mic_white_24dp"
             app:backgroundTint="@color/blue" />
-
     </LinearLayout>
 
     <LinearLayout

@@ -41,6 +41,8 @@ public class SettingsActivity extends PreferenceActivity
         bindPreferenceSummaryToValue(findPreference("Port"));
         bindPreferenceSummaryToValue(findPreference("AdminPassword"));
         bindPreferenceSummaryToValue(findPreference("pref_kiosk_mode"));
+        bindPreferenceSummaryToValue(findPreference("ServerIp"));
+        bindPreferenceSummaryToValue(findPreference("ServerPort"));
     }
 
     /**

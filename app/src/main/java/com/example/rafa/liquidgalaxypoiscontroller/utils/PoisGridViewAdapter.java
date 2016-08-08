@@ -335,7 +335,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
                     while (!isCancelled()) {
                         session.sendKeepAliveMsg();
 
-                        for (int i = this.rotationAngle; i <= (360 - this.currentPoi.getHeading()); i += (this.rotationAngle * this.rotationFactor)) {
+                        for (int i = 0; i <= (360 - this.currentPoi.getHeading()); i += (this.rotationAngle * this.rotationFactor)) {
 
                             String commandRotate = "echo 'flytoview=<gx:duration>3</gx:duration><gx:flyToMode>smooth</gx:flyToMode><LookAt>" +
                                     "<longitude>" + this.currentPoi.getLongitude() + "</longitude>" +

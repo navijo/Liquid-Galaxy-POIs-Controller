@@ -120,6 +120,7 @@ public class EditTaskFragment extends DialogFragment {
 
         LGTask currentTask = getTaskData(Integer.parseInt(String.valueOf(taskId)));
 
+
         getDialog().setTitle(R.string.edit_task);
         Button saveTask = (Button) rootView.findViewById(R.id.btn_save_task);
         Button btnCancel = (Button) rootView.findViewById(R.id.btn_cancel_edit_task);

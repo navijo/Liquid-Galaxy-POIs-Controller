@@ -16,6 +16,12 @@
             android:paddingRight="20dp"
             android:paddingTop="10dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/task_explanation" />
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/new_task_name"
                 android:layout_width="match_parent"
@@ -94,9 +100,8 @@
                     android:id="@+id/new_task_ip_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:digits="0123456789."
                     android:hint="@string/new_task_ip"
-                    android:inputType="numberDecimal" />
+                    android:inputType="text" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout

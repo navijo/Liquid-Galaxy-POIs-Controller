@@ -251,6 +251,13 @@
     <string name="pref_header_general">General Settings</string>
     <string name="title_activity_settings">Settings</string>
     <string name="creating_tour">Creating Tour...</string>
+    <string name="server_port">Server port variable for advanced tasks</string>
+    <string name="server_ip">Server Ip Variable for advanced tasks</string>
+    <string name="task_explanation">The following substitution variables are disponible:\n
+        $lgIp: IP address of the LG Master\n
+        $serverIp: IP address of the server where the task will be launched\n
+        $serverPort: Port in which the browser will be opened
+    </string>
 
 
 </resources>

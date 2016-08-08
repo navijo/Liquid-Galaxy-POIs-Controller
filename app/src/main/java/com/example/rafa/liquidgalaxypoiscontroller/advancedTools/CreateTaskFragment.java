@@ -46,7 +46,6 @@ public class CreateTaskFragment extends DialogFragment {
     private static int ACTION_UPLOAD_EXEC_SCRIPT = 2;
     private static int ACTION_UPLOAD_SHUTDOWN_SCRIPT = 3;
 
-
     Handler handler;
     private EditText new_task_name_input;
     private TextInputLayout new_task_name;
@@ -166,6 +165,7 @@ public class CreateTaskFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.add_new_task, container, false);
 
         getDialog().setTitle(R.string.add_new_task);
+
         Button saveTask = (Button) rootView.findViewById(R.id.btn_add_task);
         Button btnCancel = (Button) rootView.findViewById(R.id.btn_cancel_add_task);
 
@@ -216,6 +216,8 @@ public class CreateTaskFragment extends DialogFragment {
             }
         });
 
+        new_task_ip.setText("$serverIp");
+        new_task_browser_URL.setText("$serverIp:$serverPort");
 
         saveTask.setOnClickListener(new View.OnClickListener() {
             @Override
