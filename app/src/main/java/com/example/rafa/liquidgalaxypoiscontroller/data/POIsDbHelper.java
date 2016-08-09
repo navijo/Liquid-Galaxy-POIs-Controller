@@ -4,12 +4,19 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 public class POIsDbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "poi_controller.db";
     private static final int DATABASE_VERSION = 33;
+    Context context;
 
     public POIsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -20,6 +27,22 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         db.execSQL(createTasksEntryTable());
         createBaseCategories(db);
         createDefaultLgTasks(db);
+        insertDefaultData(db);
+    }
+
+    private void insertDefaultData(SQLiteDatabase db) {
+        try {
+            InputStream inputStream = context.getAssets().open("Inserts.sql");
+            BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = r.readLine()) != null) {
+                if (!line.equals("\n") && !line.equals("") && !line.contains("/*")) {
+                    db.execSQL(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void createDefaultLgTasks(SQLiteDatabase db) {
@@ -29,16 +52,16 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('LG-Potree','Launch LG-Potree Task','./asherat666-lg-potree/scripts/lg-potree','./asherat666-lg-potree/scripts/lg-potree-stop',0)";
         db.execSQL(sqlPotree);
 
-        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/DLP/start-dlp 10.160.101.109 10.160.102.14:8000','bash /home/lg/Desktop/DLP/exitdlp','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
+        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/DLP/start-dlp $lgIp $serverIp:$serverPort','bash /home/lg/Desktop/DLP/exitdlp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlDLP);
 
-        String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PILT','Panoramic Interactive Live Tracker','/home/lg/Desktop/lglab/gsoc16/PILT/pilt-start 10.160.100.242','/home/lg/Desktop/lglab/python-end','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
+        String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PILT','Panoramic Interactive Live Tracker','/home/lg/Desktop/lglab/gsoc16/PILT/pilt-start $lgIp','/home/lg/Desktop/lglab/python-end','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlPILT);
 
-        String sqlFAED = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FAED','Flying Automated External Defibrilator','/home/lg/Desktop/lglab/gsoc15/FAED/faed-start 10.160.100.242','/home/lg/Desktop/lglab/python-end','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
+        String sqlFAED = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FAED','Flying Automated External Defibrilator','/home/lg/Desktop/lglab/gsoc15/FAED/faed-start $lgIp','/home/lg/Desktop/lglab/python-end','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlFAED);
 
-        String sqlVYD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('VYD','View Your Data','/home/lg/Desktop/lglab/gsoc15/VYD/vyd-start 10.160.100.242','/home/lg/Desktop/lglab/python-end','10.160.102.14','lg','lq','10.160.102.14:8000',0)";
+        String sqlVYD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('VYD','View Your Data','/home/lg/Desktop/lglab/gsoc15/VYD/vyd-start $lgIp','/home/lg/Desktop/lglab/python-end','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlVYD);
 
     }
@@ -56,37 +79,30 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     }
 
     private String Earth() {
-        String SQL_CREATE_EARTH_CATEGORY = "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('EARTH', 0, 'EARTH/', 0);";
         return "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('EARTH', 0, 'EARTH/', 0);";
     }
 
     private String Moon() {
-        String SQL_CREATE_MOON_CATEGORY = "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('MOON', 0, 'MOON/', 0);";
         return "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('MOON', 0, 'MOON/', 0);";
     }
 
     private String Mars() {
-        String SQL_CREATE_MARS_CATEGORY = "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('MARS', 0, 'MARS/', 0);";
         return "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('MARS', 0, 'MARS/', 0);";
     }
 
     private String createPOInEntryTable() {
-        String SQL_CREATE_POI_TABLE = "CREATE TABLE poi (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT UNIQUE NOT NULL, Visited_Place TEXT NOT NULL, Longitude REAL NOT NULL, Latitude REAL NOT NULL, Altitude REAL NOT NULL, Heading REAL NOT NULL, Tilt REAL NOT NULL, Range REAL NOT NULL, Altitude_Mode TEXT NOT NULL, Hide INTEGER NOT NULL, Category INTEGER DEFAULT 0, FOREIGN KEY (Category) REFERENCES category (_id)  );";
         return "CREATE TABLE poi (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, Visited_Place TEXT NOT NULL, Longitude REAL NOT NULL, Latitude REAL NOT NULL, Altitude REAL NOT NULL, Heading REAL NOT NULL, Tilt REAL NOT NULL, Range REAL NOT NULL, Altitude_Mode TEXT NOT NULL, Hide INTEGER NOT NULL, Category INTEGER DEFAULT 0, FOREIGN KEY (Category) REFERENCES category (_id),UNIQUE(Name, Category) ON CONFLICT FAIL  );";
     }
 
     private String createCategoryEntryTable() {
-        String SQL_CREATE_CATEGORY_TABLE = "CREATE TABLE category (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, Father_ID INTEGER NOT NULL, Shown_Name TEXT UNIQUE NOT NULL, Hide INTEGER NOT NULL  );";
         return "CREATE TABLE category (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, Father_ID INTEGER NOT NULL, Shown_Name TEXT UNIQUE NOT NULL, Hide INTEGER NOT NULL  );";
     }
 
     private String createTourEntryTable() {
-        String SQL_CREATE_TOUR_TABLE = "CREATE TABLE tour (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, Category INTEGER NOT NULL, Hide INTEGER NOT NULL, Interval_of_time INTEGER NOT NULL, FOREIGN KEY (Category) REFERENCES category (_id)  );";
         return "CREATE TABLE tour (_id INTEGER PRIMARY KEY AUTOINCREMENT,Name TEXT NOT NULL, Category INTEGER NOT NULL, Hide INTEGER NOT NULL, Interval_of_time INTEGER NOT NULL, FOREIGN KEY (Category) REFERENCES category (_id)  );";
     }
 
     private String createTourPOIsEntryTable() {
-        String SQL_CREATE_TOUR_TABLE = "CREATE TABLE Tour_POIs (_id INTEGER PRIMARY KEY AUTOINCREMENT,Tour INTEGER NOT NULL, POI INTEGER NOT NULL, POI_Order INTEGER NOT NULL, POI_Duration INTEGER DEFAULT 0,  FOREIGN KEY (Tour) REFERENCES tour (_id)  FOREIGN KEY (POI) REFERENCES poi (_id)  );";
         return "CREATE TABLE Tour_POIs (_id INTEGER PRIMARY KEY AUTOINCREMENT,Tour INTEGER NOT NULL, POI INTEGER NOT NULL, POI_Order INTEGER NOT NULL, POI_Duration INTEGER DEFAULT 0,  FOREIGN KEY (Tour) REFERENCES tour (_id)  FOREIGN KEY (POI) REFERENCES poi (_id)  );";
     }
 
