@@ -326,7 +326,9 @@ public class SearchFragment extends Fragment {
                 Category category = getCategoryByName(currentPlanet);
                 categorySelectorTitle.setText(category.getName());
 
+                backIDs = new ArrayList<>();
                 backIDs.add(String.valueOf(category.getId()));
+
                 Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                 showCategoriesOnScreen(queryCursor);
 
@@ -352,6 +354,9 @@ public class SearchFragment extends Fragment {
                     Category category = getCategoryByName(currentPlanet);
                     categorySelectorTitle.setText(category.getName());
 
+                    backIDs = new ArrayList<>();
+                    backIDs.add(String.valueOf(category.getId()));
+
                     Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
 
@@ -374,6 +379,9 @@ public class SearchFragment extends Fragment {
                     currentPlanet = "MARS";
                     Category category = getCategoryByName(currentPlanet);
                     categorySelectorTitle.setText(category.getName());
+
+                    backIDs = new ArrayList<>();
+                    backIDs.add(String.valueOf(category.getId()));
 
                     Cursor queryCursor = POIsContract.CategoryEntry.getNotHiddenCategoriesByFatherID(getActivity(), String.valueOf(category.getId()));
                     showCategoriesOnScreen(queryCursor);
