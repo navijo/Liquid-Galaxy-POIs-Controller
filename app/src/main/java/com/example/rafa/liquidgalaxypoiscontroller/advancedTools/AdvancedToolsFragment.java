@@ -240,7 +240,7 @@ public class AdvancedToolsFragment extends Fragment {
 
             @Override
             public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, final ParallaxRecyclerAdapter<LGTask> parallaxRecyclerAdapter, int i) {
-                return new LGTaskHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.advanced_tools_list_item_card, viewGroup, false));
+                return new LGTaskHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.advanced_tools_list_item_card, viewGroup, false), parallaxRecyclerAdapter.getData());
             }
 
             @Override
@@ -288,7 +288,7 @@ public class AdvancedToolsFragment extends Fragment {
         String user;
         String password;
 
-        public LGTaskHolder(View itemView) {
+        public LGTaskHolder(View itemView, final List<LGTask> taskList) {
             super(itemView);
             taskTitle = (TextView) itemView.findViewById(R.id.task_title);
             taskDescription = (TextView) itemView.findViewById(R.id.task_description);
@@ -307,8 +307,10 @@ public class AdvancedToolsFragment extends Fragment {
                             showEditDialog(id);
                             break;
                         case R.id.launchTask:
-                            SendCommandTask sendCommandTask = new SendCommandTask(script, ip, user, password, browserUrl, false, id);
-                            sendCommandTask.execute();
+                            if (checkRunningTask(taskList)) {
+                                SendCommandTask sendCommandTask = new SendCommandTask(script, ip, user, password, browserUrl, false, id);
+                                sendCommandTask.execute();
+                            }
                             break;
                         case R.id.stopTask:
                             SendCommandTask sendStopCommandTask = new SendCommandTask(shutdownScript, ip, user, password, browserUrl, true, id);
@@ -334,6 +336,22 @@ public class AdvancedToolsFragment extends Fragment {
                             break;
                     }
                     return true;
+                }
+
+                private boolean checkRunningTask(List<LGTask> taskList) {
+                    boolean isCorrect = true;
+                    for (LGTask task : taskList) {
+                        if (task.isRunning()) {
+                            isCorrect = false;
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), getResources().getString(R.string.stopOtherTasks), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                    return isCorrect;
                 }
             });
         }

@@ -423,10 +423,12 @@ public class SearchFragment extends Fragment {
             moon.requestLayout();
             mars.requestLayout();
             categoriesListView.getLayoutParams().width = 350;
-            LinearLayout layoutPlanets = (LinearLayout) rootView.findViewById(R.id.layoutPlanets);
-            LinearLayout.LayoutParams actualParams = (LinearLayout.LayoutParams) layoutPlanets.getLayoutParams();
-            actualParams.setMarginStart(0);
-            layoutPlanets.setLayoutParams(actualParams);
+            if (rootView.findViewById(R.id.layoutPlanets) != null) {
+                LinearLayout layoutPlanets = (LinearLayout) rootView.findViewById(R.id.layoutPlanets);
+                LinearLayout.LayoutParams actualParams = (LinearLayout.LayoutParams) layoutPlanets.getLayoutParams();
+                actualParams.setMarginStart(0);
+                layoutPlanets.setLayoutParams(actualParams);
+            }
 
         } else if (smallestWidth == 1032) {
             //Tablet All In One Big => smallesWidth:1032

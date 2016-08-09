@@ -258,6 +258,7 @@
         $serverIp: IP address of the server where the task will be launched\n
         $serverPort: Port in which the browser will be opened
     </string>
+    <string name="stopOtherTasks">Another task is running. Please stop it before launching another.</string>
 
 
 </resources>
