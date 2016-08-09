@@ -363,8 +363,8 @@ INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Ti
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (416,'Golden Gate Bridge','Golden Gate Bridge',-122.478469,37.820118,0.0,135.0,76.0,2809.0,'relativeToSeaFloor',0,1);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (417,'Mexico City','Mexico City',-99.133261,19.432526,0.0,71.0,66.0,1360.0,'relativeToSeaFloor',0,1);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (418,'Christo Redentor','Christo Redentor',-43.210124,-22.951754,230.0,-85.0,66.0,810.0,'relativeToSeaFloor',0,1);
-INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (419,'Okayama Castle','Okayama Castle',133.935838595336,34.6648233904274,0.0,-148.355395459846,65.7939385732159,138.6394385625,'relativeToGround',0,1);
-INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (420,'Taipei','Taipei',121.569670600714,25.028810295215,0.0,149.786177162133,78.3616342885194,1929.3598795239,'relativeToGround',0,1);
+INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (419,'Okayama Castle','Okayama Castle',133.936087,34.665159,0.0,-148.355395459846,62,218.6394385625,'relativeToGround',0,1);
+INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (420,'Taipei','Taipei',121.564522,25.033901,0.0,142.0,54.0,3250.0,'relativeToGround',0,1);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (421,'Shanghai World Financial Center','Shanghai World Financial Center',121.498128741135,31.2397149331515,0.0,-48.7818909343998,64.5628138518832,1695.11534015877,'relativeToGround',0,1);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (422,'Petrona Towers','Petrona Towers',101.711557,3.157973,0.0,-39.0,64.0,1688.0,'relativeToGround',0,1);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (423,'Forbidden City','Forbidden City',116.390672,39.916969,0.0,-3.0,70.0,1425.0,'relativeToSeaFloor',0,1);
@@ -385,6 +385,9 @@ INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Ti
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (438,'Mare Moscoviense','Mare Moscoviense',148.32887694288,23.3408950235955,0.0,-173.723865132266,82.6576551030909,289612.07418336,'relativeToSeaFloor',0,2);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (439,'Tycho Crater','Tycho Crater',-10.8383855238043,-43.3056164044095,0.0,-17.307171340787,49.0581365393275,46288.7242890355,'relativeToSeaFloor',0,2);
 INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (440,'LCROSS Impact Site','LCROSS Impact Site',-42.5181115370408,-84.9040957966228,0.0,1.51480125331895,48.3964999683305,75311.2248110708,'relativeToSeaFloor',0,2);
+INSERT INTO `poi` (_id,Name,Visited_Place,Longitude,Latitude,Altitude,Heading,Tilt,Range,Altitude_Mode,Hide,Category) VALUES (441,'Mangrove Forest','Mangrove Forest',-91.86373298836202,18.52106283679075,10.41094381533852,-54.31631895884751,76.59342733665744,1250.0,'relativeToSeaFloor',0,1);
+
+
 
 /******************************************************************TOUR POIS**************************************************************/
 INSERT INTO `Tour_POIs` (_id,Tour,POI,POI_Order,POI_Duration) VALUES (1,1,59,1,15);
