@@ -4,7 +4,7 @@
     <string name="app_name">Liquid Galaxy Controller</string>
     <string name="tittle">Liquid Galaxy Controller</string>
     <string name="action_settings">Settings</string>
-    <string name="action_resetDB">Reset Data Base</string>
+    <string name="action_resetDB">Reset Database</string>
     <string name="POIs_button">POIS</string>
     <string name="TOURs_button">TOURs</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -63,9 +63,9 @@
     <string name="import_instructions">1.	Create one folder and put some place-marks in Google Earth corresponding on the POIs you want to save.\n2.	Save that place (foler with all POIs) and export it with a kmz extension.\n3.	Extract the <i>doc.kml</i> file which is inside the kmz that you have just created.\n4.	Download and execute the script of the following link: <a href="https://github.com/asherat/LG_Benchmarking/blob/master/Tools/kml2query.sh">KML to query.txt</a> by typing in a console: <i>sh kml2query.sh doc.kml</i>\n5.	Now you get a <i>query.txt</i> file. This file contains your POIs. Finally, you only have to change its name and set the Category name where you want the POIs to be saved.\n6.	Save that <i>CATEGORY_NAME.txt</i> file inside your device.\n7.	After these steps, go to your LGPC app, travel to the Administration Tools section and click on IMPORT POIS button.\n8.	Select your file explorer, preferably Root Explorer once, and select the X.txt file you want to import.\n
 </string>
     <string name="title_activity_info">InfoActivity</string>
-    <string name="more_information">All the complete information to help you with the Liquid Galaxy POIs Controller correct use is in: <a href="https://github.com/rafads7/Liquid_Galaxy_POIs_Controller/wiki">Liquid Galaxy POIs Controller Wiki</a>\n</string>
+    <string name="more_information">All the complete information to help you with the Liquid Galaxy POIs Controller correct use is in: <a href="https://github.com/LiquidGalaxyLAB/Liquid-Galaxy-POIs-Controller/wiki">Liquid Galaxy POIs Controller Wiki</a>\n</string>
 
-    <!--Added by Ivan-->
+    <!--Added by Ivan Josa on GSOC 2016-->
     <!--import dialog-->
     <string name="import_pois_dialog_title">Import POIS</string>
     <string name="import_pois_dialog_msg">Choose the way you want to import POIS</string>
@@ -250,9 +250,9 @@
     <string name="lessSpeed">Less Rotation Speed</string>
     <string name="pref_header_general">General Settings</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="creating_tour">Creating Tour...</string>
+    <string name="creating_tour">Creating Tour…</string>
     <string name="server_port">Server port variable for advanced tasks</string>
-    <string name="server_ip">Server Ip Variable for advanced tasks</string>
+    <string name="server_ip">Server Ip variable for advanced tasks</string>
     <string name="task_explanation">The following substitution variables are available:\n
         $lgIp: IP address of the LG Master\n
         $serverIp: IP address of the server where the task will be launched\n
