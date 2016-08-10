@@ -24,7 +24,6 @@
 
 
     <application
-        android:name=".utils.kioskModeUtils.AppContext"
         android:allowBackup="true"
         android:icon="@drawable/lg"
         android:label="@string/app_name"
@@ -126,9 +125,9 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".utils.kioskModeUtils.KioskService"
-            android:exported="false" />
+        <!--<service-->
+        <!--android:name=".utils.kioskModeUtils.KioskService"-->
+        <!--android:exported="false" />-->
 
     </application>
 
