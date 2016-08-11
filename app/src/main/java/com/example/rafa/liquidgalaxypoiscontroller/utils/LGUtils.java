@@ -43,8 +43,6 @@ public class LGUtils {
                 return session;
             }
 
-        } catch (JSchException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

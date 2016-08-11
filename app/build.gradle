@@ -11,7 +11,7 @@ repositories {
 android {
     signingConfigs {
         config {
-            keyAlias 'android'
+            keyAlias 'androiddebugkey'
             keyPassword 'android'
             storeFile file('/home/lgwork/.android/debug.keystore')
             storePassword 'android'
