@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LiquidGalaxyPOIsController.iml" filepath="$PROJECT_DIR$/LiquidGalaxyPOIsController.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Liquid-Galaxy-POIs-Controller.iml" filepath="$PROJECT_DIR$/Liquid-Galaxy-POIs-Controller.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>
-
