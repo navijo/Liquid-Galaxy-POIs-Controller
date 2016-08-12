@@ -46,8 +46,11 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     }
 
     private void createDefaultLgTasks(SQLiteDatabase db) {
-        String sqlLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh','',0)";
+        String sqlLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh','/home/lg/bin/lg-run \"killall run-earth-bin.sh googleearth googleearth-bin\"','$lgIp','lg','lqgalaxy',0)";
         db.execSQL(sqlLG);
+
+        String stopLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('Stop Liquid Galaxy','Stop Liquid Galaxy Task','/home/lg/bin/lg-run \"killall run-earth-bin.sh googleearth googleearth-bin\"','','$lgIp','lg','lqgalaxy',0)";
+        db.execSQL(stopLG);
 
         String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PCVT','Point Cloud Visualization Tool','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/lg-potree/library',0)";
         db.execSQL(sqlPotree);
