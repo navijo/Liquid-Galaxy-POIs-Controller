@@ -78,7 +78,7 @@ public class LGTools extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    String sentence = "/home/lg/bin/lg-sudo 'shutdown -h 0' > /home/lg/log.txt";
+                    String sentence = "/home/lg/bin/lg-poweroff > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "shut down");
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
@@ -94,7 +94,7 @@ public class LGTools extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    String sentence = "/home/lg/bin/lg-sudo reboot > /home/lg/log.txt";
+                    String sentence = "/home/lg/bin/lg-reboot > /home/lg/log.txt";
                     showAlertAndExecution(sentence, "reboot");
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();

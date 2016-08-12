@@ -52,7 +52,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PCVT','Point Cloud Visualization Tool','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/lg-potree/library',0)";
         db.execSQL(sqlPotree);
 
-        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/DLP/start-dlp $lgIp $serverIp:$serverPort','bash /home/lg/Desktop/DLP/exitdlp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/lglab/gsoc16/DLP/start-dlp $lgIp $serverIp:$serverPort','bash /home/lg/Desktop/lglab/gsoc16/DLP/exitdlp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlDLP);
 
         String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PILT','Panoramic Interactive Live Tracker','/home/lg/Desktop/lglab/gsoc16/PILT/pilt-start $lgIp','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
