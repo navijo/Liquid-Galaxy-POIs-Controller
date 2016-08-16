@@ -86,6 +86,9 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
                 if (viewHolderTour.addedPois.getCount() == 0 || Integer.parseInt(global_interval) != TourPOIsAdapter.getGlobalInterval()) {
                     TourPOIsAdapter.setGlobalInterval(Integer.parseInt(global_interval));
+
+                    //TODO: Review this assignment
+                    tourPOI.setDuration(Integer.parseInt(global_interval));
                 }
 
                 tourPOIS.add(tourPOI);
