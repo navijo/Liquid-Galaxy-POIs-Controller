@@ -1,5 +1,6 @@
 package com.example.rafa.liquidgalaxypoiscontroller;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,9 @@ public class CategoriesAdapter extends CursorAdapter {
 
         TextView poiName = (TextView) view.findViewById(R.id.category_list_item_textview);
         String showName = cursor.getString(CATEGORY_COLUMN_NAME);
+        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            poiName.setTextSize(15);
+        }
         poiName.setText(showName);
 
     }

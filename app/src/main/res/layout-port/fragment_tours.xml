@@ -1,0 +1,126 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.example.rafa.liquidgalaxypoiscontroller.SearchFragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_weight="2"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:id="@+id/back_start_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/back_start"
+                    android:focusable="false"
+                    android:src="@drawable/ic_home_black_36dp" />
+
+                <ImageView
+                    android:id="@+id/back_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/back"
+                    android:focusable="false"
+                    android:src="@drawable/ic_reply_black_36dp" />
+
+                <Button
+                    android:id="@+id/show_all"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_rounded_blue"
+                    android:text="@string/show_all"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/viewing_category_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/viewing_category"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/current_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="30sp"
+                android:textStyle="bold|italic|normal" />
+
+
+            <ListView
+                android:id="@+id/categories_listview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:divider="@null"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/toursTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="10dp"
+            android:text="@string/tours"
+            android:textSize="30sp"
+            android:textStyle="bold|italic|normal" />
+
+        <GridView
+            android:id="@+id/TOURSgridview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:columnWidth="30dp"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="3"
+            android:scrollbars="vertical"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="15dp" />
+
+
+    </LinearLayout>
+</LinearLayout>

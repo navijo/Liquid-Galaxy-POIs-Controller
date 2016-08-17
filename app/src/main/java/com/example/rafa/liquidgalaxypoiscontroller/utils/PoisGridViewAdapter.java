@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -123,6 +124,7 @@ public class PoisGridViewAdapter extends BaseAdapter {
         //Poi Name
         RelativeLayout.LayoutParams paramsText = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         TextView poiName = new TextView(context);
+
         if (currentPoi.getName().length() > maxLengthPoiName) {
             String name = currentPoi.getName().substring(0, maxLengthPoiName) + "...";
             poiName.setText(name);
@@ -130,7 +132,14 @@ public class PoisGridViewAdapter extends BaseAdapter {
             poiName.setText(currentPoi.getName());
         }
 
-        poiName.setTextSize(20);
+        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //Portrait Orientation
+            poiName.setTextSize(15);
+        } else {
+            poiName.setTextSize(20);
+        }
+
+
         poiName.setMaxLines(2);
         paramsText.addRule(RelativeLayout.CENTER_IN_PARENT);
 

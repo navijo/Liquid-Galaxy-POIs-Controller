@@ -11,28 +11,32 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginTop="20dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
+            android:layout_gravity="start"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
             android:background="@color/grey"
             android:orientation="vertical">
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginStart="10dp"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/back_start_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="start"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
                     android:contentDescription="@string/back_start"
                     android:focusable="false"
                     android:src="@drawable/ic_home_black_36dp" />
@@ -41,8 +45,9 @@
                     android:id="@+id/back_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="20dp"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
                     android:contentDescription="@string/back"
                     android:focusable="false"
                     android:src="@drawable/ic_reply_black_36dp" />
@@ -53,24 +58,25 @@
                 android:id="@+id/viewing_category_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="10dp"
                 android:text="@string/viewing_category"
                 android:textSize="20sp" />
+
 
             <TextView
                 android:id="@+id/current_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginStart="10dp"
                 android:textSize="30sp"
                 android:textStyle="bold|italic|normal" />
 
+
             <ListView
                 android:id="@+id/categories_listview"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_height="150dp"
+                android:layout_gravity="start"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:divider="@null"
@@ -79,76 +85,83 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layoutPlanets"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:layout_gravity="center"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/earth"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="15dp"
-                android:layout_marginEnd="10dp"
-                android:maxHeight="50dp"
-                android:src="@drawable/earth" />
-
-            <ImageView
-                android:id="@+id/moon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="15dp"
-                android:layout_marginEnd="10dp"
-                android:maxHeight="50dp"
-                android:src="@drawable/moon" />
-
-            <ImageView
-                android:id="@+id/mars"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginBottom="15dp"
-                android:layout_marginEnd="10dp"
-                android:maxHeight="50dp"
-                android:src="@drawable/mars" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="10dp"
-            android:descendantFocusability="beforeDescendants"
-            android:focusableInTouchMode="true"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/search_edittext"
-                android:layout_width="300dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:hint="@string/search_some_place" />
+                android:orientation="horizontal">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/searchButton"
+                <ImageView
+                    android:id="@+id/earth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="15dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/earth" />
+
+                <ImageView
+                    android:id="@+id/moon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/moon" />
+
+                <ImageView
+                    android:id="@+id/mars"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="15dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/mars" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_search_white_24dp"
-                app:backgroundTint="@color/blue" />
+                android:layout_gravity="start">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btnSpeak"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_mic_white_24dp"
-                app:backgroundTint="@color/blue" />
+                <EditText
+                    android:id="@+id/search_edittext"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_weight="2"
+                    android:hint="@string/search_some_place"
+                    android:textSize="12sp" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/searchButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_search_white_24dp"
+                    app:backgroundTint="@color/blue" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/btnSpeak"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_mic_white_24dp"
+                    app:backgroundTint="@color/blue" />
+            </LinearLayout>
 
         </LinearLayout>
+
+    </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -171,4 +184,4 @@
 
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
