@@ -112,8 +112,12 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     //when, from POIsFragment, we are updating a TOUR and we want to ADD another POI
     public static void setPOItoTourPOIsList(TourPOI tourPOI) {
+        String global_interval = viewHolderTour.global_interval.getText().toString();
         if (!tourPois.contains(tourPOI)) {
             TourPOIsAdapter.setType("updating");
+
+            tourPOI.setDuration(Integer.parseInt(global_interval));
+            tourPOI.setOrder(tourPois.size() + 1);
 
             newTourPOIS.add(tourPOI);
             tourPois.add(tourPOI);
@@ -569,12 +573,14 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
         int hide = getHideValueFromInputForm(viewHolder.switchButtonHide);
         String shownName = getShownNameValueFromInputForm(viewHolder.categoryID);
         int categoryID = getFatherIDValueFromInputForm(shownName);
+        String global_interval = viewHolderTour.global_interval.getText().toString();
 
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(POIsContract.TourEntry.COLUMN_NAME, name);
         contentValues.put(POIsContract.TourEntry.COLUMN_HIDE, hide);
         contentValues.put(POIsContract.TourEntry.COLUMN_CATEGORY_ID, categoryID);
+        contentValues.put(POIsContract.TourEntry.COLUMN_INTERVAL, Integer.parseInt(global_interval));
 
         return contentValues;
     }
