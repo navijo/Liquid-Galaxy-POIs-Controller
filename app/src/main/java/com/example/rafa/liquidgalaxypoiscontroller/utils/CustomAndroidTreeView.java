@@ -27,23 +27,16 @@ import java.util.Set;
 public class CustomAndroidTreeView extends AndroidTreeView {
     private static final String NODES_PATH_SEPARATOR = ";";
 
-    protected TreeNode mRoot;
+    private TreeNode mRoot;
     private Context mContext;
     private boolean applyForRoot;
     private int containerStyle = 0;
     private Class<? extends TreeNode.BaseNodeViewHolder> defaultViewHolderClass = SimpleViewHolder.class;
-    private TreeNode.TreeNodeClickListener nodeClickListener;
-    private TreeNode.TreeNodeLongClickListener nodeLongClickListener;
     private boolean mSelectionModeEnabled;
     private boolean mUseDefaultAnimation = false;
     private boolean use2dScroll = false;
     private boolean enableAutoToggle = true;
 
-
-    public CustomAndroidTreeView(Context context) {
-        super(context);
-        this.mContext = context;
-    }
 
     public CustomAndroidTreeView(Context context, TreeNode root) {
         super(context, root);
@@ -51,31 +44,6 @@ public class CustomAndroidTreeView extends AndroidTreeView {
         this.mRoot = root;
     }
 
-    private static void expand(final View v) {
-        v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        final int targetHeight = v.getMeasuredHeight();
-
-        v.getLayoutParams().height = 0;
-        v.setVisibility(View.VISIBLE);
-        Animation a = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                v.getLayoutParams().height = interpolatedTime == 1
-                        ? LinearLayout.LayoutParams.WRAP_CONTENT
-                        : (int) (targetHeight * interpolatedTime);
-                v.requestLayout();
-            }
-
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
-
-        // 1dp/ms
-        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-        v.startAnimation(a);
-    }
 
     private static void collapse(final View v) {
         final int initialHeight = v.getMeasuredHeight();
@@ -137,14 +105,6 @@ public class CustomAndroidTreeView extends AndroidTreeView {
 
     public void setDefaultViewHolder(Class<? extends TreeNode.BaseNodeViewHolder> viewHolder) {
         defaultViewHolderClass = viewHolder;
-    }
-
-    public void setDefaultNodeClickListener(TreeNode.TreeNodeClickListener listener) {
-        nodeClickListener = listener;
-    }
-
-    public void setDefaultNodeLongClickListener(TreeNode.TreeNodeLongClickListener listener) {
-        nodeLongClickListener = listener;
     }
 
     public void expandAll() {
@@ -277,7 +237,7 @@ public class CustomAndroidTreeView extends AndroidTreeView {
         nodeViewHolder.toggle(false);
         if (includeSubnodes) {
             for (TreeNode n : node.getChildren()) {
-                collapseNode(n, includeSubnodes);
+                collapseNode(n, true);
             }
         }
     }
@@ -431,7 +391,7 @@ public class CustomAndroidTreeView extends AndroidTreeView {
     private void selectNode(TreeNode parent, boolean selected, boolean skipCollapsed) {
         parent.setSelected(selected);
         toogleSelectionForNode(parent, true);
-        boolean toContinue = skipCollapsed ? parent.isExpanded() : true;
+        boolean toContinue = !skipCollapsed || parent.isExpanded();
         if (toContinue) {
             for (TreeNode node : parent.getChildren()) {
                 selectNode(node, selected, skipCollapsed);

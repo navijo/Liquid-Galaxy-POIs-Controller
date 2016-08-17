@@ -56,13 +56,8 @@ public class EditTaskFragment extends DialogFragment {
     private EditText edit_task_user;
     private EditText edit_task_password;
     private EditText edit_task_browser_URL;
-    private Button pickPhotoBtn;
-    private Button deletePhotoBtn;
     private ImageView iconview;
     private long taskId;
-
-    private Button uploadExecutionScript;
-    private Button uploadShutdownScript;
 
 
     public static EditTaskFragment newInstance(long taskId) {
@@ -78,10 +73,6 @@ public class EditTaskFragment extends DialogFragment {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
-    }
-
-    public Handler getHandler() {
-        return handler;
     }
 
     public void setHandler(Handler handler) {
@@ -129,7 +120,7 @@ public class EditTaskFragment extends DialogFragment {
         if (currentTask.getImage() != null) {
             iconview.setImageBitmap(BitmapFactory.decodeByteArray(currentTask.getImage(), 0, currentTask.getImage().length));
         }
-        deletePhotoBtn = (Button) rootView.findViewById(R.id.deletePhoto);
+        Button deletePhotoBtn = (Button) rootView.findViewById(R.id.deletePhoto);
         deletePhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,7 +128,7 @@ public class EditTaskFragment extends DialogFragment {
             }
         });
 
-        pickPhotoBtn = (Button) rootView.findViewById(R.id.pickPhoto);
+        Button pickPhotoBtn = (Button) rootView.findViewById(R.id.pickPhoto);
         pickPhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,7 +163,7 @@ public class EditTaskFragment extends DialogFragment {
         edit_task_description_input.setText(currentTask.getDescription());
         edit_task_script_input.setText(currentTask.getScript());
 
-        uploadExecutionScript = (Button) rootView.findViewById(R.id.uploadExecutionScript);
+        Button uploadExecutionScript = (Button) rootView.findViewById(R.id.uploadExecutionScript);
         uploadExecutionScript.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,7 +175,7 @@ public class EditTaskFragment extends DialogFragment {
             }
         });
 
-        uploadShutdownScript = (Button) rootView.findViewById(R.id.uploadShutDownScript);
+        Button uploadShutdownScript = (Button) rootView.findViewById(R.id.uploadShutDownScript);
         uploadShutdownScript.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -223,7 +214,7 @@ public class EditTaskFragment extends DialogFragment {
                     newValues.put(POIsContract.LGTaskEntry.COLUMN_LG_TASK_PASSWORD, edit_task_password.getText().toString());
                     newValues.put(POIsContract.LGTaskEntry.COLUMN_LG_BROWSER_URL, edit_task_browser_URL.getText().toString());
 
-                    int result = POIsContract.LGTaskEntry.updateByTaskId(getActivity(), newValues, String.valueOf(taskId));
+                    POIsContract.LGTaskEntry.updateByTaskId(getActivity(), newValues, String.valueOf(taskId));
                     Toast.makeText(getActivity(),getResources().getString(R.string.task_updated_ok), Toast.LENGTH_LONG).show();
                     getDialog().dismiss();
                 }
@@ -252,12 +243,15 @@ public class EditTaskFragment extends DialogFragment {
                 Cursor cursor = getActivity().getContentResolver().query(selectedImage,
                         filePathColumn, null, null, null);
                 // Move to first row
-                cursor.moveToFirst();
+                if (cursor != null) {
+                    cursor.moveToFirst();
 
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String imgPath = cursor.getString(columnIndex);
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String imgPath = cursor.getString(columnIndex);
 
-                iconview.setImageBitmap(BitmapFactory.decodeFile(imgPath));
+                    iconview.setImageBitmap(BitmapFactory.decodeFile(imgPath));
+                    cursor.close();
+                }
             }
         } else if (requestCode == ACTION_UPLOAD_EXEC_SCRIPT) {
             if (data != null) {
@@ -328,10 +322,10 @@ public class EditTaskFragment extends DialogFragment {
 
 
     private String pathTreatment(String path, String absolutePath) {
-        int start = 0;
-        String firstPathFolder = "";
+
+        String firstPathFolder;
         if (path.contains(":")) {
-            start = path.indexOf(":") + 1;
+            int start = path.indexOf(":") + 1;
             path = path.substring(start);
         }
 
@@ -363,13 +357,12 @@ public class EditTaskFragment extends DialogFragment {
         if (file.exists()) {
 
             try {
-                FileInputStream inputStream = null;
-                inputStream = new FileInputStream(file);
+                FileInputStream inputStream = new FileInputStream(file);
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line = "";
+                String line;
 
                 while ((line = br.readLine()) != null) {
-                    if (!line.equals("") && line != null) {
+                    if (!line.equals("")) {
                         readedStringBuilder.append(line);
                         readedStringBuilder.append("\n");
                     }

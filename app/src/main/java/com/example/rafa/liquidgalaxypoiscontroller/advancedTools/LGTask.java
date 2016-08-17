@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by Ivan Josa on 30/06/16.
  */
-public class LGTask implements Parcelable {
+class LGTask implements Parcelable {
 
     public static final Creator CREATOR =
             new Creator() {
@@ -31,20 +31,7 @@ public class LGTask implements Parcelable {
 
     private boolean isRunning;
 
-    public LGTask(long id, String title, String description, String script, byte[] image, String shutdownScript, String ip, String user, String password) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.script = script;
-        this.image = image;
-        this.shutdownScript = shutdownScript;
-        this.ip = ip;
-        this.user = user;
-        this.password = password;
-    }
-
-
-    public LGTask() {
+    LGTask() {
         id = 0;
         title = "";
         script  = "";
@@ -52,14 +39,8 @@ public class LGTask implements Parcelable {
         image = null;
     }
 
-    public LGTask(long id,String title, String script,String description) {
-        this.id = id;
-        this.title = title;
-        this.script = script;
-        this.description = description;
-    }
 
-    public LGTask(Parcel in) {
+    private LGTask(Parcel in) {
         id = in.readLong();
         title = in.readString();
         description = in.readString();
@@ -74,11 +55,11 @@ public class LGTask implements Parcelable {
         isRunning = in.readByte() != 0;
     }
 
-    public String getBrowserUrl() {
+    String getBrowserUrl() {
         return browserUrl;
     }
 
-    public void setBrowserUrl(String browserUrl) {
+    void setBrowserUrl(String browserUrl) {
         this.browserUrl = browserUrl;
     }
 
@@ -106,11 +87,11 @@ public class LGTask implements Parcelable {
         this.title = title;
     }
 
-    public String getScript() {
+    String getScript() {
         return script;
     }
 
-    public void setScript(String script) {
+    void setScript(String script) {
         this.script = script;
     }
 
@@ -122,19 +103,19 @@ public class LGTask implements Parcelable {
         this.description = description;
     }
 
-    public String getShutdownScript() {
+    String getShutdownScript() {
         return shutdownScript;
     }
 
-    public void setShutdownScript(String shutdownScript) {
+    void setShutdownScript(String shutdownScript) {
         this.shutdownScript = shutdownScript;
     }
 
-    public String getIp() {
+    String getIp() {
         return ip;
     }
 
-    public void setIp(String ip) {
+    void setIp(String ip) {
         this.ip = ip;
     }
 
@@ -154,11 +135,11 @@ public class LGTask implements Parcelable {
         this.password = password;
     }
 
-    public boolean isRunning() {
+    boolean isRunning() {
         return isRunning;
     }
 
-    public void setRunning(boolean running) {
+    void setRunning(boolean running) {
         isRunning = running;
     }
 
@@ -176,7 +157,7 @@ public class LGTask implements Parcelable {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + new Long(id).hashCode();
+        result = 31 * result + Long.valueOf(id).hashCode();
         return result;
     }
 

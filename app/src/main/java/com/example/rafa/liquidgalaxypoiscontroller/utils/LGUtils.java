@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 public class LGUtils {
 
-    static Session session = null;
+    private static Session session = null;
 
     public static Session getSession(Activity activity) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);

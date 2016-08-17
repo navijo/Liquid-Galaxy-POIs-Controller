@@ -56,11 +56,7 @@ public class CreateTaskFragment extends DialogFragment {
     private EditText new_task_user;
     private EditText new_task_password;
     private EditText new_task_browser_URL;
-    private Button pickPhotoBtn;
     private ImageView iconview;
-
-    private Button uploadExecutionScript;
-    private Button uploadShutdownScript;
 
     public static CreateTaskFragment newInstance() {
         CreateTaskFragment createTask = new CreateTaskFragment();
@@ -73,10 +69,6 @@ public class CreateTaskFragment extends DialogFragment {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
-    }
-
-    public Handler getHandler() {
-        return handler;
     }
 
     public void setHandler(Handler handler) {
@@ -112,13 +104,17 @@ public class CreateTaskFragment extends DialogFragment {
                 // Get the cursor
                 Cursor cursor = getActivity().getContentResolver().query(selectedImage,
                         filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
 
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String imgPath = cursor.getString(columnIndex);
+                if (cursor != null) {
+                    // Move to first row
+                    cursor.moveToFirst();
 
-                iconview.setImageBitmap(BitmapFactory.decodeFile(imgPath));
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String imgPath = cursor.getString(columnIndex);
+
+                    iconview.setImageBitmap(BitmapFactory.decodeFile(imgPath));
+                    cursor.close();
+                }
             }
         } else if (requestCode == ACTION_UPLOAD_EXEC_SCRIPT) {
             if (data != null) {
@@ -170,7 +166,7 @@ public class CreateTaskFragment extends DialogFragment {
         Button btnCancel = (Button) rootView.findViewById(R.id.btn_cancel_add_task);
 
         iconview = (ImageView) rootView.findViewById(android.R.id.icon);
-        pickPhotoBtn = (Button) rootView.findViewById(R.id.pickPhoto);
+        Button pickPhotoBtn = (Button) rootView.findViewById(R.id.pickPhoto);
         pickPhotoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,7 +188,7 @@ public class CreateTaskFragment extends DialogFragment {
         new_task_description_input = (EditText) rootView.findViewById(R.id.new_task_description_input);
         new_task_script_input = (EditText) rootView.findViewById(R.id.new_task_script_input);
 
-        uploadExecutionScript = (Button) rootView.findViewById(R.id.uploadExecutionScript);
+        Button uploadExecutionScript = (Button) rootView.findViewById(R.id.uploadExecutionScript);
         uploadExecutionScript.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,7 +200,7 @@ public class CreateTaskFragment extends DialogFragment {
             }
         });
 
-        uploadShutdownScript = (Button) rootView.findViewById(R.id.uploadShutDownScript);
+        Button uploadShutdownScript = (Button) rootView.findViewById(R.id.uploadShutDownScript);
         uploadShutdownScript.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -216,8 +212,8 @@ public class CreateTaskFragment extends DialogFragment {
             }
         });
 
-        new_task_ip.setText("$serverIp");
-        new_task_browser_URL.setText("$serverIp:$serverPort");
+        new_task_ip.setText(getResources().getString(R.string.taskIpDefault));
+        new_task_browser_URL.setText(getResources().getString(R.string.taskBrowserUrlDefault));
 
         saveTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,7 +240,7 @@ public class CreateTaskFragment extends DialogFragment {
                     newTask.put(POIsContract.LGTaskEntry.COLUMN_LG_TASK_PASSWORD, new_task_password.getText().toString());
                     newTask.put(POIsContract.LGTaskEntry.COLUMN_LG_BROWSER_URL, new_task_browser_URL.getText().toString());
 
-                    Uri insertedUri = POIsContract.LGTaskEntry.createNewTask(getActivity(), newTask);
+                    POIsContract.LGTaskEntry.createNewTask(getActivity(), newTask);
                     Toast.makeText(getActivity(), getResources().getString(R.string.task_added_ok), Toast.LENGTH_LONG).show();
                     getDialog().dismiss();
                 }
@@ -272,10 +268,10 @@ public class CreateTaskFragment extends DialogFragment {
     }
 
     private String pathTreatment(String path, String absolutePath) {
-        int start = 0;
-        String firstPathFolder = "";
+
+        String firstPathFolder;
         if (path.contains(":")) {
-            start = path.indexOf(":") + 1;
+            int start = path.indexOf(":") + 1;
             path = path.substring(start);
         }
 
@@ -307,13 +303,12 @@ public class CreateTaskFragment extends DialogFragment {
         if (file.exists()) {
 
             try {
-                FileInputStream inputStream = null;
-                inputStream = new FileInputStream(file);
+                FileInputStream inputStream = new FileInputStream(file);
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line = "";
+                String line;
 
                 while ((line = br.readLine()) != null) {
-                    if (!line.equals("") && line != null) {
+                    if (!line.equals("")) {
                         readedStringBuilder.append(line);
                         readedStringBuilder.append("\n");
                     }

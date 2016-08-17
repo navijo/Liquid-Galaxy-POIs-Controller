@@ -134,7 +134,7 @@ public class AdvancedToolsFragment extends Fragment {
 
     public void populateUI() {
         Cursor allTasksCursor = POIsProvider.getAllLGTasks();
-        List<LGTask> taksList = new ArrayList<LGTask>();
+        List<LGTask> taksList = new ArrayList<>();
         try {
             while (allTasksCursor.moveToNext()) {
                 int taskId = allTasksCursor.getInt(0);
@@ -288,7 +288,7 @@ public class AdvancedToolsFragment extends Fragment {
         String user;
         String password;
 
-        public LGTaskHolder(View itemView, final List<LGTask> taskList) {
+        LGTaskHolder(View itemView, final List<LGTask> taskList) {
             super(itemView);
             taskTitle = (TextView) itemView.findViewById(R.id.task_title);
             taskDescription = (TextView) itemView.findViewById(R.id.task_description);
@@ -375,7 +375,7 @@ public class AdvancedToolsFragment extends Fragment {
 
         private ProgressDialog dialog;
 
-        public SendCommandTask(String command, String ip, String user, String password, String browserUrl, boolean isStop, long taskId) {
+        SendCommandTask(String command, String ip, String user, String password, String browserUrl, boolean isStop, long taskId) {
             this.command = command;
             this.ip = ip;
             this.user = user;
@@ -484,7 +484,6 @@ public class AdvancedToolsFragment extends Fragment {
             String threatedCommand = settingsVariablesSubstitution(command);
             pIp = pIp.replaceAll(serverIpPattern, prefs.getString("ServerIp", "")).replaceAll(lgIpPattern, prefs.getString("HostName", ""));
 
-
             String user = (pUser != null && !pUser.equals("")) ? pUser : prefs.getString("User", "lg");
             String password = (pPassword != null && !pPassword.equals("")) ? pPassword : prefs.getString("Password", "lqgalaxy");
             String hostname = (pIp != null && !pIp.equals("")) ? pIp : prefs.getString("HostName", "172.26.17.21");
@@ -525,13 +524,8 @@ public class AdvancedToolsFragment extends Fragment {
             String serverIp = prefs.getString("ServerIp", "");
             String serverPort = prefs.getString("ServerPort", "");
 
-            String threatedCommand = command.replaceAll(lgIpPattern, hostname).replaceAll(serverIpPattern, serverIp).replaceAll(serverPortPattern, serverPort);
-
-
-            return threatedCommand;
+            return command.replaceAll(lgIpPattern, hostname).replaceAll(serverIpPattern, serverIp).replaceAll(serverPortPattern, serverPort);
         }
-
-
     }
 
 }

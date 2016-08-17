@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -31,10 +32,10 @@ import java.util.List;
  */
 public class ToursGridViewAdapter extends BaseAdapter {
 
-    List<Tour> tourList;
-    Context context;
-    FragmentActivity activity;
-    Session session;
+    private List<Tour> tourList;
+    private Context context;
+    private FragmentActivity activity;
+    private Session session;
 
 
     public ToursGridViewAdapter(List<Tour> tourList, Context context, FragmentActivity activity) {
@@ -74,14 +75,13 @@ public class ToursGridViewAdapter extends BaseAdapter {
             button.setTextSize(15);
         }
 
-        Drawable top = context.getResources().getDrawable(R.drawable.politour48);
-        button.setCompoundDrawablesWithIntrinsicBounds(top, null, null, null);
+        Drawable left = ResourcesCompat.getDrawable(context.getResources(), R.drawable.politour48, null);
+        button.setCompoundDrawablesWithIntrinsicBounds(left, null, null, null);
 
         AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
         button.setMaxLines(1);
 
-
-        button.setBackground(context.getResources().getDrawable(R.drawable.button_rounded_grey));
+        button.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.button_rounded_grey, null));
         button.setLayoutParams(params);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +101,7 @@ public class ToursGridViewAdapter extends BaseAdapter {
         private ProgressDialog dialog;
 
 
-        public LaunchTourTask(Tour currentTour) {
+        LaunchTourTask(Tour currentTour) {
             this.currentTour = currentTour;
         }
 
@@ -137,7 +137,7 @@ public class ToursGridViewAdapter extends BaseAdapter {
         protected Boolean doInBackground(Void... params) {
 
             List<HashMap<String, String>> pois = new ArrayList<>();
-            List<Integer> poisDuration = new ArrayList<Integer>();
+            List<Integer> poisDuration = new ArrayList<>();
 
             try {
                 Cursor tourPoiCursor = POIsContract.TourPOIsEntry.getPOIsByTourID(String.valueOf(this.currentTour.getId()));
@@ -233,7 +233,7 @@ public class ToursGridViewAdapter extends BaseAdapter {
             }
         }
 
-        public void resetTourSettings() {
+        void resetTourSettings() {
             this.cancel(true);
             showStopAlert();
         }
@@ -257,7 +257,7 @@ public class ToursGridViewAdapter extends BaseAdapter {
 
     private class GetSessionTask extends AsyncTask<Void, Void, Void> {
 
-        public GetSessionTask() {
+        GetSessionTask() {
         }
 
         @Override

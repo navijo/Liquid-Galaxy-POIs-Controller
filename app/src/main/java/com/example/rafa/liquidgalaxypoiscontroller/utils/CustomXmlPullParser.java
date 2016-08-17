@@ -30,11 +30,11 @@ public class CustomXmlPullParser {
             parser.nextTag();
             return readPOIS(parser);
         } catch (XmlPullParserException e) {
-            Toast.makeText(activity,activity.getResources().getString(R.string.parsingError), Toast.LENGTH_LONG);
+            Toast.makeText(activity, activity.getResources().getString(R.string.parsingError), Toast.LENGTH_LONG).show();
         } finally {
             in.close();
         }
-        return new ArrayList<POI>();
+        return new ArrayList<>();
     }
 
     private List<POI> readPOIS(org.xmlpull.v1.XmlPullParser parser) throws XmlPullParserException, IOException {
@@ -59,7 +59,7 @@ public class CustomXmlPullParser {
     private List<POI> readFolder(org.xmlpull.v1.XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(org.xmlpull.v1.XmlPullParser.START_TAG, ns, "Folder");
 
-        List<POI> entries = new ArrayList<POI>();
+        List<POI> entries = new ArrayList<>();
 
         while (parser.next() != org.xmlpull.v1.XmlPullParser.END_TAG) {
             if (parser.getEventType() != org.xmlpull.v1.XmlPullParser.START_TAG) {
@@ -153,8 +153,8 @@ public class CustomXmlPullParser {
 
     private Point readCoordinatesString(org.xmlpull.v1.XmlPullParser parser) throws IOException, XmlPullParserException {
 
-        String coordinates = "";
-        String[] coordinatesSplit = new String[]{};
+        String coordinates;
+        String[] coordinatesSplit;
 
         parser.require(org.xmlpull.v1.XmlPullParser.START_TAG, ns, "coordinates");
         coordinates = readText(parser);
