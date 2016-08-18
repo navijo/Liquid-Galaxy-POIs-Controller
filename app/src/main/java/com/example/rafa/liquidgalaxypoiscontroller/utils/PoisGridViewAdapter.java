@@ -202,9 +202,9 @@ public class PoisGridViewAdapter extends BaseAdapter {
         if (smallestWidth > 800) {
             return 35;
         } else if (smallestWidth <= 800 && smallestWidth >= 600) {
-            return 20;
+            return 13;
         } else {
-            return 15;
+            return 10;
         }
     }
 

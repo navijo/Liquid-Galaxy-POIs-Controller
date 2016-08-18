@@ -455,16 +455,40 @@ public class SearchFragment extends Fragment {
             moon.requestLayout();
             mars.requestLayout();
         } else if (smallestWidth <= 720 && smallestWidth >= 600) {
-            editSearch.setTextSize(40);
-            earth.getLayoutParams().height = 120;
-            moon.getLayoutParams().height = 120;
-            mars.getLayoutParams().height = 120;
-            earth.getLayoutParams().width = 120;
-            moon.getLayoutParams().width = 120;
-            mars.getLayoutParams().width = 120;
+//            editSearch.setTextSize(40);
+//            earth.getLayoutParams().height = 120;
+//            moon.getLayoutParams().height = 120;
+//            mars.getLayoutParams().height = 120;
+//            earth.getLayoutParams().width = 120;
+//            moon.getLayoutParams().width = 120;
+//            mars.getLayoutParams().width = 120;
+//            earth.requestLayout();
+//            moon.requestLayout();
+//            mars.requestLayout();
+            editSearch.setTextSize(20);
+            earth.getLayoutParams().height = 320;
+            moon.getLayoutParams().height = 320;
+            mars.getLayoutParams().height = 320;
+            earth.getLayoutParams().width = 320;
+            moon.getLayoutParams().width = 320;
+            mars.getLayoutParams().width = 320;
             earth.requestLayout();
             moon.requestLayout();
             mars.requestLayout();
+            categoriesListView.getLayoutParams().width = 450;
+            if (rootView.findViewById(R.id.layoutPlanets) != null) {
+                LinearLayout layoutPlanets = (LinearLayout) rootView.findViewById(R.id.layoutPlanets);
+                LinearLayout.LayoutParams actualParams = (LinearLayout.LayoutParams) layoutPlanets.getLayoutParams();
+                actualParams.setMarginStart(0);
+                layoutPlanets.setLayoutParams(actualParams);
+            }
+            if (rootView.findViewById(R.id.searchLayout) != null) {
+                LinearLayout searchLayout = (LinearLayout) rootView.findViewById(R.id.searchLayout);
+                LinearLayout.LayoutParams actualParams = (LinearLayout.LayoutParams) searchLayout.getLayoutParams();
+                actualParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                searchLayout.setLayoutParams(actualParams);
+            }
+
         } else {
             earth.getLayoutParams().height = 75;
             moon.getLayoutParams().height = 75;
