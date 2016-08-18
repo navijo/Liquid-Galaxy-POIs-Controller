@@ -235,6 +235,7 @@
     <string name="aboutDocText1">This app has been developed thanks to GSOC 2016 Program as a continuation of a GSOC 2015 Project</string>
     <string name="aboutDocText2">developed originally by Rafa Durán Sàez(rafaduransaez@gmail.com) and continued by Ivan Josa Llovera (ivanjosallovera@gmail.com)</string>
     <string name="aboutDocText3">https://github.com/LiquidGalaxyLAB/Liquid-Galaxy-POIs-Controller.git</string>
+    <string name="aboutDocText4">Developed thanks to the TIC Laboratories of the Scientific Park of Lleida, Liquid Galaxy LAB &amp; LleidaDrone LAB,  Polytechnic School of Lleida, End Point Corp (NY), Wonderama LAB from University Western University (Sidney), Gigabyte, Benq, HP, Corsair, and  Hemav Academics.</string>
     <string name="about_Controller_message">About Liquid Galaxy Controller</string>
     <string name="hidden">Hidden</string>
     <string name="visible">Visible</string>
