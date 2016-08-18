@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.CategoryEntry;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract.LGTaskEntry;
@@ -92,7 +93,7 @@ public class POIsProvider extends ContentProvider {
         return true;
     }
 
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor cursor;
         switch (sUriMatcher.match(uri)) {
             case ALL_POIS /*100*/:
@@ -132,7 +133,7 @@ public class POIsProvider extends ContentProvider {
         return cursor;
     }
 
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (sUriMatcher.match(uri)) {
             case ALL_POIS /*100*/:
                 return POIEntry.CONTENT_TYPE;
@@ -159,7 +160,7 @@ public class POIsProvider extends ContentProvider {
         }
     }
 
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         Uri returnUri;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long _id;
@@ -206,7 +207,7 @@ public class POIsProvider extends ContentProvider {
         return returnUri;
     }
 
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         int rowsDeleted;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
@@ -253,7 +254,7 @@ public class POIsProvider extends ContentProvider {
         return rowsDeleted;
     }
 
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int rowsUpdated;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {

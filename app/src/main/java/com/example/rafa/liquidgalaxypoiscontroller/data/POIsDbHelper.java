@@ -12,9 +12,9 @@ import java.io.InputStreamReader;
 public class POIsDbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "poi_controller.db";
     private static final int DATABASE_VERSION = 33;
-    Context context;
+    private Context context;
 
-    public POIsDbHelper(Context context) {
+    POIsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
@@ -61,7 +61,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PILT','Panoramic Interactive Live Tracker','/home/lg/Desktop/lglab/gsoc16/PILT/pilt-start $lgIp','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlPILT);
 
-        String sqlFAED = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FAED','Flying Automated External Defibrilator','/home/lg/Desktop/lglab/gsoc15/FAED/faed-start $lgIp','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlFAED = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FAED','Flying Automated External Defibrilator','/home/lg/Desktop/lglab/gsoc15/FAED/faed-start $lgIp','/home/lg/Desktop/lglab/gsoc15/FAED/faed-exit $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlFAED);
 
         String sqlVYD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('VYD','View Your Data','/home/lg/Desktop/lglab/gsoc15/VYD/vyd-start $lgIp','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
@@ -80,8 +80,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     }
 
     private String ImportedFolder() {
-        String SQL_CREATE_IMPORTED_FOLDER = "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('PW Beacon Imported',(SELECT _ID FROM CATEGORY WHERE NAME LIKE 'EARTH'), 'PW IMPORTED/', 0);";
-        return SQL_CREATE_IMPORTED_FOLDER;
+        return "INSERT INTO category(Name, Father_ID, Shown_Name, Hide) VALUES ('PW Beacon Imported',(SELECT _ID FROM CATEGORY WHERE NAME LIKE 'EARTH'), 'PW IMPORTED/', 0);";
     }
 
     private String Earth() {
@@ -126,7 +125,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     }
 
 
-    public void resetDatabase(SQLiteDatabase db){
+    void resetDatabase(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS category");
         db.execSQL("DROP TABLE IF EXISTS poi");
         db.execSQL("DROP TABLE IF EXISTS tour");
