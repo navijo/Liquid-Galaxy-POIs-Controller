@@ -21,16 +21,13 @@ import android.widget.Switch;
 import com.example.rafa.liquidgalaxypoiscontroller.data.POIsContract;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Ivan Josa on 18/07/16.
  */
 public class ImportTourDialogFragment extends DialogFragment {
 
-    private static Map<String, String> spinnerIDsAndShownNames;
     EditText tourName;
     Switch visibility;
     EditText duration;
@@ -39,7 +36,6 @@ public class ImportTourDialogFragment extends DialogFragment {
     Button cancelBtn;
     TextInputLayout tourNameInputLayout;
     TextInputLayout poisIntervalInputLayout;
-    private Cursor queryCursor;
 
     public static ImportTourDialogFragment newInstance() {
         ImportTourDialogFragment importTour = new ImportTourDialogFragment();
@@ -109,23 +105,21 @@ public class ImportTourDialogFragment extends DialogFragment {
 
     private void fillCategorySpinner(Spinner spinner) {
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add(getResources().getString(R.string.noRouteText));
-        spinnerIDsAndShownNames = new HashMap<String, String>();
 
         //We get all the categories IDs and ShownNames
-        queryCursor = POIsContract.CategoryEntry.getIDsAndShownNamesOfAllCategories(getActivity());
+        Cursor queryCursor = POIsContract.CategoryEntry.getIDsAndShownNamesOfAllCategories(getActivity());
 
         while (queryCursor.moveToNext()) {
-            spinnerIDsAndShownNames.put(queryCursor.getString(1), String.valueOf(queryCursor.getInt(0)));
             list.add(queryCursor.getString(1));
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, list);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-//        queryCursor.close();
+        queryCursor.close();
     }
 
 }
