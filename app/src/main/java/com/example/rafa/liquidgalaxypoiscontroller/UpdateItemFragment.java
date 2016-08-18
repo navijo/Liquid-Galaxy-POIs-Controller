@@ -628,34 +628,33 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     public static class ViewHolderPoi {
 
-        public int NAME = 1;
-        public int VISITED_PLACE_NAME = 2;
-        public int LONGITUDE = 3;
-        public int LATITUDE = 4;
-        public int ALTITUDE = 5;
-        public int HEADING = 6;
-        public int TILT = 7;
-        public int RANGE = 8;
-        public int ALTITUDE_MODE = 9;
-        public int HIDE = 10;
-        public int CATEGORY_ID = 11;
-
-        public EditText nameET;
-        public EditText visitedPlaceET;
-        public EditText longitudeET;
-        public EditText latitudeET;
-        public EditText altitudeET;
-        public EditText headingET;
-        public EditText tiltET;
-        public EditText rangeET;
-        public Spinner categoryID;
-        public FloatingActionButton createPOI;
-        public FloatingActionButton updatePOI;
         public FloatingActionButton cancel;
-        public Spinner spinnerAltitudeMode;
+        int NAME = 1;
+        int VISITED_PLACE_NAME = 2;
+        int LONGITUDE = 3;
+        int LATITUDE = 4;
+        int ALTITUDE = 5;
+        int HEADING = 6;
+        int TILT = 7;
+        int RANGE = 8;
+        int ALTITUDE_MODE = 9;
+        int HIDE = 10;
+        int CATEGORY_ID = 11;
+        EditText nameET;
+        EditText visitedPlaceET;
+        EditText longitudeET;
+        EditText latitudeET;
+        EditText altitudeET;
+        EditText headingET;
+        EditText tiltET;
+        EditText rangeET;
+        Spinner categoryID;
+        FloatingActionButton createPOI;
+        FloatingActionButton updatePOI;
+        Spinner spinnerAltitudeMode;
         private Switch switchButtonHide;
 
-        public ViewHolderPoi(View rootView) {
+        ViewHolderPoi(View rootView) {
 
             nameET = (EditText) rootView.findViewById(R.id.name);
             visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
@@ -676,23 +675,22 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     public static class ViewHolderTour {
 
-        public int NAME = 1;
-        public int CATEGORY = 2;
-        public int HIDE = 3;
-        public int INTERVAL = 4;
-
-        public EditText tourName;
-        public Spinner categoryID;
-        public android.support.design.widget.FloatingActionButton createTOUR;
-        public android.support.design.widget.FloatingActionButton updateTOUR;
-        public ListView addedPois;
         public ImageView up;
-        public ImageView down;
         public FloatingActionButton cancel;
-        public EditText global_interval;
+        int NAME = 1;
+        int CATEGORY = 2;
+        int HIDE = 3;
+        int INTERVAL = 4;
+        EditText tourName;
+        Spinner categoryID;
+        android.support.design.widget.FloatingActionButton createTOUR;
+        android.support.design.widget.FloatingActionButton updateTOUR;
+        ListView addedPois;
+        ImageView down;
+        EditText global_interval;
         private Switch switchButtonHide;
 
-        public ViewHolderTour(View rootView) {
+        ViewHolderTour(View rootView) {
 
             tourName = (EditText) rootView.findViewById(R.id.tour_name);
             switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
@@ -709,26 +707,24 @@ public class UpdateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     public static class ViewHolderCategory {
 
-        public EditText categoryName;
-        public Spinner fatherID;
-        public FloatingActionButton createCategory;
-        public FloatingActionButton updateCategory;
         public FloatingActionButton cancel;
+        EditText categoryName;
+        Spinner fatherID;
+        FloatingActionButton createCategory;
+        FloatingActionButton updateCategory;
         private int NAME = 1;
         private int FATHER_ID = 2;
         private int SHOWN_NAME = 3;
         private int HIDE = 4;
         private Switch switchButtonHide;
 
-        public ViewHolderCategory(View rootView) {
-
+        ViewHolderCategory(View rootView) {
             categoryName = (EditText) rootView.findViewById(R.id.category_name);
             switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
             fatherID = (Spinner) rootView.findViewById(R.id.father_spinner);
             createCategory = (FloatingActionButton) rootView.findViewById(R.id.create_category);
             updateCategory = (FloatingActionButton) rootView.findViewById(R.id.update_category);
             cancel = (FloatingActionButton) rootView.findViewById(R.id.cancel_come_back);
-
         }
     }
 
