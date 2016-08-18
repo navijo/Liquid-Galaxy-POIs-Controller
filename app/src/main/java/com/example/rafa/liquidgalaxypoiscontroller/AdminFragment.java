@@ -22,7 +22,7 @@ public class AdminFragment extends Fragment {
         managementOfPoisToursAndCategories(viewHolder);
         setLogOutButtonBehaviour(viewHolder);
         setNewItemHereButtonBehaviour(viewHolder);
-        setNewItemButtonBehaviour(viewHolder);//Creation of a new item
+        setNewItemButtonBehaviour(viewHolder);
 
         return rootView;
     }
@@ -39,7 +39,6 @@ public class AdminFragment extends Fragment {
                     viewHolder.createTourhere.setVisibility(View.GONE);
                     viewHolder.createCategoryhere.setVisibility(View.GONE);
                     viewHolder.createPOIhere.setVisibility(View.GONE);
-//                    POISFragment.setAdminView(getView());
                 }
             }
         });
@@ -55,7 +54,6 @@ public class AdminFragment extends Fragment {
                     viewHolder.createPOIhere.setVisibility(View.GONE);
                     viewHolder.createCategoryhere.setVisibility(View.GONE);
                     viewHolder.createTourhere.setVisibility(View.GONE);
-//                    POISFragment.setAdminView(getView());
                 }
             }
         });
@@ -71,7 +69,6 @@ public class AdminFragment extends Fragment {
                     viewHolder.createPOIhere.setVisibility(View.GONE);
                     viewHolder.createTourhere.setVisibility(View.GONE);
                     viewHolder.createCategoryhere.setVisibility(View.GONE);
-//                    POISFragment.setAdminView(getView());
                 }
             }
         });
@@ -145,20 +142,20 @@ public class AdminFragment extends Fragment {
     }
 
     public static class ViewHolder {
-        public Button createPOI;
-        public Button createCategory;
-        public Button createTour;
-        public Button createPOIhere;
-        public Button createCategoryhere;
-        public Button createTourhere;
+        Button createPOI;
+        Button createCategory;
+        Button createTour;
+        Button createPOIhere;
+        Button createCategoryhere;
+        Button createTourhere;
 
-        public Button poisManagement;
-        public Button toursManagement;
-        public Button categoriesManagement;
+        Button poisManagement;
+        Button toursManagement;
+        Button categoriesManagement;
 
-        public Button logout;
+        Button logout;
 
-        public ViewHolder(View rootView) {
+        ViewHolder(View rootView) {
 
             poisManagement = (Button) rootView.findViewById(R.id.pois_management);
             toursManagement = (Button) rootView.findViewById(R.id.tours_management);

@@ -16,15 +16,6 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
     public static final int PAGE_TASKS = 3;
     public static final int PAGE_BEACONS = 4;
 
-
-//    private static final int PAGE_POIS = 0;
-//    private static final int PAGE_TOURS = 1;
-//    private static final int PAGE_CATEGORIES = 2;
-//    private static final int PAGE_TOOLS = 3;
-//    private static final int PAGE_BEACONS = 4;
-//    private static final int PAGE_TASKS = 5;
-//    private static final int PAGE_TREEEVIEW = 6;
-
     public AdminCollectionPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -48,18 +39,6 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return NearbyBeaconsFragment.newInstance();
             default:
                 return null;
-//            case PAGE_POIS:
-//                Fragment fragmentPOIs = new POISFragment();
-//                args.clear();
-//                args.putString("EDITABLE", "ADMIN/POIS");
-//                fragmentPOIs.setArguments(args);
-//                return fragmentPOIs;
-//            case PAGE_CATEGORIES:
-//                Fragment fragmentCategories = new POISFragment();
-//                args.clear();
-//                args.putString("EDITABLE", "ADMIN/CATEGORIES");
-//                fragmentCategories.setArguments(args);
-//                return fragmentCategories;
         }
     }
 
@@ -81,10 +60,6 @@ public class AdminCollectionPagerAdapter extends FragmentStatePagerAdapter {
                 return "SCAN BEACON";
             default:
                 return "PAGE" + (position - 1);
-//            case PAGE_POIS:
-//                return "POIS";
-//            case PAGE_CATEGORIES:
-//                return "CATEGORIES";
         }
     }
 }

@@ -13,11 +13,10 @@ import android.widget.TextView;
  */
 public class CategoriesAdapter extends CursorAdapter {
 
-    public static final int CATEGORY_COLUMN_NAME = 1;
-    public static final int CATEGORY_COLUMN_SHOWN_NAME = 3;
+    private static final int CATEGORY_COLUMN_NAME = 1;
 
 
-    public CategoriesAdapter(Context context, Cursor c, int flags) {
+    CategoriesAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
