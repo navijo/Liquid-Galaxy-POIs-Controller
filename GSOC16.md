@@ -1,5 +1,9 @@
+# GSOC 2016 - Ivan Josa
 
-This project is a GSOC 2016 project that continues a previous project. This GSOC 2016 project contains the following subprojects for each one of them a commits link is provided
+This  GSOC 2016 project (Liquid Galaxy Controller) is a continuation of a previous project.
+Also, as a part of GSOC 2016, two new projects (BYOP and PhysicalWebLGPoiReader) have been developed.
+
+A link to the commits for each one of them is provided as well as a youtube link to a demonstration video.
 
 Liquid Galaxy Controller : https://github.com/LiquidGalaxyLAB/Liquid-Galaxy-POIs-Controller/commits/master?author=navijo
 
