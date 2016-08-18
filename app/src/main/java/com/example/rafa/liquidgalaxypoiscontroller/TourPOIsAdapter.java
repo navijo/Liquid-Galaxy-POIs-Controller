@@ -28,7 +28,7 @@ public class TourPOIsAdapter extends BaseAdapter {
     private static int global_interval = 0;
 
 
-    public TourPOIsAdapter(FragmentActivity activity, List<TourPOI> tourPOIs) {
+    TourPOIsAdapter(FragmentActivity activity, List<TourPOI> tourPOIs) {
         TourPOIsAdapter.activity = activity;
         pois = tourPOIs;
     }
@@ -37,11 +37,11 @@ public class TourPOIsAdapter extends BaseAdapter {
         type = t;
     }
 
-    public static int getGlobalInterval() {
+    static int getGlobalInterval() {
         return global_interval;
     }
 
-    public static void setGlobalInterval(int globalInterval) {
+    static void setGlobalInterval(int globalInterval) {
         global_interval = globalInterval;
     }
 
@@ -78,16 +78,12 @@ public class TourPOIsAdapter extends BaseAdapter {
 
     private static boolean isNumeric(String str) {
         try {
-            int d = Integer.parseInt(str);
+            Integer.parseInt(str);
         } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
     }
-
-//    public static void deleteDurationByPosition(int durationIndex) {
-//        poisDuration.remove(durationIndex);
-//    }
 
     /**
      * How many items are in the data set represented by this Adapter.
@@ -164,7 +160,7 @@ public class TourPOIsAdapter extends BaseAdapter {
         //we get the POI field called Seconds and we set its behaviour when user types on it.
         EditText seconds = (EditText) view.findViewById(R.id.poi_seconds);
         seconds.setText(String.valueOf(tourPOI.getDuration()));
-        secondsBehaviour(tourPOI, seconds, position);
+        secondsBehaviour(tourPOI, seconds);
 
         setArrowsBehaviour(view, position, name);
         setDeleteItemButtonBehaviour(view, tourPOI);
@@ -172,16 +168,14 @@ public class TourPOIsAdapter extends BaseAdapter {
         return view;
     }
 
-    private void secondsBehaviour(final TourPOI tourPOI, final EditText seconds, final int position) {
+    private void secondsBehaviour(final TourPOI tourPOI, final EditText seconds) {
         seconds.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                int s = 0;
                 if (!hasFocus) {
                     String sec = seconds.getText().toString();
                     if (isNumeric(sec)) {
-                        s = Integer.parseInt(sec);
-
+                        int s = Integer.parseInt(sec);
                         tourPOI.setDuration(s);
                     }
                 }
@@ -229,7 +223,7 @@ public class TourPOIsAdapter extends BaseAdapter {
             pois.add(position, toMoveDown);
             notifyDataSetChanged();
         }catch (ArrayIndexOutOfBoundsException ex){
-            Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -248,7 +242,7 @@ public class TourPOIsAdapter extends BaseAdapter {
 
             notifyDataSetChanged();
         }catch (ArrayIndexOutOfBoundsException ex){
-            Toast.makeText(activity, ex.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
     }

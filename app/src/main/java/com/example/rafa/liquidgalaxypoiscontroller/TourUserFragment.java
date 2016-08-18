@@ -32,7 +32,6 @@ public class TourUserFragment extends Fragment {
     private TextView categorySelectorTitle, currentCategoryText;
     private Button show_all;
     private ImageView backIcon, backStartIcon;
-    private CategoriesAdapter adapter;
     private ArrayList<String> backIDs = new ArrayList<String>();
 
     @Nullable
@@ -113,7 +112,7 @@ public class TourUserFragment extends Fragment {
     }
 
     private void showCategoriesOnScreen(Cursor queryCursor) {
-        adapter = new CategoriesAdapter(getActivity(), queryCursor, 0);
+        CategoriesAdapter adapter = new CategoriesAdapter(getActivity(), queryCursor, 0);
 
         if (queryCursor.getCount() > 0) {
             categoriesListView.setAdapter(adapter);

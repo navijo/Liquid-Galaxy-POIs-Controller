@@ -540,7 +540,7 @@ public class POISFragment extends Fragment {
         }
         if(EDITABLE_TAG.endsWith("POIS")) {
             seeingOptions.setVisibility(View.GONE);
-            poisListViewTittle.setText("POIs");
+            poisListViewTittle.setText(getResources().getString(R.string.pois));
         }
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
@@ -621,14 +621,14 @@ public class POISFragment extends Fragment {
                 visitPoiTask.execute();
                // setConnectionWithLiquidGalaxy(command); //we set connection with LG and send the sentence to watch the wished on the LG.
         } catch (Exception ex) {
-            Toast.makeText(getActivity(), "Error. " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Error. " + ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     /*Other utilities to achieve efectiveness.*/
     private HashMap<String, String> getPOIData(int id) throws Exception {
         Cursor c = POIsContract.POIEntry.getPOIByID(getActivity(), String.valueOf(id));
-        HashMap<String, String> poi = new HashMap<String, String>();
+        HashMap<String, String> poi = new HashMap<>();
 
         if(c.moveToNext()) {
             poi.put("completeName", c.getString(1));
@@ -673,7 +673,7 @@ public class POISFragment extends Fragment {
             additionLayout.setVisibility(View.VISIBLE);
         }
         poisListViewTittle.setVisibility(View.VISIBLE);
-        poisListViewTittle.setText("Tours");
+        poisListViewTittle.setText(getResources().getString(R.string.TOURs_button));
         backIcon.setVisibility(View.GONE);
         backStartIcon.setVisibility(View.GONE);
     }
@@ -707,7 +707,7 @@ public class POISFragment extends Fragment {
     }
 
     private void toursByCategoriesVisibility(){
-        poisListViewTittle.setText("Tours");
+        poisListViewTittle.setText(getResources().getString(R.string.TOURs_button));
         seeingOptions.setVisibility(View.VISIBLE);
         seeingOptions.setText(getResources().getString(R.string.see_all));
         if (EDITABLE_TAG.startsWith("ADMIN")) {
@@ -855,7 +855,7 @@ public class POISFragment extends Fragment {
                     try {
                         CreateItemFragment.setPOItoTourPOIsList(tourPOI);
                     } catch (Exception e) {
-                        Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                     dialog.dismiss();
                 }
@@ -928,15 +928,19 @@ public class POISFragment extends Fragment {
             public void onClick(View v) {
                 dialog.dismiss();
                 Intent updateCategoryIntent = new Intent(getActivity(), UpdateItemActivity.class);
-                if(type.equals("POI")){
-                    updateCategoryIntent.putExtra("UPDATE_TYPE", type);
-                    updateCategoryIntent.putExtra("ITEM_ID", itemSelectedId);
-                }else if(type.equals("TOUR")){
-                    updateCategoryIntent.putExtra("UPDATE_TYPE", type);
-                    updateCategoryIntent.putExtra("ITEM_ID", itemSelectedId);
-                }else {
-                    updateCategoryIntent.putExtra("UPDATE_TYPE", type);
-                    updateCategoryIntent.putExtra("ITEM_ID", itemSelectedId);
+                switch (type) {
+                    case "POI":
+                        updateCategoryIntent.putExtra("UPDATE_TYPE", type);
+                        updateCategoryIntent.putExtra("ITEM_ID", itemSelectedId);
+                        break;
+                    case "TOUR":
+                        updateCategoryIntent.putExtra("UPDATE_TYPE", type);
+                        updateCategoryIntent.putExtra("ITEM_ID", itemSelectedId);
+                        break;
+                    default:
+                        updateCategoryIntent.putExtra("UPDATE_TYPE", type);
+                        updateCategoryIntent.putExtra("ITEM_ID", itemSelectedId);
+                        break;
                 }
                 startActivity(updateCategoryIntent);
             }
@@ -974,6 +978,7 @@ public class POISFragment extends Fragment {
         Cursor queryCursor = POIsContract.CategoryEntry.getCategoriesForRefreshing(getActivity(), whereClauseCategory);
         adapter = new CategoriesAdapter(getActivity(), queryCursor, 0);
         categoriesListView.setAdapter(adapter);
+        queryCursor.close();
     }
 
 

@@ -11,25 +11,24 @@ import android.widget.TextView;
 /**
  * Created by RAFA on 07/06/2015.
  */
-public class POIsAdapter extends CursorAdapter{
+class POIsAdapter extends CursorAdapter {
 
-    public static final int POI_COLUMN_VISITED_PLACE_NAME = 1;
+    private static final int POI_COLUMN_VISITED_PLACE_NAME = 1;
 
-    public static final int TOUR_COLUMN_NAME = 1;
-    public static final int CATEGORY_COLUMN_NAME = 1;
+    private static final int TOUR_COLUMN_NAME = 1;
+    private static final int CATEGORY_COLUMN_NAME = 1;
 
     private String itemName;
 
 
-    public POIsAdapter(Context context, Cursor c, int flags) {
+    POIsAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.poi_list_item, parent, false);
-        return view;
+        return LayoutInflater.from(context).inflate(R.layout.poi_list_item, parent, false);
     }
 
     @Override
@@ -37,17 +36,21 @@ public class POIsAdapter extends CursorAdapter{
 
         TextView poiName = (TextView) view.findViewById(R.id.poi_list_item_textview);
         if(itemName != null) {
-            if (itemName.equals("POI")) {
-                poiName.setText(cursor.getString(POI_COLUMN_VISITED_PLACE_NAME));
-            } else if (itemName.equals("TOUR")) {
-                poiName.setText(cursor.getString(TOUR_COLUMN_NAME));
-            } else {
-                poiName.setText(cursor.getString(CATEGORY_COLUMN_NAME));
+            switch (itemName) {
+                case "POI":
+                    poiName.setText(cursor.getString(POI_COLUMN_VISITED_PLACE_NAME));
+                    break;
+                case "TOUR":
+                    poiName.setText(cursor.getString(TOUR_COLUMN_NAME));
+                    break;
+                default:
+                    poiName.setText(cursor.getString(CATEGORY_COLUMN_NAME));
+                    break;
             }
         }
     }
 
-    public void setItemName(String itemName) {
+    void setItemName(String itemName) {
         this.itemName = itemName;
     }
 
