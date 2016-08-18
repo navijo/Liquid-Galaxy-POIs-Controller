@@ -42,8 +42,7 @@ import java.util.List;
 public class LGTools extends Fragment {
 
     Session session;
-    private String filePath = "";
-    private Button importPois, relaunch, reboot, shutDown;
+    private Button importPois, relaunch, reboot, shutDown, cleanKML;
 
     public LGTools() {
     }
@@ -57,11 +56,28 @@ public class LGTools extends Fragment {
         relaunch = (Button) view.findViewById(R.id.relaunch);
         reboot = (Button) view.findViewById(R.id.reboot);
         shutDown = (Button) view.findViewById(R.id.shutdown);
+        cleanKML = (Button) view.findViewById(R.id.cleanKmls);
         setImportPOIsButtonBehaviour();
         setRelaunchButtonBehaviour();
         setRebootButtonBehaviour();
         setShutDownButtonBehaviour();
+        setCleanKMLButtonBehaviour();
         return view;
+    }
+
+    private void setCleanKMLButtonBehaviour() {
+        cleanKML.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    //String sentence = "rm -f /var/www/html/kmls.txt; touch /var/www/html/kmls.txt > /home/lg/log.txt";
+                    String sentence = "chmod 777 /var/www/html/kmls.txt; echo '' > /var/www/html/kmls.txt";
+                    showAlertAndExecution(sentence, "clean kml files");
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), getResources().getString(R.string.error_galaxy), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -200,6 +216,7 @@ public class LGTools extends Fragment {
                 if (uri != null) {
                     String path = uri.toString();
                     //We get the file path by executing one of the following methods, depending the explorer the user uses.
+                    String filePath;
                     if (path.toLowerCase().startsWith("file://")) {
                         filePath = (new File(URI.create(path))).getAbsolutePath();
                     } else {
@@ -281,7 +298,7 @@ public class LGTools extends Fragment {
 
     private int createNestedCategory(String categoryName, int fatherId) {
 
-        int categoryID = 0;
+        int categoryID;
         ContentValues category = new ContentValues();
         category.put(POIsContract.CategoryEntry.COLUMN_NAME, categoryName);
         category.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, fatherId);
@@ -301,7 +318,7 @@ public class LGTools extends Fragment {
 
     private int createCategory(String categoryName) {
 
-        int categoryID = 0;
+        int categoryID;
         ContentValues category = new ContentValues();
         category.put(POIsContract.CategoryEntry.COLUMN_NAME, categoryName);
         category.put(POIsContract.CategoryEntry.COLUMN_FATHER_ID, 0);
@@ -320,10 +337,10 @@ public class LGTools extends Fragment {
     }
 
     private String pathTreatment(String path, String absolutePath) {
-        int start = 0;
-        String firstPathFolder = "";
+
+        String firstPathFolder;
         if (path.contains(":")) {
-            start = path.indexOf(":") + 1;
+            int start = path.indexOf(":") + 1;
             path = path.substring(start);
         }
 
@@ -343,9 +360,6 @@ public class LGTools extends Fragment {
             }
         }
 
-        if (!absolutePath.endsWith("/")) {
-            // absolutePath = absolutePath + "/";
-        }
         return absolutePath + path;
     }
 
@@ -355,7 +369,7 @@ public class LGTools extends Fragment {
         private String path;
 
 
-        public ReadImportFileTask(String filePath) {
+        ReadImportFileTask(String filePath) {
             this.path = filePath;
         }
 
@@ -392,15 +406,14 @@ public class LGTools extends Fragment {
         }
 
         private List<ContentValues> readFile() {
-            List<ContentValues> poisList = new ArrayList<ContentValues>();
+            List<ContentValues> poisList = new ArrayList<>();
             File file = new File(this.path);
             if (file.exists()) {
                 long total = 0;
                 try {
-                    FileInputStream inputStream = null;
-                    inputStream = new FileInputStream(file);
+                    FileInputStream inputStream = new FileInputStream(file);
                     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                    String line = "";
+                    String line;
                     int numLines = countLines(this.path);
                     while ((line = br.readLine()) != null) {
                         //for each POI described inside the file we read and introduce it inside the database.
@@ -426,7 +439,7 @@ public class LGTools extends Fragment {
             return poisList;
         }
 
-        public int countLines(String filename) throws IOException {
+        int countLines(String filename) throws IOException {
 
             LineNumberReader lnr = new LineNumberReader(new FileReader(new File(filename)));
 
@@ -458,7 +471,6 @@ public class LGTools extends Fragment {
 
                 /**************/
                 String name = getPOIName(line);
-                String visited_place = name;
                 String longitude = getPOIAttribute("longitude", line);
                 String latitude = getPOIAttribute("latitude", line);
                 String altitude = getPOIAttribute("altitude", line);
@@ -468,7 +480,7 @@ public class LGTools extends Fragment {
                 String altitudeMode = getAltitudeMode(line);
 
                 poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
-                poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, visited_place);
+                poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, name);
                 poi.put(POIsContract.POIEntry.COLUMN_LONGITUDE, longitude);
                 poi.put(POIsContract.POIEntry.COLUMN_LATITUDE, latitude);
                 poi.put(POIsContract.POIEntry.COLUMN_ALTITUDE, altitude);
@@ -479,9 +491,7 @@ public class LGTools extends Fragment {
                 poi.put(POIsContract.POIEntry.COLUMN_HIDE, 0);
                 poi.put(POIsContract.POIEntry.COLUMN_CATEGORY_ID, categoryId);
 
-                Uri insertedUri = POIsContract.POIEntry.createNewPOI(getActivity(), poi);
-            } catch (android.database.SQLException e) {
-                e.printStackTrace();
+                POIsContract.POIEntry.createNewPOI(getActivity(), poi);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -495,7 +505,7 @@ public class LGTools extends Fragment {
 
         private int getOrCreatePoiCategoryByName(String line) {
             int firstArrova = line.indexOf("@");
-            int categoryId = 0;
+            int categoryId;
             String categoryName = line.substring(0, firstArrova);
 
 
@@ -506,7 +516,7 @@ public class LGTools extends Fragment {
                 } else {
                     //Category not exist, we need to create it
                     String[] categoryTreeNames = categoryName.split("/");
-                    if (categoryTreeNames != null && categoryTreeNames.length > 1) {
+                    if (categoryTreeNames.length > 1) {
                         categoryId = createCategoryTree(categoryTreeNames);
                     } else {
                         categoryId = createCategory(categoryName);
@@ -520,7 +530,7 @@ public class LGTools extends Fragment {
 
     private class GetSessionTask extends AsyncTask<Void, Void, Void> {
 
-        public GetSessionTask() {
+        GetSessionTask() {
         }
 
         @Override
