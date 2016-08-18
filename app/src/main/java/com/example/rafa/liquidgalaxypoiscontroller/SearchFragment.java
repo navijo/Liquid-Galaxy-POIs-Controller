@@ -455,16 +455,6 @@ public class SearchFragment extends Fragment {
             moon.requestLayout();
             mars.requestLayout();
         } else if (smallestWidth <= 720 && smallestWidth >= 600) {
-//            editSearch.setTextSize(40);
-//            earth.getLayoutParams().height = 120;
-//            moon.getLayoutParams().height = 120;
-//            mars.getLayoutParams().height = 120;
-//            earth.getLayoutParams().width = 120;
-//            moon.getLayoutParams().width = 120;
-//            mars.getLayoutParams().width = 120;
-//            earth.requestLayout();
-//            moon.requestLayout();
-//            mars.requestLayout();
             editSearch.setTextSize(20);
             earth.getLayoutParams().height = 320;
             moon.getLayoutParams().height = 320;
@@ -490,6 +480,7 @@ public class SearchFragment extends Fragment {
             }
 
         } else {
+            editSearch.setTextSize(15);
             earth.getLayoutParams().height = 75;
             moon.getLayoutParams().height = 75;
             mars.getLayoutParams().height = 75;
