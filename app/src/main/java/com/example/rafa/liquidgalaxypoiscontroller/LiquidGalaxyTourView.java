@@ -47,7 +47,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
             Cursor c = TourPOIsEntry.getPOIsByTourID(params[0]);
             while (c.moveToNext()) {
                 int poiID = c.getInt(0);
-                poisDuration.add(Integer.valueOf(c.getInt(2)));
+                poisDuration.add(c.getInt(2));
                 pois.add(getPOIData(poiID));
             }
             try {
@@ -128,7 +128,7 @@ public class LiquidGalaxyTourView extends AsyncTask<String, Void, String> {
 
     private void sendTourPOI(Integer duration, String command) {
         try {
-            Thread.sleep((long) (duration.intValue() * 1000));
+            Thread.sleep((long) (duration * 1000));
             LGUtils.setConnectionWithLiquidGalaxy(session, command, poisFragmentAct);
         } catch (InterruptedException e) {
             e.printStackTrace();
