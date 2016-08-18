@@ -59,10 +59,6 @@ public class LGPCAdminActivity extends ActionBarActivity implements TabListener 
             String value = extras.getString("comeFrom");
             if (value != null && value.equalsIgnoreCase("tours")) {
                 mViewPager.setCurrentItem(AdminCollectionPagerAdapter.PAGE_TOURS);
-//            } else if (value != null && value.equalsIgnoreCase("categories")) {
-//                mViewPager.setCurrentItem(2);
-//            } else if (value != null && value.equalsIgnoreCase("pois")) {
-//                mViewPager.setCurrentItem(0);
             } else if (value != null && value.equalsIgnoreCase("treeView")) {
                 mViewPager.setCurrentItem(AdminCollectionPagerAdapter.PAGE_TREEEVIEW);
             }
