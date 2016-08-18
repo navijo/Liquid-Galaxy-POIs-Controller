@@ -83,7 +83,9 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         String global_interval = viewHolderTour.globalInterval.getText().toString();
         if (isNumeric(global_interval)) {//Frist of all, user must type the global interval time value.
             if (!tourPOIS.contains(tourPOI)) {
+
                 FragmentActivity activity = (FragmentActivity) rootView.getContext();
+
                 if (viewHolderTour.addedPois.getCount() == 0 || Integer.parseInt(global_interval) != TourPOIsAdapter.getGlobalInterval()) {
                     TourPOIsAdapter.setGlobalInterval(Integer.parseInt(global_interval));
                     tourPOI.setOrder(tourPOIS.size());
@@ -614,21 +616,21 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
     public static class ViewHolderPoi {
 
         public EditText name;
-        public EditText visitedPlaceET;
-        public EditText longitudeET;
-        public EditText latitudeET;
-        public EditText altitudeET;
-        public EditText headingET;
-        public EditText tiltET;
-        public EditText rangeET;
-        public Spinner categoryID;
-        public FloatingActionButton createPOI;
-        public FloatingActionButton updatePOI;
         public FloatingActionButton cancel;
-        public Spinner spinnerAltitudeMode;
+        EditText visitedPlaceET;
+        EditText longitudeET;
+        EditText latitudeET;
+        EditText altitudeET;
+        EditText headingET;
+        EditText tiltET;
+        EditText rangeET;
+        Spinner categoryID;
+        FloatingActionButton createPOI;
+        FloatingActionButton updatePOI;
+        Spinner spinnerAltitudeMode;
         private Switch switchButtonHide;
 
-        public ViewHolderPoi(final View rootView) {
+        ViewHolderPoi(final View rootView) {
 
             name = (EditText) rootView.findViewById(R.id.name);
             visitedPlaceET = (EditText) rootView.findViewById(R.id.visited_place);
@@ -673,16 +675,16 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     public static class ViewHolderTour {
 
-        public EditText tourName;
-        public Spinner categoryID;
-        public android.support.design.widget.FloatingActionButton createTOUR;
-        public android.support.design.widget.FloatingActionButton updateTOUR;
         public android.support.design.widget.FloatingActionButton cancel;
-        public ListView addedPois;
-        public EditText globalInterval;
+        EditText tourName;
+        Spinner categoryID;
+        android.support.design.widget.FloatingActionButton createTOUR;
+        android.support.design.widget.FloatingActionButton updateTOUR;
+        ListView addedPois;
+        EditText globalInterval;
         private Switch switchButtonHide;
 
-        public ViewHolderTour(View rootView) {
+        ViewHolderTour(View rootView) {
 
             tourName = (EditText) rootView.findViewById(R.id.tour_name);
             switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
@@ -697,14 +699,14 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
 
     public static class ViewHolderCategory {
 
-        public EditText categoryName;
-        public Spinner fatherID;
-        public FloatingActionButton createCategory;
-        public FloatingActionButton updateCategory;
         public FloatingActionButton cancel;
+        EditText categoryName;
+        Spinner fatherID;
+        FloatingActionButton createCategory;
+        FloatingActionButton updateCategory;
         private Switch switchButtonHide;
 
-        public ViewHolderCategory(View rootView) {
+        ViewHolderCategory(View rootView) {
 
             categoryName = (EditText) rootView.findViewById(R.id.category_name);
             switchButtonHide = (Switch) rootView.findViewById(R.id.switchButtonHide);
@@ -721,7 +723,7 @@ public class CreateItemFragment extends Fragment implements OnMapReadyCallback, 
         private int tourId;
         private ProgressDialog dialog;
 
-        public AddTourToDatabase(int tourId) {
+        AddTourToDatabase(int tourId) {
             this.tourId = tourId;
         }
 
