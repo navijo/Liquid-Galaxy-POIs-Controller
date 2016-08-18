@@ -259,6 +259,9 @@
         $serverPort: Port in which the browser will be opened
     </string>
     <string name="stopOtherTasks">Another task is running. Please stop it before launching another.</string>
+    <string name="taskIpDefault">$serverIp</string>
+    <string name="taskBrowserUrlDefault">$serverIp:$serverPort</string>
+    <string name="clean_KML">Clean KMLS</string>
 
 
 </resources>
