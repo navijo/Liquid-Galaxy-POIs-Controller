@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="1dp"
     android:background="@android:color/darker_gray"
-    android:layout_margin="1dp">
+    android:orientation="vertical">
 
 
     <LinearLayout
@@ -30,11 +30,6 @@
             android:layout_height="wrap_content"
             android:text="@string/cancel" />
 
-        <!--<Button-->
-        <!--android:id="@+id/next_subcategory"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/next_subcategory"/>-->
     </LinearLayout>
 
 
