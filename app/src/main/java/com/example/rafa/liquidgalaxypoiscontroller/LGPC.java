@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -57,6 +58,12 @@ public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_action_bar));
+        }
+
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
