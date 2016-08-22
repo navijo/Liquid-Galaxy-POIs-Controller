@@ -1,4 +1,4 @@
-<com.example.rafa.liquidgalaxypoiscontroller.PW.SwipeRefreshWidget
+<com.gsoc.ijosa.liquidgalaxycontroller.PW.SwipeRefreshWidget
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/swipe_refresh_widget"
     android:layout_width="match_parent"
@@ -50,4 +50,4 @@
     </RelativeLayout>
 
 
-</com.example.rafa.liquidgalaxypoiscontroller.PW.SwipeRefreshWidget>
+</com.gsoc.ijosa.liquidgalaxycontroller.PW.SwipeRefreshWidget>

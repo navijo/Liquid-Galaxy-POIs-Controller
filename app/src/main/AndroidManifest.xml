@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rafa.liquidgalaxypoiscontroller" >
+    package="com.gsoc.ijosa.liquidgalaxycontroller">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -37,19 +37,19 @@
 
         <provider
             android:name=".data.POIsProvider"
-            android:authorities="com.example.rafa.liquidgalaxypoiscontroller"
+            android:authorities="com.gsoc.ijosa.liquidgalaxycontroller"
             android:enabled="true"
             android:exported="true" />
 
         <!--<uses-sdk android:minSdkVersion="21" />-->
 
         <activity
-            android:name=".CreateItemActivity"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.CreateItemActivity"
             android:label="@string/title_activity_create_item"
             android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
-            android:name=".UpdateItemActivity"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.UpdateItemActivity"
             android:label="@string/title_activity_update_item"
             android:windowSoftInputMode="adjustPan" >
         </activity>
@@ -61,11 +61,11 @@
         </intent-filter>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".LGPC"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.LGPC"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -74,15 +74,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LGPCAdminActivity"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.LGPCAdminActivity"
             android:label="" >
         </activity>
         <activity
-            android:name=".InfoActivity"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.InfoActivity"
             android:label="@string/title_activity_info" >
         </activity>
         <activity
-            android:name=".Help"
+            android:name="com.gsoc.ijosa.liquidgalaxycontroller.Help"
             android:label="@string/title_activity_help" >
         </activity>
 

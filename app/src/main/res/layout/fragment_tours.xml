@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/whiteGrey"
     android:orientation="horizontal"
-    tools:context="com.example.rafa.liquidgalaxypoiscontroller.SearchFragment">
+    tools:context="com.gsoc.ijosa.liquidgalaxycontroller.com.gsoc.ijosa.liquidgalaxycontroller.SearchFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"

@@ -8,4 +8,4 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     app:tabIndicatorColor="@android:color/white"
-    tools:context="com.example.rafa.liquidgalaxypoiscontroller.LGPCAdminActivity" />
+    tools:context="com.gsoc.ijosa.liquidgalaxycontroller.com.gsoc.ijosa.liquidgalaxycontroller.LGPCAdminActivity" />

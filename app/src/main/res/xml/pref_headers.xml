@@ -3,7 +3,7 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.example.rafa.liquidgalaxypoiscontroller.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.gsoc.ijosa.liquidgalaxycontroller.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
 
 
