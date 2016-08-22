@@ -15,19 +15,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:text="@string/POIs_button" />
+        android:text="@string/POIs_button"
+        android:textColor="@color/white" />
     <Button
         android:id="@+id/tours_management"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/pois_management"
-        android:text="@string/TOURs_button" />
+        android:text="@string/TOURs_button"
+        android:textColor="@color/white" />
     <Button
         android:id="@+id/categories_management"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/tours_management"
-        android:text="@string/categories_button" />
+        android:text="@string/categories_button"
+        android:textColor="@color/white" />
 
     <RelativeLayout
         android:id="@+id/management_button_container"

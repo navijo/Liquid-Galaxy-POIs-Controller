@@ -52,7 +52,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String stopLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('Stop Liquid Galaxy','Stop Liquid Galaxy Task','/home/lg/bin/lg-run \"killall run-earth-bin.sh googleearth googleearth-bin\"','','$lgIp','lg','lqgalaxy',0)";
         db.execSQL(stopLG);
 
-        String sqlPeruse = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('Peruse','Peruse a Rue','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/touchscreen',0)";
+        String sqlPeruse = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('Peruse a Rue','Peruse a Rue','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/touchscreen',0)";
         db.execSQL(sqlPeruse);
 
         String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PCVT','Point Cloud Visualization Tool','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/lg-potree/library',0)";

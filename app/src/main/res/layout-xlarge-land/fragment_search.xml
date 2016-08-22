@@ -141,7 +141,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:hint="@string/search_some_place" />
+                    android:hint="@string/search_some_place"
+                    android:textColor="@color/black" />
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/searchButton"
