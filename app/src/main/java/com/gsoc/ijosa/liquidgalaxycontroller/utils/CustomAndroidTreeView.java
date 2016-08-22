@@ -260,12 +260,7 @@ public class CustomAndroidTreeView extends AndroidTreeView {
             }
         }
 
-        //We don't use animation, so...
-//        if (mUseDefaultAnimation) {
-//            expand(parentViewHolder.getNodeItemsView());
-//        } else {
         parentViewHolder.getNodeItemsView().setVisibility(View.VISIBLE);
-//        }
 
     }
 
@@ -273,38 +268,17 @@ public class CustomAndroidTreeView extends AndroidTreeView {
         final TreeNode.BaseNodeViewHolder viewHolder = getViewHolderForNode(n);
         final View nodeView = viewHolder.getView();
         container.addView(nodeView);
-//        if (mSelectionModeEnabled) {
-//            viewHolder.toggleSelectionMode(mSelectionModeEnabled);
-//        }
 
         nodeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (n.getClickListener() != null) {
-//                    n.getClickListener().onClick(n, n.getValue());
-//                } else if (nodeClickListener != null) {
-//                    nodeClickListener.onClick(n, n.getValue());
-//                }
+
                 if (enableAutoToggle) {
                     toggleNode(n);
                 }
             }
         });
 
-//        nodeView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                if (n.getLongClickListener() != null) {
-//                    return n.getLongClickListener().onLongClick(n, n.getValue());
-//                } else if (nodeLongClickListener != null) {
-//                    return nodeLongClickListener.onLongClick(n, n.getValue());
-//                }
-//                if (enableAutoToggle) {
-//                    toggleNode(n);
-//                }
-//                return false;
-//            }
-//        });
     }
 
     public <E> List<E> getSelectedValues(Class<E> clazz) {
@@ -353,7 +327,7 @@ public class CustomAndroidTreeView extends AndroidTreeView {
         }
     }
 
-    // TODO Do we need to go through whole tree? Save references or consider collapsed nodes as not selected
+
     private List<TreeNode> getSelected(TreeNode parent) {
         List<TreeNode> result = new ArrayList<>();
         for (TreeNode n : parent.getChildren()) {
