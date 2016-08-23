@@ -55,7 +55,7 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String sqlPeruse = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('Peruse a Rue','Peruse a Rue','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/touchscreen',0)";
         db.execSQL(sqlPeruse);
 
-        String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PCVT','Point Cloud Visualization Tool','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/lg-potree/library',0)";
+        String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PCVT','Point Cloud Visualization Tool','bash /home/lg/asherat666-peruse-a-rue/scripts/lg-potree $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/lg-potree/library',0)";
         db.execSQL(sqlPotree);
 
         String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/lglab/gsoc16/DLP/start-dlp $lgIp $serverIp:$serverPort','bash /home/lg/Desktop/lglab/gsoc16/DLP/exitdlp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
