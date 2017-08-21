@@ -73,6 +73,21 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         String sqlIBRI = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('IBRI','Interactive Beacon Rescue Interface','/home/lg/Desktop/lglab/gsoc16/IBRI/ibri-start $serverIp $serverPort','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
         db.execSQL(sqlIBRI);
 
+        String sqlFlOYBD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FlOYBD','Flying over your big data','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh floybd $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_django_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        db.execSQL(sqlFlOYBD);
+
+        String sqlWikimediaDataProject = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('WikimediaDataProject','Interactive Beacon Rescue Interface','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh WikimediaDataProject $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_django_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        db.execSQL(sqlWikimediaDataProject);
+
+        String sqlmy_meteorological_station = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('my_meteorological_station','Interactive Beacon Rescue Interface','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh my_meteorological_station $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_node_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:3000',0)";
+        db.execSQL(sqlmy_meteorological_station);
+
+        String sqlmemories = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('memories','Interactive Beacon Rescue Interface','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh memories $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_node_proj.sh $lgIp','$serverIp','lg','lq','geographical-memories.firebaseapp.com',0)";
+        db.execSQL(sqlmemories);
+        
+        String sqlSmartAgroVisualizationTool = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('SmartAgroVisualizationTool','Interactive Beacon Rescue Interface','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh SmartAgroVisualizationTool $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_node_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:3001',0)";
+        db.execSQL(sqlSmartAgroVisualizationTool);
+
     }
 
     private void createBaseCategories(SQLiteDatabase db) {
