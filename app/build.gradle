@@ -17,14 +17,14 @@ android {
             storePassword 'android'
         }
     }
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 24
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.gsoc.ijosa.liquidgalaxycontroller"
         minSdkVersion 19
-        targetSdkVersion 22
-        versionCode 2
-        versionName "1.2"
+        targetSdkVersion 24
+        versionCode 3
+        versionName "1.2.2"
     }
     buildTypes {
         release {
@@ -38,11 +38,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile(name: 'uribeacon-library-release', ext: 'aar')
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:appcompat-v7:24.+'
+    compile 'com.android.support:design:24.+'
     compile 'com.mcxiaoke.volley:library-aar:1.0.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:cardview-v7:22.2.1'
+    compile 'com.android.support:recyclerview-v7:24.+'
+    compile 'com.android.support:cardview-v7:24.+'
     compile 'com.google.android.gms:play-services:7.3.0'
     compile 'com.github.kanytu:android-parallax-recyclerview:v1.7'
     /**For the tree view**/
@@ -51,7 +51,6 @@ dependencies {
     compile files('libs/jsch-0.1.53.jar')
     compile files('libs/jzlib-1.1.1.jar')
 }
-
 
 
 
