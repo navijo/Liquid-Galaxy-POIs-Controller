@@ -23,8 +23,8 @@ android {
         applicationId "com.gsoc.ijosa.liquidgalaxycontroller"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 3
-        versionName "1.2.2"
+        versionCode 4
+        versionName "1.2.3"
     }
     buildTypes {
         release {
