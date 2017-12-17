@@ -496,9 +496,7 @@ public class LGTools extends Fragment {
                     tilt = getPOIAttribute("tilt", line);
                     range = getPOIAttribute("range", line);
                     altitudeMode = getAltitudeMode(line);
-                }
-
-                else { //if CSV Note:CSV file must be in format: name,longitude,latitude,altitude,heading,tilt,range,altitudeMode
+                } else { //if CSV Note:CSV file must be in format : name,longitude,latitude,altitude,heading,tilt,range,altitudeMode
                     name = getPOIAttributeCSV(0,line);
                     longitude = getPOIAttributeCSV(line.indexOf(name+",")+name.length()+1, line);
                     latitude = getPOIAttributeCSV(line.indexOf(","+longitude+",")+longitude.length()+2, line);
