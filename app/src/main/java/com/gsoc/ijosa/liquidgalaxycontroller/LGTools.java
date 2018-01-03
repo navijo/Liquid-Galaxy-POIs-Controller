@@ -252,6 +252,13 @@ public class LGTools extends Fragment {
 
     }
 
+    private String getPOIAttributeCSV(int index, String line) {
+
+        int end=line.indexOf(',',index);
+        return line.substring(index,end);
+
+    }
+
     private String getAltitudeMode(String line) {
 
         int attributeSize = "gx:altitudeMode>".length();
@@ -259,6 +266,11 @@ public class LGTools extends Fragment {
         int end = line.indexOf("</gx:altitudeMode>");
         return line.substring(start, end);
     }
+
+    private String getaltitudeModeCSV(int index, String line){
+        return line.substring(index,line.length());
+    }
+
 
     private int createCategoryTree(String[] categoryTreeName) {
         int categoryID = 0;
@@ -470,14 +482,30 @@ public class LGTools extends Fragment {
                 int categoryId = getOrCreatePoiCategoryByName(line);
 
                 /**************/
-                String name = getPOIName(line);
-                String longitude = getPOIAttribute("longitude", line);
-                String latitude = getPOIAttribute("latitude", line);
-                String altitude = getPOIAttribute("altitude", line);
-                String heading = getPOIAttribute("heading", line);
-                String tilt = getPOIAttribute("tilt", line);
-                String range = getPOIAttribute("range", line);
-                String altitudeMode = getAltitudeMode(line);
+
+                String name,longitude,latitude,altitude,heading,tilt,range,altitudeMode;
+
+                //to check if KML or CSV
+
+                if(line.indexOf('<')>=0) { //if KML
+                    name = getPOIName(line);
+                    longitude = getPOIAttribute("longitude", line);
+                    latitude = getPOIAttribute("latitude", line);
+                    altitude = getPOIAttribute("altitude", line);
+                    heading = getPOIAttribute("heading", line);
+                    tilt = getPOIAttribute("tilt", line);
+                    range = getPOIAttribute("range", line);
+                    altitudeMode = getAltitudeMode(line);
+                } else { //if CSV Note:CSV file must be in format : name,longitude,latitude,altitude,heading,tilt,range,altitudeMode
+                    name = getPOIAttributeCSV(0,line);
+                    longitude = getPOIAttributeCSV(line.indexOf(name+",")+name.length()+1, line);
+                    latitude = getPOIAttributeCSV(line.indexOf(","+longitude+",")+longitude.length()+2, line);
+                    altitude = getPOIAttributeCSV(line.indexOf(","+latitude+",")+latitude.length()+2, line);
+                    heading = getPOIAttributeCSV(line.indexOf(","+altitude+",")+altitude.length()+2, line);
+                    tilt = getPOIAttributeCSV(line.indexOf(","+heading+",")+heading.length()+2, line);
+                    range = getPOIAttributeCSV(line.indexOf(","+tilt+",")+tilt.length()+2, line);
+                    altitudeMode = getaltitudeModeCSV(line.lastIndexOf(',')+1,line);
+                }
 
                 poi.put(POIsContract.POIEntry.COLUMN_COMPLETE_NAME, name);
                 poi.put(POIsContract.POIEntry.COLUMN_VISITED_PLACE_NAME, name);

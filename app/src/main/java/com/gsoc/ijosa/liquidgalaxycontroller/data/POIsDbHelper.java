@@ -4,10 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 
 public class POIsDbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "poi_controller.db";
@@ -20,14 +22,17 @@ public class POIsDbHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(createCategoryEntryTable());
-        db.execSQL(createPOInEntryTable());
-        db.execSQL(createTourEntryTable());
-        db.execSQL(createTourPOIsEntryTable());
-        db.execSQL(createTasksEntryTable());
-        createBaseCategories(db);
-        createDefaultLgTasks(db);
-        insertDefaultData(db);
+        try {
+            db.execSQL(createCategoryEntryTable());
+            db.execSQL(createPOInEntryTable());
+            db.execSQL(createTourEntryTable());
+            db.execSQL(createTourPOIsEntryTable());
+            db.execSQL(createTasksEntryTable());
+            createBaseCategories(db);
+            createDefaultLgTasks(db);
+            insertDefaultData(db);
+        } catch (Exception e) {
+        }
     }
 
     private void insertDefaultData(SQLiteDatabase db) {
@@ -45,47 +50,75 @@ public class POIsDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void createDefaultLgTasks(SQLiteDatabase db) {
-        String sqlLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('Liquid Galaxy','Launch Liquid Galaxy Task','/home/lg/bin/startup-script.sh','/home/lg/bin/lg-run \"killall run-earth-bin.sh googleearth googleearth-bin\"','$lgIp','lg','lqgalaxy',0)";
+    private JSONObject readJSONtasks() throws IOException {
+        JSONObject tasks = null;
+        InputStream in = context.getAssets().open("defaultTask.json");
+        int size = in.available();
+        byte[] buffer = new byte[size];
+        in.read(buffer);
+        in.close();
+        String json = new String(buffer, "UTF-8");
+        try {
+            tasks = new JSONObject(json);
+        } catch (Exception e) {
+        }
+        return tasks;
+
+    }
+
+    private String getDefaultTasks(JSONObject obj, String task) {
+        String sql = null;
+        try {
+            sql = obj.getString(task);
+        } catch (Exception e) {
+        }
+        return sql;
+    }
+
+    private void createDefaultLgTasks(SQLiteDatabase db) throws IOException {
+
+        JSONObject SqlTasks = readJSONtasks();
+
+        String sqlLG = getDefaultTasks(SqlTasks, "sqlLG");
         db.execSQL(sqlLG);
 
-        String stopLG = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,isRunning) VALUES ('Stop Liquid Galaxy','Stop Liquid Galaxy Task','/home/lg/bin/lg-run \"killall run-earth-bin.sh googleearth googleearth-bin\"','','$lgIp','lg','lqgalaxy',0)";
+        String stopLG = getDefaultTasks(SqlTasks, "stopLG");
         db.execSQL(stopLG);
 
-        String sqlPeruse = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('Peruse a Rue','Peruse a Rue','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-peruse-a-rue-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/touchscreen',0)";
+        String sqlPeruse = getDefaultTasks(SqlTasks, "sqlPeruse");
         db.execSQL(sqlPeruse);
 
-        String sqlPotree = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PCVT','Point Cloud Visualization Tool','bash /home/lg/asherat666-peruse-a-rue/scripts/lg-potree $lgIp $serverIp 8086 lg','/home/lg/asherat666-peruse-a-rue/scripts/lg-potree-stop $lgIp lg','$serverIp','lg','lq','$serverIp:8086/lg-potree/library',0)";
+        String sqlPotree = getDefaultTasks(SqlTasks, "sqlPotree");
         db.execSQL(sqlPotree);
 
-        String sqlDLP = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('DLP','Drone Logistics Platform','export DISPLAY=:0 && bash /home/lg/Desktop/lglab/gsoc16/DLP/start-dlp $lgIp $serverIp:$serverPort','bash /home/lg/Desktop/lglab/gsoc16/DLP/exitdlp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlDLP = getDefaultTasks(SqlTasks, "sqlDLP");
         db.execSQL(sqlDLP);
 
-        String sqlPILT = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('PILT','Panoramic Interactive Live Tracker','/home/lg/Desktop/lglab/gsoc16/PILT/pilt-start $lgIp','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlPILT = getDefaultTasks(SqlTasks, "sqlPILT");
         db.execSQL(sqlPILT);
 
-        String sqlFAED = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FAED','Flying Automated External Defibrilator','export DISPLAY=:0 && bash /home/lg/Desktop/lglab/gsoc15/FAED/faed-start $lgIp','/home/lg/Desktop/lglab/gsoc15/FAED/faed-exit $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlFAED = getDefaultTasks(SqlTasks, "sqlFAED");
         db.execSQL(sqlFAED);
 
-        String sqlVYD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('VYD','View Your Data','/home/lg/Desktop/lglab/gsoc15/VYD/vyd-start $lgIp','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlVYD = getDefaultTasks(SqlTasks, "sqlVYD");
         db.execSQL(sqlVYD);
 
-        String sqlIBRI = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('IBRI','Interactive Beacon Rescue Interface','/home/lg/Desktop/lglab/gsoc16/IBRI/ibri-start $serverIp $serverPort','/home/lg/Desktop/lglab/python-end $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlIBRI = getDefaultTasks(SqlTasks, "sqlIBRI");
         db.execSQL(sqlIBRI);
 
-        String sqlFlOYBD = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('FlOYBD','Fly Over Your Big Data','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh floybd $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_django_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlFlOYBD = getDefaultTasks(SqlTasks, "sqlFlOYBD");
         db.execSQL(sqlFlOYBD);
 
-        String sqlWikimediaDataProject = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('WDLGV','WikiData Liquid Galaxy Visualization','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh WikimediaDataProject $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_django_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:$serverPort',0)";
+        String sqlWikimediaDataProject = getDefaultTasks(SqlTasks, "sqlWikimediaDataProject");
         db.execSQL(sqlWikimediaDataProject);
 
-        String sqlmy_meteorological_station = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('MMS','My Meteorological Station','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh my_meteorological_station $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_node_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:3000',0)";
+        String sqlmy_meteorological_station = getDefaultTasks(SqlTasks, "sqlmy_meteorological_station");
         db.execSQL(sqlmy_meteorological_station);
 
-        String sqlmemories = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('Geographical Memories','','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh memories $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_node_proj.sh $lgIp','$serverIp','lg','lq','geographical-memories.firebaseapp.com',0)";
+        String sqlmemories = getDefaultTasks(SqlTasks, "sqlmemories");
         db.execSQL(sqlmemories);
 
-        String sqlSmartAgroVisualizationTool = "INSERT INTO LG_TASK(Title, Description, Script,Shutdown_Script,IP,User,Password,URL,isRunning) VALUES ('SAVT','Smart Agro Visualization Tool','/home/lg/Desktop/lglab/projectsRunner/mainscrip.sh SmartAgroVisualizationTool $lgIp ','/home/lg/Desktop/lglab/projectsRunner/end_node_proj.sh $lgIp','$serverIp','lg','lq','$serverIp:3001',0)";
+        String sqlSmartAgroVisualizationTool = getDefaultTasks(SqlTasks, "sqlSmartAgroVisualizationTool");
         db.execSQL(sqlSmartAgroVisualizationTool);
 
     }
