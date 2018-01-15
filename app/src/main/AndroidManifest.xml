@@ -135,6 +135,9 @@
         <!--android:name=".utils.kioskModeUtils.KioskService"-->
         <!--android:exported="false" />-->
 
+        <activity
+            android:name=".navigator">
+        </activity>
     </application>
 
 </manifest>
