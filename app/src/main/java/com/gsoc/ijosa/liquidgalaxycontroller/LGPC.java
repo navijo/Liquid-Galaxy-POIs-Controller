@@ -123,7 +123,13 @@ public class LGPC extends ActionBarActivity implements ActionBar.TabListener {
             Intent intent = new Intent(this, InfoActivity.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.action_admin) {
+        }
+        else if (id == R.id.action_controller) {
+            Intent intent = new Intent(this, navigator.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_admin) {
             //When the user decides to enter to the Administration section, first appears one
             //popup asking for a password.
             if(!POISFragment.getTourState()) {
