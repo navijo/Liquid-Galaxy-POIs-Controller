@@ -225,6 +225,7 @@
     <string name="viewing">Visualizing</string>
     <string name="inLG">in Liquid Galaxy</string>
     <string name="visualizationCanceled">Visualization Canceled</string>
+    <string name="controller">Open Controller</string>
 
     <string name="show_all">Show All</string>
     <string name="showByCategories">Show by categories</string>
