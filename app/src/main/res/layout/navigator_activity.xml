@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.gsoc.ijosa.liquidgalaxycontroller.navigator"
+        tools:layout_editor_absoluteY="81dp">
+
+        <Button
+            android:id="@+id/upButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="13dp"
+            android:layout_toEndOf="@+id/leftButton"
+            android:drawableTop="@drawable/ic_arrow_upward_black_24dp"
+            tools:layout_editor_absoluteX="148dp"
+            tools:layout_editor_absoluteY="52dp" />
+
+        <Button
+            android:id="@+id/downButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rightButton"
+            android:layout_toEndOf="@+id/leftButton"
+            android:drawableTop="@drawable/ic_arrow_downward_black_24dp"
+            tools:layout_editor_absoluteX="148dp"
+            tools:layout_editor_absoluteY="178dp" />
+
+        <Button
+            android:id="@+id/leftButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/upButton"
+            android:layout_marginStart="49dp"
+            android:drawableTop="@drawable/ic_arrow_back_black_24dp"
+            tools:layout_editor_absoluteX="60dp"
+            tools:layout_editor_absoluteY="115dp" />
+
+        <Button
+            android:id="@+id/rightButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/upButton"
+            android:layout_toEndOf="@+id/upButton"
+            android:drawableTop="@drawable/ic_arrow_forward_black_24dp"
+            tools:layout_editor_absoluteX="236dp"
+            tools:layout_editor_absoluteY="115dp" />
+
+        <Button
+            android:id="@+id/zoomIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/zoomOut"
+            android:layout_alignBottom="@+id/zoomOut"
+            android:layout_alignStart="@+id/leftButton"
+            android:drawableTop="@drawable/ic_zoom_in_black_24dp"
+            tools:layout_editor_absoluteX="60dp"
+            tools:layout_editor_absoluteY="323dp" />
+
+        <Button
+            android:id="@+id/zoomOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="23dp"
+            android:layout_toEndOf="@+id/downButton"
+            android:drawableTop="@drawable/ic_zoom_out_black_24dp"
+            tools:layout_editor_absoluteX="236dp"
+            tools:layout_editor_absoluteY="323dp" />
+
+    </RelativeLayout>
